@@ -146,7 +146,6 @@ container.bind<ICoreService>(TYPES.CoreService).toConstantValue(
 
 import { GigyaOptions, GigyaController } from './controller/gigya_controller';
 
-
 const android_gigya : GigyaOptions = new GigyaOptions()
 android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
 android_gigya.data_center = 'us1';
@@ -159,10 +158,10 @@ ios_gigya.data_center = 'us1';
 ios_gigya.user_key    = 'AMvnR4qi0nSo';
 ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
 
-container.bind<GigyaOptions>(TYPES.GigyaOptions).toConstantValue(ios_gigya);
+container.bind<GigyaOptions>(TYPES.GigyaOptions).toConstantValue(android_gigya);
+/**/
 
-/*
-const gigya_controller : GigyaController = new GigyaController(logger, ios_gigya)
+
 /*
 
 // Include Gigya's SDK
@@ -187,7 +186,7 @@ ios_gigya.data_center = 'us1';
 ios_gigya.user_key    = 'AMvnR4qi0nSo';
 ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
 
-const account_gigya : GigyaConfiguration = ios_gigya
+const account_gigya : GigyaConfiguration = android_gigya
 
 // Initialize SDK with your API Key and Secret.
 const gigya = new Gigya(account_gigya.api_key, account_gigya.data_center,
@@ -207,18 +206,19 @@ const gigya = new Gigya(account_gigya.api_key, account_gigya.data_center,
 // });
 
 
-// // LOGIN
-// // -------------
-// const response = gigya.accounts.login({
-//   loginID: 'sergi.torrellassocastro@soprasteria.com',
-//   password: '1rangers1',
-//   include : 'data',
-//   sessionExpiration: 60000
-// }).then( (response:any) => {
-//   console.log(response);
-// }).catch( (error: any) => {
-//   console.log(error);
-// });
+// LOGIN
+// -------------
+const response = gigya.accounts.login({
+  loginID: 'oxn93112@ckoie.com',
+  password: '12345678',
+  include : 'data',
+  sessionExpiration: 60000
+}).then( (response:any) => {
+  console.log(response);
+}).catch( (error: any) => {
+  console.log("LJFDSÑLFDSJ ")
+  console.log(error);
+});
 
 // // getJWTPublicKey
 // // -------------

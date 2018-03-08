@@ -32,14 +32,42 @@ export class GigyaController {
     this.gigya = new Gigya(options.api_key, options.data_center,
                             options.user_key, options.secret);
 
+// ----------------
+    this.gigya_sequence()
+// ----------------
   }
 
-  public get_jwt_public_key() : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{
-    return this.gigya.accounts.getJWTPublicKey()
-  }
+  public async gigya_sequence() : Promise<void> {
 
-  public get_account_info(uid : string) : Promise<GigyaResponse & Account>{
-    return this.gigya.accounts.getAccountInfo({ UID: uid })
+    try{
+
+      // get JWT public key
+      let response : any = await this.get_jwt_public_key()
+      //this.logger.info(JSON.stringify(response,null,2))
+
+      // Login
+      response  = await this.login('oxn93112@ckoie.com', '12345678')
+      const uid : string = response.UID
+      //this.logger.info(JSON.stringify(response,null,2))
+
+      // Get Account Info
+      response = await this.get_account_info(uid)
+      //this.logger.info(JSON.stringify(response,null,2))
+
+      // Get JWT
+      response = await this.get_jwt(uid)
+      //this.logger.info(JSON.stringify(response,null,2))
+
+      const jwt_token : string = response.id_token
+      this.logger.info("Obtained JWT token -> " +  jwt_token)
+
+    }catch(e){
+      this.logger.error(e)
+    }
+
+
+
+    return Promise.resolve()
   }
 
   public login(login : string, password : string) : Promise<GigyaResponse & Account & SessionInfo>{
@@ -49,6 +77,14 @@ export class GigyaController {
               include: 'data',
               sessionExpiration : 60000
             })
+  }
+
+  public get_account_info(uid : string) : Promise<GigyaResponse & Account>{
+    return this.gigya.accounts.getAccountInfo({ UID: uid })
+  }
+
+  public get_jwt_public_key() : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{
+    return this.gigya.accounts.getJWTPublicKey()
   }
 
   public get_jwt(uid : string) : Promise<GigyaResponse & AccountsGetJWTResponse>{
