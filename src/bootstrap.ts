@@ -18,11 +18,6 @@ import { ICoreService, CoreService } from './service/core_service';
 import { RequestType } from './controller/core_controller';
 import  './controller/core_controller';
 
-
-// ------------------------------------
-
-// ------------------------------------
-
 // ------------------------------------
 // CONFIGURATION
 // ------------------------------------
@@ -147,7 +142,106 @@ container.bind<ICoreService>(TYPES.CoreService).toConstantValue(
   )
 );
 
+// ------------------------------------
 
+import { GigyaOptions, GigyaController } from './controller/gigya_controller';
+
+
+const android_gigya : GigyaOptions = new GigyaOptions()
+android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
+android_gigya.data_center = 'us1';
+android_gigya.user_key    = 'AMvnR4qi0nSo';
+android_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
+
+const ios_gigya : GigyaOptions = new GigyaOptions()
+ios_gigya.api_key     = '3_-7gHURwQ0lLRQhSQi9GpB2e8tmk2gM3Akqzg-GxyNcTHNpEBO3vKghOD_PVNVG6G';
+ios_gigya.data_center = 'us1';
+ios_gigya.user_key    = 'AMvnR4qi0nSo';
+ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
+
+container.bind<GigyaOptions>(TYPES.GigyaOptions).toConstantValue(ios_gigya);
+
+/*
+const gigya_controller : GigyaController = new GigyaController(logger, ios_gigya)
+/*
+
+// Include Gigya's SDK
+import Gigya from 'gigya';
+
+class GigyaConfiguration{
+  api_key     : string;
+  data_center : string;
+  user_key    : string;
+  secret      : string;
+}
+
+const android_gigya : GigyaConfiguration = new GigyaConfiguration()
+android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
+android_gigya.data_center = 'us1';
+android_gigya.user_key    = 'AMvnR4qi0nSo';
+android_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
+
+const ios_gigya : GigyaConfiguration = new GigyaConfiguration()
+ios_gigya.api_key     = '3_-7gHURwQ0lLRQhSQi9GpB2e8tmk2gM3Akqzg-GxyNcTHNpEBO3vKghOD_PVNVG6G';
+ios_gigya.data_center = 'us1';
+ios_gigya.user_key    = 'AMvnR4qi0nSo';
+ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
+
+const account_gigya : GigyaConfiguration = ios_gigya
+
+// Initialize SDK with your API Key and Secret.
+const gigya = new Gigya(account_gigya.api_key, account_gigya.data_center,
+                          account_gigya.user_key, account_gigya.secret);
+
+
+// // Fetch user's account.
+// // Returns a Promise. Promise is thrown on error.
+// // Get Account Info
+// // --------------------
+// const response = gigya.accounts.getAccountInfo({
+//   UID: '22caa681b4c24c409597b318e22b2734'
+// }).then( (response:any) => {
+//   console.log(response);
+// }).catch( (error: any) => {
+//   console.log(error);
+// });
+
+
+// // LOGIN
+// // -------------
+// const response = gigya.accounts.login({
+//   loginID: 'sergi.torrellassocastro@soprasteria.com',
+//   password: '1rangers1',
+//   include : 'data',
+//   sessionExpiration: 60000
+// }).then( (response:any) => {
+//   console.log(response);
+// }).catch( (error: any) => {
+//   console.log(error);
+// });
+
+// // getJWTPublicKey
+// // -------------
+// const response = gigya.accounts.getJWTPublicKey()
+// .then( (response:any) => {
+//   console.log(response);
+// }).catch( (error: any) => {
+//   console.log(error);
+// });
+
+// // getJWT
+// // -------------
+// const response = gigya.accounts.getJWT({
+//   targetUID: '22caa681b4c24c409597b318e22b2734'
+// })
+// .then( (response:any) => {
+//   console.log(response);
+// }).catch( (error: any) => {
+//   console.log(error);
+// });
+/**/
+
+// ------------------------------------
 
 // ------------------------------------
 // INITIALIZE APPLICATION
@@ -155,7 +249,7 @@ container.bind<ICoreService>(TYPES.CoreService).toConstantValue(
 
 const http_port  = nconf.get("HTTP_PORT")
 logger.info('-------------------------------------')
-logger.info('          WHISBI RM GATEWAY         ')
+logger.info('          NIN Backend                ')
 logger.info('-------------------------------------')
 logger.info('Listening at ' + http_port + ' for http')
 fs.readFile(config_file, 'utf8', function (err : NodeJS.ErrnoException,data) {

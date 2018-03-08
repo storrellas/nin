@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build:live",
     "build": "tsc",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/bootstrap.ts",
+    "build:live": "nodemon -L --exec ./node_modules/.bin/ts-node -- ./src/bootstrap.ts",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "mocha --opts mocha.unit.opts",
     "test:unit:live": "mocha --opts mocha.unit.opts --watch",

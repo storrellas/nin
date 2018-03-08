@@ -3,7 +3,8 @@ const TYPES = {
   CoreService: Symbol('CoreService'),
   DataStore: Symbol('DataStore'),
   Models: Symbol('Models'),
-  CoreModuleManager: Symbol('CoreModuleManager')
+  CoreModuleManager: Symbol('CoreModuleManager'),
+  GigyaOptions: Symbol('GigyaOptions')
 };
 
 export default TYPES;
