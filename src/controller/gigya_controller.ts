@@ -33,11 +33,14 @@ export class GigyaController {
                             options.user_key, options.secret);
 
 // ----------------
-    this.gigya_sequence()
+    this.get_jwt_token('oxn93112@ckoie.com', '12345678')
+    .then( (jwt_token: string) => {
+      this.logger.info("TOOOOKEN -> " + jwt_token)
+    })
 // ----------------
   }
 
-  public async gigya_sequence() : Promise<void> {
+  public async get_jwt_token(login: string, password: string) : Promise<string> {
 
     try{
 
@@ -46,7 +49,7 @@ export class GigyaController {
       //this.logger.info(JSON.stringify(response,null,2))
 
       // Login
-      response  = await this.login('oxn93112@ckoie.com', '12345678')
+      response  = await this.login(login, password)
       const uid : string = response.UID
       //this.logger.info(JSON.stringify(response,null,2))
 
@@ -59,15 +62,15 @@ export class GigyaController {
       //this.logger.info(JSON.stringify(response,null,2))
 
       const jwt_token : string = response.id_token
-      this.logger.info("Obtained JWT token -> " +  jwt_token)
+      this.logger.debug("Obtained JWT token -> " +  jwt_token)
+      return Promise.resolve(jwt_token)
 
     }catch(e){
       this.logger.error(e)
+      return Promise.reject(undefined)
     }
 
 
-
-    return Promise.resolve()
   }
 
   public login(login : string, password : string) : Promise<GigyaResponse & Account & SessionInfo>{

@@ -11,7 +11,8 @@
     "test:unit": "mocha --opts mocha.unit.opts",
     "test:unit:live": "mocha --opts mocha.unit.opts --watch",
     "test:integration": "mocha --opts mocha.integration.opts",
-    "coverage": "nyc npm test"
+    "coverage": "nyc npm test",
+    "sync":"./node_modules/.bin/ts-node ./src/persistance.ts"
   },
   "author": "",
   "license": "ISC",
