@@ -1,5 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { injectable } from 'inversify';
+import * as uuidv4 from 'uuid/v4';
+
 
 export interface IModel {
   getModel(name: string): Sequelize.Model<{}, {}>;
@@ -20,8 +22,8 @@ export class Model {
     // user
     this.models['user'] = this.sequelize.define('user',{
       id                    : {type: Sequelize.STRING(64), primaryKey:true},
-      pre_height            : {type: Sequelize.INTEGER, defaultValue:0},
-      pre_weight            : {type: Sequelize.INTEGER, defaultValue:0}
+      pre_height            : {type: Sequelize.DOUBLE, defaultValue:0},
+      pre_weight            : {type: Sequelize.DOUBLE, defaultValue:0}
     },
     {
        freezeTableName: true,
@@ -31,7 +33,18 @@ export class Model {
     this.models['tracking_weight'] = this.sequelize.define('tracking_weight',{
       id                    : {type: Sequelize.STRING(64), primaryKey:true},
       user_id               : {type: Sequelize.STRING(64)},
-      pre_weight            : {type: Sequelize.INTEGER}
+      weight                : {type: Sequelize.DOUBLE},
+      note                  : {type: Sequelize.STRING(256)},
+      date                  : {type: Sequelize.DATE}
+    },
+    {
+       timestamps: false,
+       freezeTableName: true,
+       hooks: {
+        beforeCreate: (output : any, options: any) => {
+          output.id = uuidv4();
+        }
+      }
     });
 
     // associations

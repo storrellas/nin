@@ -13,15 +13,33 @@ import * as jsonwebtoken from 'jsonwebtoken';
 @controller('/services/1.1/')
 export class TrackingController {
 
+  // Body mass index for pregnancy
+  private bmi_max : number = 24.9
+  private bmi_min : number = 18.5
+
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
-
 
   private get_uid(token : string) : string{
     const item : any = jsonwebtoken.decode(token)
     //this.logger.debug("extracted uid: " + item.sub)
     return item.sub
+  }
+
+  /**
+    * Calculates weight limits according to bmi formula
+    * BMI = (Weight in kilograms  / Height[m]^^2)
+    * https://www.fitpregnancy.com/tools/bmi-calculator
+    * NORMAL (18.5 to 24.9) 25-35lbs recommended weight gain
+    *
+    * output[0] -> max weight
+    * output[1] -> min weight
+    */
+  private bmi_weight_limits(height: number) : number[]{
+    const weight_max = this.bmi_max * Math.pow(height,2)
+    const weight_min = this.bmi_min * Math.pow(height,2)
+    return [weight_max, weight_min]
   }
 
   /**
@@ -144,8 +162,6 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     const uid : string = this.get_uid(token)
     this.logger.info("prepregnancy_create_or_update uid:"  + uid)
 
-    console.log(request)
-
     try{
       const output : Array<any> =
         await this.model.getModel('user').update(
@@ -165,17 +181,17 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
           response.json({result: 'ko'})
         }else{
           this.logger.info("update ok!")
-// ----------------
-// This formula needs to be incorporated here to calculate the BMI
-// ----------------
 
+          const weight_array : number[] =
+                this.bmi_weight_limits(parseFloat(request.body.height))
+          const bmi_string : string = this.bmi_min + "-" + this.bmi_max
           const response_json = {
                   response: {
                       range: {
-                          max: 73.35,
-                          min: 69.05
+                          max: weight_array[0],
+                          min: weight_array[1]
                       },
-                      BMI: "18.5-24.9",
+                      BMI: bmi_string,
                       trimester: 3
                   },
                   result: 0
@@ -270,9 +286,66 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     * Weight Tracking
     */
   @httpPost('custom/mum_weight_trackers/create')
-  public mum_weight_tracking_create(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async mum_weight_tracking_create(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = this.get_uid(token)
+    this.logger.info("mum_weight_tracking_create uid:"  + uid)
+
+    try{
+
+      const unix_timestamp : number = parseInt(request.body.date)
+      await this.model.getModel('tracking_weight').create({
+        user_id               : uid,
+        weight                : request.body.weight,
+        note                  : request.body.note,
+        date                  : new Date(unix_timestamp*1000)
+      })
+      this.logger.info("tracking created!")
+
+      const output : any =
+        await this.model.getModel('user').findOne(
+          {
+            where: {
+              id: uid
+            }
+          })
+
+      // Calculate range
+      const weight_array : number[] =
+            this.bmi_weight_limits(output.pre_height)
+      const weight_max : number = weight_array[0]
+      const weight_min : number = weight_array[1]
+      let range_str : string = "normal"
+      if( parseFloat(request.body.weight) > weight_max) range_str = "higher"
+      if( parseFloat(request.body.weight) < weight_min) range_str = "lower"
+      this.logger.debug("BMI Limits [" + weight_max + "," + weight_min +  "]")
+
+
+      const response_json = {
+          response: {
+              entity: {
+                  language: "und",
+                  title: "2107776-" + unix_timestamp,
+                  status: 1,
+                  note: request.body.note,
+                  week: "9",
+                  weight: request.body.weight,
+                  children: uid + "_1516745642557",
+                  date: unix_timestamp,
+                  mid: 7166
+              },
+              range: range_str
+          },
+          result: 0
+      }
+      response.json(response_json)
+      return Promise.resolve(undefined)
+
+    }catch(e){
+      this.logger.error("Error")
+      console.log(e)
+      return Promise.reject(undefined)
+    }
   }
   @httpPost('custom/mum_weight_trackers/update')
   public mum_weight_tracking_update(request: Request, response: Response): Promise<void> {
