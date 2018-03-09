@@ -34,11 +34,30 @@ export class TrackingController {
   }
 
   /**
-    * Cache time
+    * The App will have a cache to store different groups of information.
+    * This method will return the timestamp of the last modification of each of this groups.
+    * If we detect a change on that timestamp we will recover the information from server again.
+    * https://wiki.nespresso.com/display/NMTPS/API+Content+Cache
     */
   @httpGet('custom/cache/time')
   public cache_time(request: any, response: Response): Promise<void> {
-    response.json({result: 'ok'})
+
+    const cache_menu_timestamp : number = 1518616381
+    const cache_export_timestamp : number = 1509404692
+    const cache_foodgroup_timestamp : number = 1518616261
+
+    const response_json = {
+      response: {
+          cache: {
+              menu: cache_menu_timestamp,
+              expert: cache_export_timestamp,
+              foodgroups: cache_foodgroup_timestamp,
+              reset: 0
+          }
+      },
+      result: 0
+    }
+    response.json(response_json)
     return Promise.resolve(undefined)
   }
 
