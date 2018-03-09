@@ -1,0 +1,237 @@
+import { controller, httpGet, httpPost, httpPut, httpDelete } from 'inversify-express-utils';
+import { injectable, inject } from 'inversify';
+import { Request, Response, Express } from 'express';
+import * as Sequelize from 'sequelize';
+import * as xml2js from 'xml2js';
+
+import TYPES from '../constant/types';
+import { IModel } from '../models/model';
+import { LoggerInstance, transports, LoggerOptions, WLogger } from '../utils/logger';
+
+import * as helper from '../utils/helper';
+import * as jsonwebtoken from 'jsonwebtoken';
+
+@controller('/services/1.1/')
+export class ProfileController {
+
+  constructor(@inject(TYPES.Model) private model: IModel,
+              @inject(TYPES.Logger) private logger: LoggerInstance){
+  }
+
+
+  /**
+    * Ping
+    */
+  @httpGet('ping/')
+  public ping(request: any, response: Response): Promise<void> {
+    response.json({result: 'ok'})
+    return Promise.resolve(undefined)
+  }
+
+  /**
+    * The App will have a cache to store different groups of information.
+    * This method will return the timestamp of the last modification of each of this groups.
+    * If we detect a change on that timestamp we will recover the information from server again.
+    * https://wiki.nespresso.com/display/NMTPS/API+Content+Cache
+    */
+  @httpGet('custom/cache/time')
+  public cache_time(request: any, response: Response): Promise<void> {
+
+    // Select timestamp
+    const cache_menu_timestamp : number = 1518616381
+    const cache_export_timestamp : number = 1509404692
+    const cache_foodgroup_timestamp : number = 1518616261
+
+    // Generate response
+    const response_json = {
+      response: {
+          cache: {
+              menu: cache_menu_timestamp,
+              expert: cache_export_timestamp,
+              foodgroups: cache_foodgroup_timestamp,
+              reset: 0
+          }
+      },
+      result: 0
+    }
+    response.json(response_json)
+    return Promise.resolve(undefined)
+  }
+
+  /**
+    * WHO Message
+    */
+  @httpGet('custom/security/message')
+  public who_message(request: any, response: Response): Promise<void> {
+    this.logger.info("who_message")
+
+    // Generate response
+    const response_json = {
+      response: {
+          nid: 4646,
+          title_field: "La Organización Mundial de la Salud (OMS)",
+          field_description: 'La OMS recomienda la lactancia materna exclusiva hasta los 6 meses.\r\n \
+Nestlé apoya esta recomendación en conjunto con la introducción \
+de la alimentación complementaria a partir \
+de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.',
+          field_sm_checkbox_text: null,
+          field_sm_confirm_text: "CLICK PARA CONTINUAR"
+      },
+      result: 0
+    }
+    response.json(response_json)
+
+    return Promise.resolve(undefined)
+  }
+
+  /**
+    * This service have 2 functions:
+    *
+    * This service launch a User synchronisation between Drupal and Gigya.
+    * This method will be called 2 times:
+    *    When the user starts the App (doing Login or with the remember me checkbox selected).
+    *    After the user add a Pregnancy/Baby
+    * In the response, the method returns the timestamp of the last track,
+    * this timestamp is used for the local cache of the user tracks.
+    */
+  @httpPost('custom/user/login')
+  public user_login(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("user_login uid:"  + uid)
+
+    // Create custom user if not exists
+    this.model.getModel('user').upsert({
+      id: uid
+    })
+
+    response.json({result: 'ok'})
+    return Promise.resolve(undefined)
+  }
+
+  /**
+    * This service launch a User synchronisation between Drupal and Gigya.
+    * This method will be called after a change of the Duedate of the Baby.
+    * The method do exactly the same than the Login, but it's copied because
+    * in the future, the logic could be different.
+    */
+  @httpPost('custom/user/update')
+  public user_update(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("user_update uid:"  + uid)
+
+// ------------------
+// Grab information from gigya
+// ------------------
+
+    response.json({result: 'ok'})
+    return Promise.resolve(undefined)
+  }
+
+
+  /**
+    * Prepregnancy Data
+    */
+  @httpPost('custom/user/save_prepregnancy_data')
+  public async prepregnancy_create_or_update(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("prepregnancy_create_or_update uid:"  + uid)
+
+    try{
+      const output : Array<any> =
+        await this.model.getModel('user').update(
+          {
+            pre_height : request.body.height,
+            pre_weight : request.body.weight
+          },
+          {
+            where: {
+              id: uid
+            }
+          })
+
+        // Check row affected
+        if( output[0] == 0 ){
+          this.logger.error("uid not found")
+          response.json({result: 'ko'})
+        }else{
+          this.logger.info("update ok!")
+
+          const weight_array : number[] =
+                helper.bmi_weight_limits(parseFloat(request.body.height))
+          const bmi_string : string = helper.bmi_min + "-" + helper.bmi_max
+          const response_json = {
+                  response: {
+                      range: {
+                          max: weight_array[0],
+                          min: weight_array[1]
+                      },
+                      BMI: bmi_string,
+                      trimester: 3
+                  },
+                  result: 0
+              }
+          response.json(response_json)
+        }
+        return Promise.resolve(undefined)
+
+    }catch(e){
+      console.log(e)
+      this.logger.error("exception raised")
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
+  }
+  @httpPost('custom/user/get_prepregnancy_data')
+  public async prepregnancy_get(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("prepregnancy_get uid:"  + uid)
+
+    try{
+      const output : any =
+        await this.model.getModel('user').findOne(
+          {
+            where: {
+              id: uid
+            }
+          })
+
+        if( output == undefined ){
+          this.logger.error("user not found")
+          response.json({result: 'ko'})
+        }else{
+          const response_json = {
+              response: {
+                  weight: output.pre_weight,
+                  height: output.pre_height,
+                  children: uid + "_1516745642557"
+              },
+              result: 0
+          }
+          this.logger.info("updated ok!")
+          response.json(response_json)
+        }
+        return Promise.resolve(undefined)
+
+    }catch(e){
+      console.log(e)
+      this.logger.error("exception raised")
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
+  }
+
+
+  /**
+    * Dashboard
+    */
+  @httpPost('custom/user/dashboard')
+  public user_dashboard(request: Request, response: Response): Promise<void> {
+    response.json({result: 'ok'})
+    return Promise.resolve(undefined)
+  }
+
+}
