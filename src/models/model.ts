@@ -31,7 +31,7 @@ export class Model {
 
     // tracking_weight
     this.models['tracking_weight'] = this.sequelize.define('tracking_weight',{
-      id                    : {type: Sequelize.STRING(64), primaryKey:true},
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       user_id               : {type: Sequelize.STRING(64)},
       weight                : {type: Sequelize.DOUBLE},
       note                  : {type: Sequelize.STRING(256)},
@@ -39,12 +39,7 @@ export class Model {
     },
     {
        timestamps: false,
-       freezeTableName: true,
-       hooks: {
-        beforeCreate: (output : any, options: any) => {
-          output.id = uuidv4();
-        }
-      }
+       freezeTableName: true
     });
 
     // associations

@@ -43,6 +43,36 @@ export class TrackingController {
   }
 
   /**
+    * Calculates whether given weight is [lower, normal, higher]
+    */
+  private async calculate_range(uid: string, weight: number) : Promise<string>{
+    try{
+
+      const output : any =
+        await this.model.getModel('user').findOne(
+          {
+            where: {
+              id: uid
+            }
+          })
+
+      // Calculate range
+      const weight_array : number[] =
+            this.bmi_weight_limits(output.pre_height)
+      const weight_max : number = weight_array[0]
+      const weight_min : number = weight_array[1]
+      let range_str : string = "normal"
+      if( weight > weight_max) range_str = "higher"
+      if( weight < weight_min) range_str = "lower"
+      this.logger.debug("BMI Limits [" + weight_max + "," + weight_min +  "]")
+      return Promise.resolve(range_str)
+
+    }catch(e){
+      return Promise.resolve('')
+    }
+  }
+
+  /**
     * Ping
     */
   @httpGet('ping/')
@@ -294,7 +324,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     try{
 
       const unix_timestamp : number = parseInt(request.body.date)
-      await this.model.getModel('tracking_weight').create({
+      const tracking_weight : any = await this.model.getModel('tracking_weight').create({
         user_id               : uid,
         weight                : request.body.weight,
         note                  : request.body.note,
@@ -302,25 +332,9 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       })
       this.logger.info("tracking created!")
 
-      const output : any =
-        await this.model.getModel('user').findOne(
-          {
-            where: {
-              id: uid
-            }
-          })
-
-      // Calculate range
-      const weight_array : number[] =
-            this.bmi_weight_limits(output.pre_height)
-      const weight_max : number = weight_array[0]
-      const weight_min : number = weight_array[1]
-      let range_str : string = "normal"
-      if( parseFloat(request.body.weight) > weight_max) range_str = "higher"
-      if( parseFloat(request.body.weight) < weight_min) range_str = "lower"
-      this.logger.debug("BMI Limits [" + weight_max + "," + weight_min +  "]")
-
-
+      // Build response
+      const range_str : string =
+        await this.calculate_range(uid, parseFloat(request.body.weight))
       const response_json = {
           response: {
               entity: {
@@ -332,7 +346,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
                   weight: request.body.weight,
                   children: uid + "_1516745642557",
                   date: unix_timestamp,
-                  mid: 7166
+                  mid: tracking_weight.id
               },
               range: range_str
           },
