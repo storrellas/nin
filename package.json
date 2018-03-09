@@ -12,12 +12,13 @@
     "test:unit:live": "mocha --opts mocha.unit.opts --watch",
     "test:integration": "mocha --opts mocha.integration.opts",
     "coverage": "nyc npm test",
-    "sync":"./node_modules/.bin/ts-node ./src/persistance.ts"
+    "sync": "./node_modules/.bin/ts-node ./src/persistance.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/filesystem": "0.0.28",
+    "@types/jsonwebtoken": "^7.2.5",
     "@types/nconf": "0.0.36",
     "@types/node": "^6.0.92",
     "@types/supertest": "^2.0.4",
@@ -32,6 +33,7 @@
     "inversify": "^4.5.2",
     "inversify-express-utils": "^5.0.0",
     "ioredis": "^3.2.1",
+    "jsonwebtoken": "^8.2.0",
     "mocha": "^3.5.3",
     "mysql2": "^1.5.1",
     "nconf": "^0.10.0",

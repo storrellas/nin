@@ -10,13 +10,17 @@ import { Request, Response, Application, NextFunction } from 'express';
 
 
 import { LoggerInstance, transports, LoggerOptions, WLogger } from './utils/logger';
-import { IModels, Models } from './models/model';
+import { IModel, Model } from './models/model';
 import { IDataStore, DataStore, LocalDataStore } from './service/datastore';
 import { ICoreModuleManager, CoreModuleManager } from './models/core_module_manager';
 import { ICoreService, CoreService } from './service/core_service';
 
-import { RequestType } from './controller/core_controller';
-import  './controller/core_controller';
+// import { RequestType } from './controller/core_controller';
+// import  './controller/core_controller';
+
+import { GigyaOptions, GigyaController } from './controller/gigya_controller';
+
+import  './controller/tracking_controller';
 
 // ------------------------------------
 // CONFIGURATION
@@ -95,7 +99,7 @@ if( process.env.NODE_ENV === 'production')
 
 if( nconf.get('NODE_ENV') === 'integration_test'){
   nconf.set('MYSQL','USING SQLITE FOR INTEGRATION TESTS')
-  container.bind<IModels>(TYPES.Models).toConstantValue(new Models(
+  container.bind<IModel>(TYPES.Model).toConstantValue(new Model(
     "configuration","","",
     {
       dialect: 'sqlite',
@@ -109,7 +113,7 @@ if( nconf.get('NODE_ENV') === 'integration_test'){
 else
 {
 
-  container.bind<IModels>(TYPES.Models).toConstantValue(new Models(
+  container.bind<IModel>(TYPES.Model).toConstantValue(new Model(
     "configuration",
     nconf.get("MYSQL:USER"),
     nconf.get("MYSQL:PASSWORD"),
@@ -130,22 +134,19 @@ else
 }
 
 
-container.bind<ICoreModuleManager>(TYPES.CoreModuleManager).toConstantValue(new CoreModuleManager(
-    container.get<IModels>(TYPES.Models),
-    container.get<LoggerInstance>(TYPES.Logger)
-));
-container.bind<ICoreService>(TYPES.CoreService).toConstantValue(
-  new CoreService(
-    container.get<ICoreModuleManager>(TYPES.CoreModuleManager),
-    container.get<IDataStore>(TYPES.DataStore),
-    container.get<LoggerInstance>(TYPES.Logger)
-  )
-);
+// container.bind<ICoreModuleManager>(TYPES.CoreModuleManager).toConstantValue(new CoreModuleManager(
+//     container.get<IModel>(TYPES.Model),
+//     container.get<LoggerInstance>(TYPES.Logger)
+// ));
+// container.bind<ICoreService>(TYPES.CoreService).toConstantValue(
+//   new CoreService(
+//     container.get<ICoreModuleManager>(TYPES.CoreModuleManager),
+//     container.get<IDataStore>(TYPES.DataStore),
+//     container.get<LoggerInstance>(TYPES.Logger)
+//   )
+// );
 
-// ------------------------------------
-
-import { GigyaOptions, GigyaController } from './controller/gigya_controller';
-
+// Gigya Controller
 const android_gigya : GigyaOptions = new GigyaOptions()
 android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
 android_gigya.data_center = 'us1';
@@ -159,8 +160,6 @@ ios_gigya.user_key    = 'AMvnR4qi0nSo';
 ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
 
 container.bind<GigyaOptions>(TYPES.GigyaOptions).toConstantValue(android_gigya);
-
-// ------------------------------------
 
 // ------------------------------------
 // INITIALIZE APPLICATION
@@ -201,51 +200,6 @@ fs.readFile(config_file, 'utf8', function (err : NodeJS.ErrnoException,data) {
    app.use(bodyParser.text({
      type: () => true
    }));
-
-
-   // Middleware for extracting data from url / body and set into request.data
-    app.use((request: Request, response: Response, next : NextFunction) => {
-
-// TODO: Check whether request is GET or POST_get_core_by
-
-        // Check whether data in URL / body
-        let data : string = "";
-        if( request.body.length > 0 ){
-          data = request.body;
-        }else if( request.query.data != undefined ){
-          data = request.query.data;
-        }else{
-          response.status(400).json( {response:'no data identified in request'} )
-        }
-
-        // Grab parameters
-        if( data.length > 0 ){
-          try{
-            let json_data : any = JSON.parse(data)
-            request.data = JSON.parse(data)
-            request.request_type = RequestType.JSON;
-            next();
-          }catch{
-            logger.debug("JSON cannot be parsed '" + request.body + "'. Proceeding to XML parsing ...")
-            // Parse XML
-            var parser = new xml2js.Parser({explicitArray : false});
-            parser.parseString(data, (err :any, result: any) => {
-              if( err == null ){
-                request.data = result.data;
-                request.request_type = RequestType.XML;
-                next()
-              }else{
-                this.logger.error("Problems parsing " + result + " " + err)
-                response.status(400).json( {response:'no possible to parse data either JSON or XML'} )
-              }
-            });
-          }
-
-        }
-
-    });
-
-
 
  });
 

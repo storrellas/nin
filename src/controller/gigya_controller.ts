@@ -3,16 +3,12 @@ import { injectable, inject } from 'inversify';
 import { Request, Response, Express } from 'express';
 
 import TYPES from '../constant/types';
-import { IModels } from '../models/model';
 import { LoggerInstance, transports, LoggerOptions, WLogger } from '../utils/logger';
 
 // Include Gigya's SDK
-import { Gigya,
-         GigyaResponse,
-       AccountsGetJWTPublicKeyResponse,
-     Account,
-   SessionInfo,
- AccountsGetJWTResponse} from 'gigya';
+import { Gigya, GigyaResponse,
+          AccountsGetJWTPublicKeyResponse, Account, SessionInfo,
+          AccountsGetJWTResponse} from 'gigya';
 
 export class GigyaOptions {
   api_key     : string;
@@ -32,12 +28,12 @@ export class GigyaController {
     this.gigya = new Gigya(options.api_key, options.data_center,
                             options.user_key, options.secret);
 
-// ----------------
-    this.get_jwt_token('oxn93112@ckoie.com', '12345678')
-    .then( (jwt_token: string) => {
-      this.logger.info("TOOOOKEN -> " + jwt_token)
-    })
-// ----------------
+// // ----------------
+//     this.get_jwt_token('oxn93112@ckoie.com', '12345678')
+//     .then( (jwt_token: string) => {
+//       this.logger.info("TOOOOKEN -> " + jwt_token)
+//     })
+// // ----------------
   }
 
   public async get_jwt_token(login: string, password: string) : Promise<string> {
