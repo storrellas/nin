@@ -68,20 +68,7 @@ export class TrackingController {
     */
   @httpGet('custom/security/message')
   public who_message(request: any, response: Response): Promise<void> {
-    this.logger.info("ldsjfñlajfdsñl")
-    //response.json({result: 'ok'})
-/*
-{
-    "response": {
-        "nid": 4646,
-        "title_field": "La Organización Mundial de la Salud (OMS)",
-        "field_description": "La OMS recomienda la lactancia materna exclusiva hasta los 6 meses.\r\nNestlé apoya esta recomendación en conjunto con la introducción de la alimentación complementaria a partir de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.",
-        "field_sm_checkbox_text": null,
-        "field_sm_confirm_text": "CLICK PARA CONTINUAR"
-    },
-    "result": 0
-}
-/**/
+    this.logger.info("who_message")
 
     // Generate response
     const response_json = {
