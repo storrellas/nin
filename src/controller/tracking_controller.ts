@@ -433,7 +433,10 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   }
   @httpPost('custom/mum_weight_trackers/delete')
   public mum_weight_tracking_delete(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
+    this.model.getModel('tracking_weight').destroy({
+        where: {id: parseInt(request.body.mid)}
+    })
+    response.json({result: 0})
     return Promise.resolve(undefined)
   }
 
