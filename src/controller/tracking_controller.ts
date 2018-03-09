@@ -324,12 +324,13 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     try{
 
       const unix_timestamp : number = parseInt(request.body.date)
-      const tracking_weight : any = await this.model.getModel('tracking_weight').create({
-        user_id               : uid,
-        weight                : request.body.weight,
-        note                  : request.body.note,
-        date                  : new Date(unix_timestamp*1000)
-      })
+      const tracking_weight : any =
+          await this.model.getModel('tracking_weight').create({
+            user_id               : uid,
+            weight                : request.body.weight,
+            note                  : request.body.note,
+            date                  : unix_timestamp
+          })
       this.logger.info("tracking created!")
 
       // Build response
@@ -362,9 +363,63 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     }
   }
   @httpPost('custom/mum_weight_trackers/update')
-  public mum_weight_tracking_update(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async mum_weight_tracking_update(request: Request, response: Response): Promise<void> {
+    try{
+
+      const output : any =
+        await this.model.getModel('tracking_weight').update(
+          {
+            note : request.body.note,
+            weight : parseFloat(request.body.weight)
+          },
+          {
+            where: {
+              id: parseInt(request.body.mid)
+            }
+          })
+
+      // Check row affected
+      if( output[0] == 0 ){
+        this.logger.error("id not found")
+        response.json({result: 'ko'})
+      }else{
+        this.logger.info("update ok!")
+                    // Build response
+        const tracking_weight : any =
+          await this.model.getModel('tracking_weight').findOne({
+              where: {id: parseInt(request.body.mid)}
+            })
+        const range_str : string =
+          await this.calculate_range(tracking_weight.user_id, parseFloat(request.body.weight))
+        const response_json = {
+            response: {
+                entity: {
+                    language: "und",
+                    title: "2107776-" + tracking_weight.date,
+                    status: 1,
+                    note: tracking_weight.note,
+                    week: "9",
+                    weight: String(tracking_weight.weight),
+                    children: tracking_weight.user_id + "_1516745642557",
+                    date: tracking_weight.date,
+                    mid: tracking_weight.id
+                },
+                range: range_str
+            },
+            result: 0
+        }
+        response.json(response_json)
+      }
+      return Promise.resolve(undefined)
+    }catch(e){
+      console.log(e)
+      this.logger.error("Error")
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
+
+
+
   }
   @httpPost('custom/mum_weight_trackers/list')
   public mum_weight_tracking_retrieve_list(request: Request, response: Response): Promise<void> {

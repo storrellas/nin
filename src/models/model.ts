@@ -35,10 +35,9 @@ export class Model {
       user_id               : {type: Sequelize.STRING(64)},
       weight                : {type: Sequelize.DOUBLE},
       note                  : {type: Sequelize.STRING(256)},
-      date                  : {type: Sequelize.DATE}
+      date                  : {type: Sequelize.STRING(64)}
     },
     {
-       timestamps: false,
        freezeTableName: true
     });
 
