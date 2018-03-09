@@ -17,12 +17,11 @@ export class GigyaOptions {
   secret      : string;
 }
 
-@controller('')
-export class GigyaController {
+export class GigyaService {
 
   private gigya : Gigya;
 
-  constructor(@inject(TYPES.GigyaOptions) private options : GigyaOptions,
+  constructor(private options : GigyaOptions,
               @inject(TYPES.Logger) private logger: LoggerInstance)
   {
     this.gigya = new Gigya(options.api_key, options.data_center,

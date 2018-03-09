@@ -2,7 +2,7 @@ const TYPES = {
   Logger: Symbol('WLogger'),
   DataStore: Symbol('DataStore'),
   Model: Symbol('Model'),
-  GigyaOptions: Symbol('GigyaOptions')
+  GigyaService: Symbol('GigyaService')
 };
 
 export default TYPES;

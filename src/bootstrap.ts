@@ -12,13 +12,7 @@ import { Request, Response, Application, NextFunction } from 'express';
 import { LoggerInstance, transports, LoggerOptions, WLogger } from './utils/logger';
 import { IModel, Model } from './models/model';
 import { IDataStore, DataStore, LocalDataStore } from './service/datastore';
-import { ICoreModuleManager, CoreModuleManager } from './models/core_module_manager';
-import { ICoreService, CoreService } from './service/core_service';
-
-// import { RequestType } from './controller/core_controller';
-// import  './controller/core_controller';
-
-import { GigyaOptions, GigyaController } from './controller/gigya_controller';
+import { GigyaOptions, GigyaService } from './service/gigya_service';
 
 import  './controller/tracking_controller';
 
@@ -133,19 +127,6 @@ else
 
 }
 
-
-// container.bind<ICoreModuleManager>(TYPES.CoreModuleManager).toConstantValue(new CoreModuleManager(
-//     container.get<IModel>(TYPES.Model),
-//     container.get<LoggerInstance>(TYPES.Logger)
-// ));
-// container.bind<ICoreService>(TYPES.CoreService).toConstantValue(
-//   new CoreService(
-//     container.get<ICoreModuleManager>(TYPES.CoreModuleManager),
-//     container.get<IDataStore>(TYPES.DataStore),
-//     container.get<LoggerInstance>(TYPES.Logger)
-//   )
-// );
-
 // Gigya Controller
 const android_gigya : GigyaOptions = new GigyaOptions()
 android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
@@ -159,7 +140,9 @@ ios_gigya.data_center = 'us1';
 ios_gigya.user_key    = 'AMvnR4qi0nSo';
 ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
 
-container.bind<GigyaOptions>(TYPES.GigyaOptions).toConstantValue(android_gigya);
+container.bind<GigyaService>(TYPES.GigyaService).toConstantValue(
+  new GigyaService( android_gigya, container.get<LoggerInstance>(TYPES.Logger))
+);
 
 // ------------------------------------
 // INITIALIZE APPLICATION
