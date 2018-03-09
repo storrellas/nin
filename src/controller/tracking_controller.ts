@@ -42,10 +42,12 @@ export class TrackingController {
   @httpGet('custom/cache/time')
   public cache_time(request: any, response: Response): Promise<void> {
 
+    // Select timestamp
     const cache_menu_timestamp : number = 1518616381
     const cache_export_timestamp : number = 1509404692
     const cache_foodgroup_timestamp : number = 1518616261
 
+    // Generate response
     const response_json = {
       response: {
           cache: {
@@ -66,7 +68,37 @@ export class TrackingController {
     */
   @httpGet('custom/security/message')
   public who_message(request: any, response: Response): Promise<void> {
-    response.json({result: 'ok'})
+    this.logger.info("ldsjfñlajfdsñl")
+    //response.json({result: 'ok'})
+/*
+{
+    "response": {
+        "nid": 4646,
+        "title_field": "La Organización Mundial de la Salud (OMS)",
+        "field_description": "La OMS recomienda la lactancia materna exclusiva hasta los 6 meses.\r\nNestlé apoya esta recomendación en conjunto con la introducción de la alimentación complementaria a partir de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.",
+        "field_sm_checkbox_text": null,
+        "field_sm_confirm_text": "CLICK PARA CONTINUAR"
+    },
+    "result": 0
+}
+/**/
+
+    // Generate response
+    const response_json = {
+      response: {
+          nid: 4646,
+          title_field: "La Organización Mundial de la Salud (OMS)",
+          field_description: 'La OMS recomienda la lactancia materna exclusiva hasta los 6 meses.\r\n \
+Nestlé apoya esta recomendación en conjunto con la introducción \
+de la alimentación complementaria a partir \
+de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.',
+          field_sm_checkbox_text: null,
+          field_sm_confirm_text: "CLICK PARA CONTINUAR"
+      },
+      result: 0
+    }
+    response.json(response_json)
+
     return Promise.resolve(undefined)
   }
 
