@@ -20,9 +20,25 @@ export class Model {
     // user
     this.models['user'] = this.sequelize.define('user',{
       id                    : {type: Sequelize.STRING(64), primaryKey:true},
-      pre_height            : {type: Sequelize.INTEGER},
+      pre_height            : {type: Sequelize.INTEGER, defaultValue:0},
+      pre_weight            : {type: Sequelize.INTEGER, defaultValue:0}
+    },
+    {
+       freezeTableName: true,
+    });
+
+    // tracking_weight
+    this.models['tracking_weight'] = this.sequelize.define('tracking_weight',{
+      id                    : {type: Sequelize.STRING(64), primaryKey:true},
+      user_id               : {type: Sequelize.STRING(64)},
       pre_weight            : {type: Sequelize.INTEGER}
     });
+
+    // associations
+    this.models['tracking_weight'].belongsTo(this.models['user'], {
+      foreignKey: 'user_id',
+      targetKey: 'id'
+    })
 
   }
 
@@ -32,10 +48,10 @@ export class Model {
 
   public sync() : Promise<void> {
     return new Promise<void>( (resolve, reject) =>{
-      this.sequelize.sync()
+      this.sequelize.sync({force:true})
       .then(() => {
         return resolve()
       })
-    })     
+    })
   }
 }

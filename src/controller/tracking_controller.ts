@@ -90,7 +90,14 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   }
 
   /**
-    * Drupal Sync
+    * This service have 2 functions:
+    *
+    * This service launch a User synchronisation between Drupal and Gigya.
+    * This method will be called 2 times:
+    *    When the user starts the App (doing Login or with the remember me checkbox selected).
+    *    After the user add a Pregnancy/Baby
+    * In the response, the method returns the timestamp of the last track,
+    * this timestamp is used for the local cache of the user tracks.
     */
   @httpPost('custom/user/login')
   public user_login(request: Request, response: Response): Promise<void> {
@@ -98,11 +105,31 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     const uid : string = this.get_uid(token)
     this.logger.info("user_login uid:"  + uid)
 
+    // Create custom user if not exists
+    this.model.getModel('user').upsert({
+      id: uid
+    })
+
     response.json({result: 'ok'})
     return Promise.resolve(undefined)
   }
+
+  /**
+    * This service launch a User synchronisation between Drupal and Gigya.
+    * This method will be called after a change of the Duedate of the Baby.
+    * The method do exactly the same than the Login, but it's copied because
+    * in the future, the logic could be different.
+    */
   @httpPost('custom/user/update')
   public user_update(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = this.get_uid(token)
+    this.logger.info("user_update uid:"  + uid)
+
+// ------------------
+// Grab information from gigya
+// ------------------
+
     response.json({result: 'ok'})
     return Promise.resolve(undefined)
   }
@@ -112,14 +139,96 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     * Prepregnancy Data
     */
   @httpPost('custom/user/save_prepregnancy_data')
-  public prepregnancy_create(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async prepregnancy_create_or_update(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = this.get_uid(token)
+    this.logger.info("prepregnancy_create_or_update uid:"  + uid)
+
+    console.log(request)
+
+    try{
+      const output : Array<any> =
+        await this.model.getModel('user').update(
+          {
+            pre_height : request.body.height,
+            pre_weight : request.body.weight
+          },
+          {
+            where: {
+              id: uid
+            }
+          })
+
+        // Check row affected
+        if( output[0] == 0 ){
+          this.logger.error("uid not found")
+          response.json({result: 'ko'})
+        }else{
+          this.logger.info("update ok!")
+// ----------------
+// This formula needs to be incorporated here to calculate the BMI
+// ----------------
+
+          const response_json = {
+                  response: {
+                      range: {
+                          max: 73.35,
+                          min: 69.05
+                      },
+                      BMI: "18.5-24.9",
+                      trimester: 3
+                  },
+                  result: 0
+              }
+          response.json(response_json)
+        }
+        return Promise.resolve(undefined)
+
+    }catch(e){
+      console.log(e)
+      this.logger.error("exception raised")
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
   }
   @httpPost('custom/user/get_prepregnancy_data')
-  public prepregnancy_get(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async prepregnancy_get(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const uid : string = this.get_uid(token)
+    this.logger.info("prepregnancy_get uid:"  + uid)
+
+    try{
+      const output : any =
+        await this.model.getModel('user').findOne(
+          {
+            where: {
+              id: uid
+            }
+          })
+
+        if( output == undefined ){
+          this.logger.error("user not found")
+          response.json({result: 'ko'})
+        }else{
+          const response_json = {
+              response: {
+                  weight: output.pre_weight,
+                  height: output.pre_height,
+                  children: uid + "_1516745642557"
+              },
+              result: 0
+          }
+          this.logger.info("updated ok!")
+          response.json(response_json)
+        }
+        return Promise.resolve(undefined)
+
+    }catch(e){
+      console.log(e)
+      this.logger.error("exception raised")
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
   }
 
 

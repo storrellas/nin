@@ -94,7 +94,7 @@ if( process.env.NODE_ENV === 'production')
 if( nconf.get('NODE_ENV') === 'integration_test'){
   nconf.set('MYSQL','USING SQLITE FOR INTEGRATION TESTS')
   container.bind<IModel>(TYPES.Model).toConstantValue(new Model(
-    "configuration","","",
+    "NIN","","",
     {
       dialect: 'sqlite',
       // disable logging; default: console.log
@@ -108,7 +108,7 @@ else
 {
 
   container.bind<IModel>(TYPES.Model).toConstantValue(new Model(
-    "configuration",
+    "NIN",
     nconf.get("MYSQL:USER"),
     nconf.get("MYSQL:PASSWORD"),
     {
@@ -120,7 +120,7 @@ else
         idle: 10000
       },
       // disable logging; default: console.log
-      logging: false
+      logging: true
     }
     )
   );
@@ -179,7 +179,7 @@ fs.readFile(config_file, 'utf8', function (err : NodeJS.ErrnoException,data) {
      extended: true
    }));
    //Uncomment this to play with user controller that is working with jsons not binaries
-   //app.use(bodyParser.json());
+   app.use(bodyParser.json());
    app.use(bodyParser.text({
      type: () => true
    }));
