@@ -10,6 +10,10 @@ import { Gigya, GigyaResponse,
           AccountsGetJWTPublicKeyResponse, Account, SessionInfo,
           AccountsGetJWTResponse} from 'gigya';
 
+export { GigyaResponse,
+          AccountsGetJWTPublicKeyResponse, Account, SessionInfo,
+          AccountsGetJWTResponse } from 'gigya';
+
 export class GigyaOptions {
   api_key     : string;
   data_center : string;

@@ -7,14 +7,14 @@ import * as xml2js from 'xml2js';
 import TYPES from '../constant/types';
 import { IModel } from '../models/model';
 import { LoggerInstance, transports, LoggerOptions, WLogger } from '../utils/logger';
-
 import * as helper from '../utils/helper';
-import * as jsonwebtoken from 'jsonwebtoken';
+import { GigyaResponse, Account, GigyaOptions, GigyaService } from '../service/gigya_service';
 
 @controller('/services/1.1/')
 export class ProfileController {
 
-  constructor(@inject(TYPES.Model) private model: IModel,
+  constructor(@inject(TYPES.GigyaService) private gigya : GigyaService,
+              @inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
 
@@ -116,17 +116,56 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     * in the future, the logic could be different.
     */
   @httpPost('custom/user/update')
-  public user_update(request: Request, response: Response): Promise<void> {
+  public async user_update(request: Request, response: Response): Promise<void> {
     const token : any = request.get('token')
     const uid : string = helper.get_uid(token)
     this.logger.info("user_update uid:"  + uid)
 
-// ------------------
-// Grab information from gigya
-// ------------------
+    try{
 
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+      // ------------------
+      // Grab information from gigya
+      // ------------------
+      const gigya_response : GigyaResponse & Account =
+        await this.gigya.get_account_info(uid)
+
+      // Information from Gigya should be parsed in here
+      const output : Array<any> =
+        await this.model.getModel('user').update(
+          {
+            gigya_data : JSON.stringify(gigya_response.data)
+          },
+          {
+            where: {
+              id: uid
+            }
+          })
+        // Check row affected
+        if( output[0] == 0 ){
+          this.logger.error("uid not found")
+          response.json({result: 'ko'})
+        }else{
+          this.logger.info("update ok!")
+          const response_json = {
+                      response: {
+                          last_tracked: 1516609740,
+                          last_tracked_modified: 1516609740
+                      },
+                      result: 0
+                  }
+          response.json(response_json)
+        }
+
+
+      return Promise.resolve(undefined)
+    }catch(e){
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
+
+
+
+
   }
 
 

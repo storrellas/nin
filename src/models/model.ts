@@ -23,7 +23,8 @@ export class Model {
     this.models['user'] = this.sequelize.define('user',{
       id                    : {type: Sequelize.STRING(64), primaryKey:true},
       pre_height            : {type: Sequelize.DOUBLE, defaultValue:0},
-      pre_weight            : {type: Sequelize.DOUBLE, defaultValue:0}
+      pre_weight            : {type: Sequelize.DOUBLE, defaultValue:0},
+      gigya_data            : {type: Sequelize.STRING(1024)}
     },
     {
        freezeTableName: true,
