@@ -12,7 +12,7 @@ import * as helper from '../utils/helper';
 import * as jsonwebtoken from 'jsonwebtoken';
 
 @controller('/services/1.1/')
-export class ProfileImageController {
+export class ContentController {
 
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
@@ -42,10 +42,42 @@ export class ProfileImageController {
     * Experts
     */
   @httpGet('custom/expertise/list')
-  public expertise_list(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async expertise_list(request: Request, response: Response): Promise<void> {
+
+    try{
+
+      const output : any[] =
+        await this.model.getModel('expertise').findAll(
+          {
+          })
+
+      // Generate expert list
+      const expertise_list : {[id:string]: any}[] = []
+      for (let item of output) {
+        expertise_list.push({
+          tid : item.id,
+          name : item.name,
+          gtm_label : item.gtm_label
+        })
+      }
+
+
+      const response_json = {
+          response: {
+              expertise: expertise_list,
+          },
+          result: 0
+      }
+      response.json(response_json)
+      //response.json({result: 'ok'})
+      return Promise.resolve(undefined)
+    }catch(e){
+      this.logger.error("error")
+      console.log(e)
+      return Promise.reject(undefined)
+    }
   }
+
   @httpPost('custom/expertise/detail')
   public expertise_detail(request: Request, response: Response): Promise<void> {
     response.json({result: 'ok'})

@@ -121,6 +121,13 @@ export class Model {
             phone                 : "01 800 737 6262",
             gtm_label             : "nutrition_experts",
           },
+          {
+            id                    : 2,
+            name                  : "Expertos en nutricion Purina",
+            email                 : "contacto@mx.purina.com",
+            phone                 : "01 800 737 6262",
+            gtm_label             : "purina_experts",
+          },
         ]);
       })
       .then( () =>{

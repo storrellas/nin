@@ -14,8 +14,11 @@ import { IModel, Model } from './models/model';
 import { IDataStore, DataStore, LocalDataStore } from './service/datastore';
 import { GigyaOptions, GigyaService } from './service/gigya_service';
 
+import  './controller/content_controller';
+import  './controller/image_controller';
 import  './controller/profile_controller';
 import  './controller/tracking_controller';
+
 
 // ------------------------------------
 // CONFIGURATION
