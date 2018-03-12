@@ -302,48 +302,70 @@ prepararlas.",
       .then( () =>{
         return this.models['nutrition_substitutes'].bulkCreate([
           // 1
-          {
-            id                     : 1,
-            nutrition_component_id : 1,
-            name                   : "1 cdita de aceite"
-          },
-          {
-            id                     : 2,
-            nutrition_component_id : 1,
-            name                   : "1 cdita de aceite de oliva"
-          },
-          {
-            id                     : 3,
-            nutrition_component_id : 1,
-            name                   : "1/2 de aguacate verde"
-          },
-          {
-            id                     : 4,
-            nutrition_component_id : 1,
-            name                   : "1 1/2 de mantequilla"
-          },
-          {
-            id                     : 5,
-            nutrition_component_id : 1,
-            name                   : "4 cdita de almendra picada"
-          },
+          { id : 1, nutrition_component_id : 1, name : "1 cdita de aceite" },
+          { id : 2, nutrition_component_id : 1, name : "1 cdita de aceite de oliva" },
+          { id : 3, nutrition_component_id : 1, name : "1/2 de aguacate verde" },
+          { id : 4, nutrition_component_id : 1, name : "1/2 de aguacate verde" },
+          { id : 5, nutrition_component_id : 1, name : "4 cdita de almendra picada " },
           // 2
-          {
-            id                     : 6,
-            nutrition_component_id : 2,
-            name                   : "1 pieza de manzana"
-          },
-          {
-            id                     : 7,
-            nutrition_component_id : 2,
-            name                   : "1 taza de melón picado"
-          },
-          {
-            id                     : 8,
-            nutrition_component_id : 2,
-            name                   : "1 taza de fresa rebanada"
-          },
+          { id : 6, nutrition_component_id : 2, name : "1 pieza de manzana" },
+          { id : 7, nutrition_component_id : 2, name : "1 taza de melón picado" },
+          { id : 8, nutrition_component_id : 2, name : "1 taza de fresa rebanada" },
           // 3
+          { id : 9,   nutrition_component_id : 3, name : "3/4 taza de avena cocida"},
+          { id : 10,  nutrition_component_id : 3, name : "1/3 pieza de bolillo"},
+          { id : 11,  nutrition_component_id : 3, name : "1/3 taza de cereal integral"},
+          { id : 12,  nutrition_component_id : 3, name : "20 gramos de codito crudo"},
+          { id : 13,  nutrition_component_id : 3, name : "1/2 taza de fideo cocido"},
+          { id : 14,  nutrition_component_id : 3, name : "1 pieza de tortilla"},
+          // 4
+          { id : 15,  nutrition_component_id : 4, name : "2 pzas de durazno amarillo"},
+          { id : 16,  nutrition_component_id : 4, name : "1 taza de fresa rebanada"},
+          { id : 17,  nutrition_component_id : 4, name : "3 piezas de guayaba"},
+          { id : 18,  nutrition_component_id : 4, name : "1 pieza de mango manila"},
+          { id : 19,  nutrition_component_id : 4, name : "1 pieza de manzana"},
+          { id : 20,  nutrition_component_id : 4, name : "1 taza de melón picado"},
+          { id : 21,  nutrition_component_id : 4, name : "2 piezas de naranja"},
+          { id : 22,  nutrition_component_id : 4, name : "1 taza de papaya picada"},
+
+          // 5
+          { id : 23,  nutrition_component_id : 5, name : "200 ml de leche"},
+          { id : 24,  nutrition_component_id : 5, name : "200 g de yogur"},
+          { id : 25,  nutrition_component_id : 5, name : "80 - 100 g de queso blanco fresco (desgrasado)"},
+          { id : 26,  nutrition_component_id : 5, name : "46 - 60 g de queso semicurado-curado"},
+          { id : 27,  nutrition_component_id : 5, name : "70 g de cuajada"},
+          { id : 28,  nutrition_component_id : 5, name : "70 g de requeson"},
+          { id : 29,  nutrition_component_id : 5, name : "200 g de petit suisse"},
+          { id : 30,  nutrition_component_id : 5, name : "220 g de natillas, flan o arroz con leche 220g"},
+          // 6
+          { id : 31,  nutrition_component_id : 6, name : "1/5 taza de atún en conserva"},
+          { id : 32,  nutrition_component_id : 6, name : "30 gramos de bistec de res"},
+          { id : 33,  nutrition_component_id : 6, name : "40 gramos de filete de pescado"},
+          { id : 34,  nutrition_component_id : 6, name : "1/2 reb. de pechuga de pavo"},
+          { id : 35,  nutrition_component_id : 6, name : "30 gramos de milanesa de pollo"},
+          { id : 36,  nutrition_component_id : 6, name : "30 gramos de carne de res"},
+          { id : 37,  nutrition_component_id : 6, name : "2 reb. de jamón de pavo"},
+          { id : 38,  nutrition_component_id : 6, name : "40 gramos de queso panela"},
+          { id : 39,  nutrition_component_id : 6, name : "12 gramos de chicharron"},
+          { id : 40,  nutrition_component_id : 6, name : "1 pieza de huevo cocido"},
+          { id : 41,  nutrition_component_id : 6, name : "40 gramos de carne de pescado"},
+          // 7
+          { id : 42,  nutrition_component_id : 7, name : "1/4 taza de brócoli cocido"},
+          { id : 43,  nutrition_component_id : 7, name : "1/2 taza de calabaza cocida"},
+          { id : 44,  nutrition_component_id : 7, name : "3/4 taza de germen de alfalfa cruda"},
+          { id : 45,  nutrition_component_id : 7, name : "1 taza de jitomate bola"},
+          // 8
+          { id : 46,  nutrition_component_id : 8, name : "1/4 taza de brócoli cocido"},
+          { id : 47,  nutrition_component_id : 8, name : "1/2 taza de calabaza cocida"},
+          { id : 48,  nutrition_component_id : 8, name : "3/4 taza de germen de alfalfa cruda"},
+          { id : 49,  nutrition_component_id : 8, name : "1 taza de jitomate bola"},
+          { id : 50,  nutrition_component_id : 8, name : "3 tazas de lechuga"},
+          { id : 51,  nutrition_component_id : 8, name : "1 taza de nopal cocido"},
+          { id : 52,  nutrition_component_id : 8, name : "1/4 taza de pepino con cascara"},
+          { id : 53,  nutrition_component_id : 8, name : "2 tazas de espinaca cruda picada"},
+          { id : 54,  nutrition_component_id : 8, name : "1/2 taza de jícama picada"},
+          { id : 55,  nutrition_component_id : 8, name : "1/2 taza de zanahoria picada"}
+          /**/
         ]);
       })
 /**/
