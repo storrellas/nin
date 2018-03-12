@@ -33,6 +33,8 @@ export class ContentController {
   }
   @httpGet('custom/nutrition_categories/list')
   public async nutrition_categories_retrieve(request: Request, response: Response): Promise<void> {
+    this.logger.info('nutrition_categories_retrieve')
+
     try{
       const output : any[] =
         await this.model.getModel('nutrition_component').findAll({
@@ -43,26 +45,22 @@ export class ContentController {
           ]
         })
 
-// ---------------------
-console.log("+++++++++++++++++++++++++++++")
-console.log(output)
-
-console.log("+++++++++++++++++++++++++++++")
-// ---------------------
 
       // Generate nutrition_list
       const nutrition_list : any[] = []
       for (let item of output) {
 
-        for (let variable of output.nutrition_substitutes) {
-
+      // Generate nutrition_substitute list
+        const nutrition_substitute_list : any[] = []
+        for (let component of item.nutrition_substitutes) {
+          nutrition_substitute_list.push(component.name)
         }
 
         nutrition_list.push({
           tid: item.id,
           name: item.name,
           field_nc_icon: item.icon,
-          field_nc_substitutes: [],
+          field_nc_substitutes: nutrition_substitute_list,
           description: item.description,
           gtm_label: item.gtm_label,
         })
