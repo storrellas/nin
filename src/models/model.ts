@@ -158,9 +158,10 @@ export class Model {
     // Menu
     // -----------------------
 
-    this.models['daily_meal'] = this.sequelize.define('daily_meal',{
+    this.models['menu'] = this.sequelize.define('menu',{
       id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       description            : {type: Sequelize.STRING(64)},
+      gtm_label              : {type: Sequelize.STRING(64)},
       kcal                   : {type: Sequelize.INTEGER},
     },
     {
@@ -169,8 +170,9 @@ export class Model {
 
     this.models['meal'] = this.sequelize.define('meal',{
       id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      description            : {type: Sequelize.STRING(64)},
       meal_type_id           : {type: Sequelize.INTEGER},
-      daily_meal_id          : {type: Sequelize.INTEGER},
+      menu_id                : {type: Sequelize.INTEGER},
     },
     {
        freezeTableName: true
@@ -189,8 +191,11 @@ export class Model {
     });
 
     // associations
-    this.models['daily_meal'].hasMany(this.models['meal'],{
-      foreignKey : 'daily_meal_id'
+    this.models['menu'].hasMany(this.models['meal'],{
+      foreignKey : 'menu_id'
+    })
+    this.models['meal'].hasMany(this.models['recipe'],{
+      foreignKey : 'meal_id'
     })
 
   }
@@ -457,7 +462,7 @@ prepararlas.",
       })
 
       .then( () =>{
-        return this.models['daily_meal'].bulkCreate([
+        return this.models['menu'].bulkCreate([
           { id : 1, description: "day_1_menu", kcal : 1885 },
           { id : 2, description: "day_2_menu", kcal : 1780 },
           { id : 3, description: "day_3_menu", kcal : 1855 },
@@ -469,37 +474,37 @@ prepararlas.",
         return this.models['meal'].bulkCreate([
 // day_1_menu
           // Hashbrown de vegetales + Jugo de mandarina - breakfast
-          { id : 1, meal_type_id : 1, daily_meal : 1 },
+          { id : 1, description : "day_1_menu_breakfast", meal_type_id : 1, menu_id : 1 },
           // Cóctel de Frutas - colacion
-          { id : 2, meal_type_id : 2, daily_meal : 1 },
+          { id : 2, description : "day_1_menu_colacion", meal_type_id : 2, menu_id : 1 },
           // Arracherra con ensalada + ensalada - lunch
-          { id : 3, meal_type_id : 3, daily_meal : 1 },
+          { id : 3, description : "day_1_menu_lunch", meal_type_id : 3, menu_id : 1 },
           // Licuado de fresas con amaranto - afternoon_colacion
-          { id : 4, meal_type_id : 4, daily_meal : 1 },
+          { id : 4, description : "day_1_menu_colacion_afternoon", meal_type_id : 4, menu_id : 1 },
           // Sandwich de pollo con jamón + Té de Manzanilla - dinner
-          { id : 5, meal_type_id : 5, daily_meal : 1 },
+          { id : 5, description : "day_1_menu_dinner", meal_type_id : 5, menu_id : 1 },
 // day_2_menu
           // Omelette de champiñones + Jugo verde - breakfast
-          { id : 6, meal_type_id : 1, daily_meal : 2 },
+          { id : 6, description : "day_2_menu_breakfast", meal_type_id : 1, menu_id : 2 },
           // Hot cake con fruta - colacion
-          { id : 7, meal_type_id : 2, daily_meal : 2 },
+          { id : 7, description : "day_2_menu_colacion", meal_type_id : 2, menu_id : 2 },
           // Salmón tropical en salsa de piña + Sopa de codito blanca + Ensalada de lechugas y pepino - lunch
-          { id : 8, meal_type_id : 3, daily_meal : 2 },
+          { id : 8, description : "day_2_menu_lunch", meal_type_id : 3, menu_id : 2 },
           // Plato de cereal con plátano - afternoon_colacion
-          { id : 9, meal_type_id : 4, daily_meal : 2 },
+          { id : 9, description : "day_2_menu_colacion_afternoon", meal_type_id : 4, menu_id : 2 },
           // Chayote al vapor con queso + Pan tostado con mantequilla + Té de limon - dinner
-          { id : 10, meal_type_id : 5, daily_meal : 2 },
+          { id : 10, description : "day_2_menu_dinner", meal_type_id : 5, menu_id : 2 },
 // day_3_menu
           // Tostada de ensalada rusa + Smoothie de mamey- breakfast
-          { id : 11, meal_type_id : 1, daily_meal : 3 },
+          { id : 11, description : "day_3_menu_breakfast", meal_type_id : 1, menu_id : 3 },
           // Pepino relleno de cacahuate - colacion
-          { id : 12, meal_type_id : 2, daily_meal : 3 },
+          { id : 12, description : "day_3_menu_colacion", meal_type_id : 2, menu_id : 3 },
           // Crema de chile poblano + Ensalada de fusilli con brochetas + Agua de limón - lunch
-          { id : 13, meal_type_id : 3, daily_meal : 3 },
+          { id : 13, description : "day_3_menu_lunch", meal_type_id : 3, menu_id : 3 },
           // Rodajas de fruta - afternoon_colacion
-          { id : 14, meal_type_id : 4, daily_meal : 3 },
+          { id : 14, description : "day_3_menu_colacion_afternoon", meal_type_id : 4, menu_id : 3 },
           // Chapata de pechuga de pavo + Papaya picada con yogurt - dinner
-          { id : 15, meal_type_id : 5, daily_meal : 3 },
+          { id : 15, description : "day_3_menu_dinner", meal_type_id : 5, menu_id : 3 },
         ]);
       })
 

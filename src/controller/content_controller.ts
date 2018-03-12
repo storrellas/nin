@@ -22,9 +22,69 @@ export class ContentController {
     * Menu Planner
     */
   @httpPost('custom/menus/list')
-  public menus_retrieve(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async menus_retrieve(request: Request, response: Response): Promise<void> {
+
+    try{
+
+      const output : any =
+        await this.model.getModel('menu').findAll({
+          include: [
+            {
+             model: this.model.getModel('meal'),
+             include: [
+               {
+                model: this.model.getModel('recipe')
+               },
+             ],
+            },
+          ],
+          order: [ ['id', 'ASC'] ],
+        })
+
+
+      // Generate menu_list
+      const menu_list = []
+      for (let item of output) {
+
+        // Generate meal_object
+        const meal_object = item.meals
+        const meal_list = []
+        for (let item of meal_object) {
+
+          // Generate recipes
+          const recipe_object = item.recipes
+          const recipe_list = []
+          for (let item of recipe_object) {
+            recipe_list.push({
+              nid : item.id,
+              title: item.title,
+              quantity : item.quantity,
+              icon : item.icon,
+              gtm_label: item.gtm_label
+            })
+          }
+          // Push meal
+          meal_list.push({ tid : item.id, recipes : recipe_list })
+        }
+
+        // Push menu
+        menu_list.push({ nid: item.id, gtm_label: item.gtm_label, meal: meal_list })
+      }
+
+      // Generate response object
+      const response_json = {
+        menus : menu_list,
+        result   : 0
+      }
+      response.json(response_json)
+
+      // response.json({result: 'ok'})
+      return Promise.resolve(undefined)
+    }catch(e){
+      this.logger.error("error")
+      console.log(e)
+      return Promise.reject(undefined)
+    }
   }
   @httpGet('custom/meal_types/list')
   public async meal_types_list(request: Request, response: Response): Promise<void> {
