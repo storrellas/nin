@@ -32,9 +32,55 @@ export class ContentController {
     return Promise.resolve(undefined)
   }
   @httpGet('custom/nutrition_categories/list')
-  public nutrition_categories_retrieve(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async nutrition_categories_retrieve(request: Request, response: Response): Promise<void> {
+    try{
+      const output : any[] =
+        await this.model.getModel('nutrition_component').findAll({
+          include: [
+            {
+             model: this.model.getModel('nutrition_substitute')
+            }
+          ]
+        })
+
+// ---------------------
+console.log("+++++++++++++++++++++++++++++")
+console.log(output)
+
+console.log("+++++++++++++++++++++++++++++")
+// ---------------------
+
+      // Generate nutrition_list
+      const nutrition_list : any[] = []
+      for (let item of output) {
+
+        for (let variable of output.nutrition_substitutes) {
+
+        }
+
+        nutrition_list.push({
+          tid: item.id,
+          name: item.name,
+          field_nc_icon: item.icon,
+          field_nc_substitutes: [],
+          description: item.description,
+          gtm_label: item.gtm_label,
+        })
+      }
+
+      const response_json = {
+          response: nutrition_list,
+          result: 0
+      }
+      response.json(response_json)
+
+      //response.json({result: 'ok'})
+      return Promise.resolve(undefined)
+    }catch{
+      this.logger.error("error")
+      return Promise.reject(undefined)
+    }
+
   }
 
 

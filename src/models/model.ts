@@ -113,7 +113,7 @@ export class Model {
     // Menus
     // -----------------------
 
-    this.models['nutrition_components'] = this.sequelize.define('nutrition_components',{
+    this.models['nutrition_component'] = this.sequelize.define('nutrition_component',{
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       name                  : {type: Sequelize.STRING(64)},
       icon                  : {type: Sequelize.STRING(64)},
@@ -124,7 +124,7 @@ export class Model {
        freezeTableName: true
     });
 
-    this.models['nutrition_substitutes'] = this.sequelize.define('nutrition_substitutes',{
+    this.models['nutrition_substitute'] = this.sequelize.define('nutrition_substitute',{
       id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       nutrition_component_id : {type: Sequelize.INTEGER},
       name                   : {type: Sequelize.STRING(64)}
@@ -135,11 +135,11 @@ export class Model {
 
 
     // associations
-    this.models['nutrition_substitutes'].belongsTo(this.models['nutrition_components'], {
+    this.models['nutrition_substitute'].belongsTo(this.models['nutrition_component'], {
       foreignKey: 'nutrition_component_id',
       targetKey: 'id'
     })
-    this.models['nutrition_components'].hasMany(this.models['nutrition_substitutes'],{
+    this.models['nutrition_component'].hasMany(this.models['nutrition_substitute'],{
       foreignKey : 'nutrition_component_id'
     })
 
@@ -219,7 +219,7 @@ export class Model {
       })
 
       .then( () =>{
-        return this.models['nutrition_components'].bulkCreate([
+        return this.models['nutrition_component'].bulkCreate([
           {
             id                    : 1,
             name                  : "Aceites",
@@ -300,7 +300,7 @@ prepararlas.",
 
 
       .then( () =>{
-        return this.models['nutrition_substitutes'].bulkCreate([
+        return this.models['nutrition_substitute'].bulkCreate([
           // 1
           { id : 1, nutrition_component_id : 1, name : "1 cdita de aceite" },
           { id : 2, nutrition_component_id : 1, name : "1 cdita de aceite de oliva" },
