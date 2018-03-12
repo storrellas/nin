@@ -110,7 +110,7 @@ export class Model {
     })
 
     // -----------------------
-    // Menus
+    // Nutrition
     // -----------------------
 
     this.models['nutrition_component'] = this.sequelize.define('nutrition_component',{
@@ -153,6 +153,30 @@ export class Model {
     this.models['nutrition_component'].hasMany(this.models['nutrition_substitute'],{
       foreignKey : 'nutrition_component_id'
     })
+
+    // -----------------------
+    // Menu
+    // -----------------------
+
+    this.models['meal'] = this.sequelize.define('meal',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      meal_type_id           : {type: Sequelize.INTEGER}
+    },
+    {
+       freezeTableName: true
+    });
+
+    this.models['recipe'] = this.sequelize.define('recipe',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      meal_id                : {type: Sequelize.INTEGER},
+      title                  : {type: Sequelize.STRING(64)},
+      quantity               : {type: Sequelize.STRING(64)},
+      icon                   : {type: Sequelize.STRING(64)},
+      gtm_label              : {type: Sequelize.STRING(64)},
+    },
+    {
+       freezeTableName: true
+    });
 
   }
 
@@ -414,8 +438,6 @@ prepararlas.",
             date_end               : "00:00",
             gtm_label              : "dinner",
           },
-
-
         ]);
       })
 
