@@ -158,9 +158,19 @@ export class Model {
     // Menu
     // -----------------------
 
+    this.models['daily_meal'] = this.sequelize.define('daily_meal',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      description            : {type: Sequelize.STRING(64)},
+      kcal                   : {type: Sequelize.INTEGER},
+    },
+    {
+       freezeTableName: true
+    });
+
     this.models['meal'] = this.sequelize.define('meal',{
       id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      meal_type_id           : {type: Sequelize.INTEGER}
+      meal_type_id           : {type: Sequelize.INTEGER},
+      daily_meal_id          : {type: Sequelize.INTEGER},
     },
     {
        freezeTableName: true
@@ -177,6 +187,11 @@ export class Model {
     {
        freezeTableName: true
     });
+
+    // associations
+    this.models['daily_meal'].hasMany(this.models['meal'],{
+      foreignKey : 'daily_meal_id'
+    })
 
   }
 
@@ -441,6 +456,183 @@ prepararlas.",
         ]);
       })
 
+      .then( () =>{
+        return this.models['daily_meal'].bulkCreate([
+          { id : 1, description: "day_1_menu", kcal : 1885 },
+          { id : 2, description: "day_2_menu", kcal : 1780 },
+          { id : 3, description: "day_3_menu", kcal : 1855 },
+        ]);
+      })
+
+
+      .then( () =>{
+        return this.models['meal'].bulkCreate([
+// day_1_menu
+          // Hashbrown de vegetales + Jugo de mandarina - breakfast
+          { id : 1, meal_type_id : 1, daily_meal : 1 },
+          // Cóctel de Frutas - colacion
+          { id : 2, meal_type_id : 2, daily_meal : 1 },
+          // Arracherra con ensalada + ensalada - lunch
+          { id : 3, meal_type_id : 3, daily_meal : 1 },
+          // Licuado de fresas con amaranto - afternoon_colacion
+          { id : 4, meal_type_id : 4, daily_meal : 1 },
+          // Sandwich de pollo con jamón + Té de Manzanilla - dinner
+          { id : 5, meal_type_id : 5, daily_meal : 1 },
+// day_2_menu
+          // Omelette de champiñones + Jugo verde - breakfast
+          { id : 6, meal_type_id : 1, daily_meal : 2 },
+          // Hot cake con fruta - colacion
+          { id : 7, meal_type_id : 2, daily_meal : 2 },
+          // Salmón tropical en salsa de piña + Sopa de codito blanca + Ensalada de lechugas y pepino - lunch
+          { id : 8, meal_type_id : 3, daily_meal : 2 },
+          // Plato de cereal con plátano - afternoon_colacion
+          { id : 9, meal_type_id : 4, daily_meal : 2 },
+          // Chayote al vapor con queso + Pan tostado con mantequilla + Té de limon - dinner
+          { id : 10, meal_type_id : 5, daily_meal : 2 },
+// day_3_menu
+          // Tostada de ensalada rusa + Smoothie de mamey- breakfast
+          { id : 11, meal_type_id : 1, daily_meal : 3 },
+          // Pepino relleno de cacahuate - colacion
+          { id : 12, meal_type_id : 2, daily_meal : 3 },
+          // Crema de chile poblano + Ensalada de fusilli con brochetas + Agua de limón - lunch
+          { id : 13, meal_type_id : 3, daily_meal : 3 },
+          // Rodajas de fruta - afternoon_colacion
+          { id : 14, meal_type_id : 4, daily_meal : 3 },
+          // Chapata de pechuga de pavo + Papaya picada con yogurt - dinner
+          { id : 15, meal_type_id : 5, daily_meal : 3 },
+        ]);
+      })
+
+      .then( () =>{
+        return this.models['recipe'].bulkCreate([
+// meal_id                : 1
+          {
+            id                     : 1,
+            meal_id                : 1,
+            title                  : "Hashbrown de vegetales",
+            quantity               : "150g",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/hash_brown_de_vegetales.png",
+          },
+          {
+            id                     : 2,
+            meal_id                : 1,
+            title                  : "Jugo de mandarina",
+            quantity               : "1/2 vaso",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/jugo_de_mandarina.png",
+          },
+          {
+            id                     : 3,
+            meal_id                : 1,
+            title                  : "Cóctel de Frutas",
+            quantity               : "1 taza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/coctel_de_frutas.png",
+          },
+          {
+            id                     : 4,
+            meal_id                : 1,
+            title                  : "Arracherra con ensalada",
+            quantity               : "200gr",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/arrachera_con_ensalada.png",
+          },
+          {
+            id                     : 5,
+            meal_id                : 1,
+            title                  : "Ensalada",
+            quantity               : "1 taza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/ensalada.png",
+          },
+          {
+            id                     : 6,
+            meal_id                : 1,
+            title                  : "Licuado de fresas con amaranto",
+            quantity               : "1 vaso",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/licuado_de_fresas_con_amaranto.png",
+          },
+          {
+            id                     : 7,
+            meal_id                : 1,
+            title                  : "Sandwich de pollo con jamón",
+            quantity               : "1 pieza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/licuado_de_fresas_con_amaranto.png",
+          },
+          {
+            id                     : 8,
+            meal_id                : 1,
+            title                  : "Té de Manzanilla",
+            quantity               : "1 taza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/te_de_manzanilla.png",
+          },
+// meal_id                : 2
+          {
+            id                     : 9,
+            meal_id                : 2,
+            title                  : "Omelette de champiñones",
+            quantity               : "150g",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/omelett_de_champinones.png",
+            gtm_label              : "ommelete"
+          },
+          {
+            id                     : 10,
+            meal_id                : 2,
+            title                  : "Jugo verde",
+            quantity               : "1 vaso",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/jugo_verde.png",
+          },
+          {
+            id                     : 11,
+            meal_id                : 2,
+            title                  : "Hot cake con fruta",
+            quantity               : "1 pieza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/hot_cake_con_fruta.png",
+          },
+          {
+            id                     : 12,
+            meal_id                : 2,
+            title                  : "Salmón tropical en salsa de piña",
+            quantity               : "100g",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/salmon_tropical_en_salsa_de_pina.png",
+          },
+          {
+            id                     : 13,
+            meal_id                : 2,
+            title                  : "Sopa de codito blanca",
+            quantity               : "1 taza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/sopa_de_codito_blanca.png",
+          },
+          {
+            id                     : 14,
+            meal_id                : 2,
+            title                  : "Ensalada de lechugas y pepino",
+            quantity               : "1 taza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/ensalada_de_lechugas_y_pepino.png",
+          },
+          {
+            id                     : 15,
+            meal_id                : 2,
+            title                  : "Plato de cereal con plátano",
+            quantity               : "1 plato",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/plato_de_cereal_con_platano.png",
+          },
+          {
+            id                     : 16,
+            meal_id                : 2,
+            title                  : "Pan tostado con mantequilla",
+            quantity               : "1 pieza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/pan_tostado_con_mantequilla.png",
+          },
+          {
+            id                     : 17,
+            meal_id                : 2,
+            title                  : "Té de limón",
+            quantity               : "1 taza",
+            icon                   : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/te_de_limon.png",
+          },
+
+
+
+
+        ]);
+      })
 
       .then(() => {
         return resolve()
