@@ -27,9 +27,41 @@ export class ContentController {
     return Promise.resolve(undefined)
   }
   @httpGet('custom/meal_types/list')
-  public meal_types_list(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async meal_types_list(request: Request, response: Response): Promise<void> {
+
+    try{
+      const output : any[] =
+        await this.model.getModel('meal_type').findAll({
+        })
+
+        // Generate meal_type list
+        const meal_type_list : any[] = []
+        for (let item of output) {
+          meal_type_list.push({
+            tid: item.id,
+            name: item.name,
+            field_meal_type_schedule: {
+              date_start: item.date_start,
+              date_end: item.date_end,
+            },
+            gtm_label: item.gtm_label,
+          })
+        }
+
+        const response_json = {
+          response : meal_type_list,
+          count    : meal_type_list.length,
+          result   : 0
+        }
+        response.json(response_json)
+
+
+      //response.json({result: 'ok'})
+      return Promise.resolve(undefined)
+    }catch{
+      this.logger.error("error")
+      return Promise.reject(undefined)
+    }
   }
   @httpGet('custom/nutrition_categories/list')
   public async nutrition_categories_retrieve(request: Request, response: Response): Promise<void> {
@@ -67,8 +99,9 @@ export class ContentController {
       }
 
       const response_json = {
-          response: nutrition_list,
-          result: 0
+          response : nutrition_list,
+          count    : nutrition_list.length,
+          result   : 0
       }
       response.json(response_json)
 

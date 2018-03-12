@@ -133,6 +133,17 @@ export class Model {
        freezeTableName: true
     });
 
+    this.models['meal_type'] = this.sequelize.define('meal_type',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      name                   : {type: Sequelize.STRING(64)},
+      date_start             : {type: Sequelize.STRING(32)},
+      date_end               : {type: Sequelize.STRING(32)},
+      gtm_label              : {type: Sequelize.STRING(32)},
+    },
+    {
+       freezeTableName: true
+    });
+
 
     // associations
     this.models['nutrition_substitute'].belongsTo(this.models['nutrition_component'], {
@@ -297,8 +308,6 @@ prepararlas.",
           },
         ]);
       })
-
-
       .then( () =>{
         return this.models['nutrition_substitute'].bulkCreate([
           // 1
@@ -365,10 +374,51 @@ prepararlas.",
           { id : 53,  nutrition_component_id : 8, name : "2 tazas de espinaca cruda picada"},
           { id : 54,  nutrition_component_id : 8, name : "1/2 taza de jícama picada"},
           { id : 55,  nutrition_component_id : 8, name : "1/2 taza de zanahoria picada"}
-          /**/
         ]);
       })
-/**/
+
+      .then( () =>{
+        return this.models['meal_type'].bulkCreate([
+          {
+            id                     : 1,
+            name                   : "Desayuno",
+            date_start             : "00:00",
+            date_end               : "09:00",
+            gtm_label              : "breakfast",
+          },
+          {
+            id                     : 2,
+            name                   : "Colación",
+            date_start             : "09:00",
+            date_end               : "12:00",
+            gtm_label              : "morning_colacion",
+          },
+          {
+            id                     : 3,
+            name                   : "Comida",
+            date_start             : "12:00",
+            date_end               : "17:00",
+            gtm_label              : "meal",
+          },
+          {
+            id                     : 4,
+            name                   : "Colación",
+            date_start             : "17:00",
+            date_end               : "20:00",
+            gtm_label              : "afternoon_colacion",
+          },
+          {
+            id                     : 5,
+            name                   : "Cena",
+            date_start             : "20:00",
+            date_end               : "00:00",
+            gtm_label              : "dinner",
+          },
+
+
+        ]);
+      })
+
 
       .then(() => {
         return resolve()
