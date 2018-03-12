@@ -71,7 +71,7 @@ export class Model {
     this.models['expertise_topic'] = this.sequelize.define('expertise_topic',{
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       expertise_id          : {type: Sequelize.INTEGER()},
-      topic                 : {type: Sequelize.STRING(64)}
+      topic                 : {type: Sequelize.STRING(1024)}
     },
     {
        freezeTableName: true
@@ -96,6 +96,14 @@ export class Model {
       foreignKey: 'expertise_id',
       targetKey: 'id'
     })
+
+    this.models['expertise'].hasMany(this.models['expertise_topic'],{
+      foreignKey : 'expertise_id'
+    })
+    this.models['expertise'].hasMany(this.models['expert'],{
+      foreignKey : 'expertise_id'
+    })
+
     this.models['expert'].belongsTo(this.models['expertise'], {
       foreignKey: 'expertise_id',
       targetKey: 'id'
