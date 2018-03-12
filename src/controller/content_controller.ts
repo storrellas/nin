@@ -43,6 +43,7 @@ export class ContentController {
     */
   @httpGet('custom/expertise/list')
   public async expertise_list(request: Request, response: Response): Promise<void> {
+    this.logger.info('expertise_list')
 
     try{
 
@@ -130,13 +131,45 @@ export class ContentController {
       this.logger.error("error")
       return Promise.reject(undefined)
     }
-
-
   }
+
   @httpPost('custom/expert/detail')
-  public expert_detail(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async expert_detail(request: Request, response: Response): Promise<void> {
+
+    this.logger.info('expert_detail nid: ' + request.body.nid)
+
+    try{
+
+      const output : any =
+        await this.model.getModel('expert').findOne({
+          where : { id : request.body.nid }
+        })
+
+      // Generate response
+      const response_json = {
+          response: {
+              nid: output.id,
+              title : output.title,
+              field_expert_image: output.image,
+              field_expert_expertise: output.expertise_id,
+              field_expert_degree: output.degree,
+              field_expert_certifications: output.certifications,
+              field_expert_highlighted: output.hightlighted,
+              body: output.body
+          },
+          result: 0
+      }
+      response.json(response_json)
+      // response.json({result: 'ok'})
+      return Promise.resolve(undefined)
+    }catch{
+      this.logger.error("error")
+      return Promise.reject(undefined)
+    }
+
+    //
+    // response.json({result: 'ok'})
+    // return Promise.resolve(undefined)
   }
 
 }
