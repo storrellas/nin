@@ -70,7 +70,7 @@ export class Model {
 
     this.models['expertise_topic'] = this.sequelize.define('expertise_topic',{
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      expertise_id          : {type: Sequelize.INTEGER()},
+      expertise_id          : {type: Sequelize.INTEGER},
       topic                 : {type: Sequelize.STRING(1024)}
     },
     {
@@ -79,7 +79,7 @@ export class Model {
 
     this.models['expert'] = this.sequelize.define('expert',{
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      expertise_id          : {type: Sequelize.INTEGER()},
+      expertise_id          : {type: Sequelize.INTEGER},
       title                 : {type: Sequelize.STRING(64)},
       image                 : {type: Sequelize.STRING(64)},
       degree                : {type: Sequelize.STRING(64)},
@@ -109,6 +109,39 @@ export class Model {
       targetKey: 'id'
     })
 
+    // -----------------------
+    // Menus
+    // -----------------------
+
+    this.models['nutrition_components'] = this.sequelize.define('nutrition_components',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      name                  : {type: Sequelize.STRING(64)},
+      icon                  : {type: Sequelize.STRING(64)},
+      description           : {type: Sequelize.STRING(1024)},
+      gtm_label             : {type: Sequelize.STRING(1024)}
+    },
+    {
+       freezeTableName: true
+    });
+
+    this.models['nutrition_substitutes'] = this.sequelize.define('nutrition_substitutes',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      nutrition_component_id : {type: Sequelize.INTEGER},
+      name                   : {type: Sequelize.STRING(64)}
+    },
+    {
+       freezeTableName: true
+    });
+
+
+    // associations
+    this.models['nutrition_substitutes'].belongsTo(this.models['nutrition_components'], {
+      foreignKey: 'nutrition_component_id',
+      targetKey: 'id'
+    })
+    this.models['nutrition_components'].hasMany(this.models['nutrition_substitutes'],{
+      foreignKey : 'nutrition_component_id'
+    })
 
   }
 
@@ -184,7 +217,137 @@ export class Model {
           },
         ]);
       })
-      /**/
+
+      .then( () =>{
+        return this.models['nutrition_components'].bulkCreate([
+          {
+            id                    : 1,
+            name                  : "Aceites",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_oil.png",
+            description           : "Son necesarias para la producción de energía y formación \
+de membranas celulares, principalmente aquellos derivados de los aceites vegetales: aguacate, \
+ajonjolí, semilla de girasol, cacahuate, almendras, pistaches, nueces, aceitunas.\r\n\
+Es importante incluir 2 raciones de pescado a la semana, ya que se obtiene DHA y \
+EPA necesarios para el desarrollo del bebe.",
+            gtm_label             : "oils",
+          },
+          {
+            id                    : 2,
+            name                  : "Azúcares",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_oil.png",
+            description           : "Azúcares",
+            gtm_label             : "sugar",
+          },
+
+          {
+            id                    : 3,
+            name                  : "Cereales",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_starches.png",
+            description           : "Son la fuente principal de energía. Debemos preferir los cereales integrales. proporcionan algunos micronutrimentos y fibra.",
+            gtm_label             : "cereals",
+          },
+          {
+            id                    : 4,
+            name                  : "Fruta",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_fruit.png",
+            description           : "Son alimentos ricos en vitaminas y aportan fibra.\r\nAyudan a prevenir \
+el estreñimiento y a su vez por la cantidad de fibra que contienen, reducen el colesterol. \
+Al comer cantidades adecuadas reducen el riesgo de desarrollar ciertas enfermedades crónicas y \
+ciertos tipos de cáncer. Brindan textura, sabor y variedad a los platillos. Es muy importante desinfectar \
+y lavar tanto verduras como frutas antes de prepararlas.",
+            gtm_label             : "fruit",
+          },
+          {
+            id                    : 5,
+            name                  : "Lácteos",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_dairy.png",
+            description           : "Aportan calcio y vitamina D, además de ofrecer proteínas.",
+            gtm_label             : "dairy",
+          },
+          {
+            id                    : 6,
+            name                  : "Proteínas",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_protein.png",
+            description           : "Son la principal fuente de proteína y hierro. Las proteínas nos ayudan a formar y conservar todos nuestros órganos, tejidos y huesos",
+            gtm_label             : "protein",
+          },
+          {
+            id                    : 7,
+            name                  : "Vegetales",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_vegatable.png",
+            description           : "Son la principal fuente de vitaminas, minerales, fibra y agua.\r\n\
+De preferencia hay que consumirlas crudas o semicocidas para beneficiarnos de la fibra.\r\nAyudan a prevenir \
+el estreñimiento y a su vez por la cantidad de fibra que contienen, reducen el colesterol. Al comer cantidades \
+adecuadas reducen el riesgo de desarrollar ciertas enfermedades crónicas y ciertos tipos de cáncer. Brindan textura, \
+sabor y variedad a los platillos. Es muy importante desinfectar y lavar tanto verduras como frutas antes de \
+prepararlas.",
+            gtm_label             : "vegetables",
+          },
+          {
+            id                    : 8,
+            name                  : "Verduras",
+            icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/group_vegatable.png",
+            description           : "Son la principal fuente de vitaminas, minerales, fibra y agua.\r\n\
+De preferencia hay que consumirlas crudas o semicocidas para beneficiarnos de la fibra.\r\nAyudan a prevenir \
+el estreñimiento y a su vez por la cantidad de fibra que contienen, reducen el colesterol. Al comer cantidades \
+adecuadas reducen el riesgo de desarrollar ciertas enfermedades crónicas y ciertos tipos de cáncer. Brindan textura, \
+sabor y variedad a los platillos. Es muy importante desinfectar y lavar tanto verduras como frutas antes de \
+prepararlas.",
+            gtm_label             : "greens",
+          },
+        ]);
+      })
+
+
+      .then( () =>{
+        return this.models['nutrition_substitutes'].bulkCreate([
+          // 1
+          {
+            id                     : 1,
+            nutrition_component_id : 1,
+            name                   : "1 cdita de aceite"
+          },
+          {
+            id                     : 2,
+            nutrition_component_id : 1,
+            name                   : "1 cdita de aceite de oliva"
+          },
+          {
+            id                     : 3,
+            nutrition_component_id : 1,
+            name                   : "1/2 de aguacate verde"
+          },
+          {
+            id                     : 4,
+            nutrition_component_id : 1,
+            name                   : "1 1/2 de mantequilla"
+          },
+          {
+            id                     : 5,
+            nutrition_component_id : 1,
+            name                   : "4 cdita de almendra picada"
+          },
+          // 2
+          {
+            id                     : 6,
+            nutrition_component_id : 2,
+            name                   : "1 pieza de manzana"
+          },
+          {
+            id                     : 7,
+            nutrition_component_id : 2,
+            name                   : "1 taza de melón picado"
+          },
+          {
+            id                     : 8,
+            nutrition_component_id : 2,
+            name                   : "1 taza de fresa rebanada"
+          },
+          // 3
+        ]);
+      })
+/**/
+
       .then(() => {
         return resolve()
       })
