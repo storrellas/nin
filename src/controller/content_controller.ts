@@ -166,10 +166,6 @@ export class ContentController {
       this.logger.error("error")
       return Promise.reject(undefined)
     }
-
-    //
-    // response.json({result: 'ok'})
-    // return Promise.resolve(undefined)
   }
 
 }
