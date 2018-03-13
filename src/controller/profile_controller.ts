@@ -34,8 +34,53 @@ export class ProfileController {
     * https://wiki.nespresso.com/display/NMTPS/API+Content+Cache
     */
   @httpGet('custom/cache/time')
-  public cache_time(request: any, response: Response): Promise<void> {
+  public async cache_time(request: any, response: Response): Promise<void> {
 
+    try{
+
+      // Get timestamps
+      let output : any =
+        await this.model.getModel('menu').findOne({
+          attributes: ['updatedAt'],
+          order: [['updatedAt', 'DESC']]
+        })
+      const cache_menu_timestamp : number =
+            helper.date_2_epoch_unix( output.updatedAt )
+      output =
+        await this.model.getModel('expertise').findOne({
+          attributes: ['updatedAt'],
+          order: [['updatedAt', 'DESC']]
+        })
+      const cache_expert_timestamp : number =
+            helper.date_2_epoch_unix( output.updatedAt )
+      output =
+        await this.model.getModel('nutrition_component').findOne({
+          attributes: ['updatedAt'],
+          order: [['updatedAt', 'DESC']]
+        })
+      const cache_foodgroup_timestamp : number =
+            helper.date_2_epoch_unix( output.updatedAt )
+
+      // Generate response
+      const response_json = {
+        response: {
+            cache: {
+                menu: cache_menu_timestamp,
+                expert: cache_expert_timestamp,
+                foodgroups: cache_foodgroup_timestamp,
+                reset: 0
+            }
+        },
+        result: 0
+      }
+      response.json(response_json)
+
+    }catch(e){
+      this.logger.error("error")
+      console.log(e)
+      return Promise.reject(undefined)
+    }
+/*
     // Select timestamp
     const cache_menu_timestamp : number = 1518616381
     const cache_export_timestamp : number = 1509404692
@@ -55,6 +100,7 @@ export class ProfileController {
     }
     response.json(response_json)
     return Promise.resolve(undefined)
+/**/
   }
 
   /**
