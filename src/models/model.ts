@@ -5,6 +5,7 @@ import * as uuidv4 from 'uuid/v4';
 
 export interface IModel {
   getModel(name: string): Sequelize.Model<{}, {}>;
+  raw(query : string): Promise<any>;
 }
 
 @injectable()
@@ -236,6 +237,10 @@ export class Model {
       targetKey: 'id'
     })
 
+  }
+
+  public raw(query : string): Promise<any> {
+    return this.sequelize.query(query, { type: Sequelize.QueryTypes.SELECT})
   }
 
   public getModel(name: string): Sequelize.Model<{}, {}> {
@@ -825,4 +830,5 @@ prepararlas.",
       })
     })
   }
+
 }

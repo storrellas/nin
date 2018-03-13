@@ -186,6 +186,17 @@ export class TrackingController {
   @httpPost('custom/mum_weight_trackers/list')
   public mum_weight_tracking_retrieve_list(request: Request, response: Response): Promise<void> {
 
+    const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
+                           "GROUP BY CONCAT(YEAR(updatedAt), '/' ,WEEK(updatedAt)) " +
+                           "order by updatedAt DESC"
+    this.model.raw(query)
+    .then((output:any) => {
+        // We don't need spread here, since only the results will be returned for select queries
+
+        console.log(output)
+    })
+
+
 // http://www.pregnancy-week-by-week.info/pregnancy-wellness/weight-gain.html
 
     response.json({result: 'ok'})
