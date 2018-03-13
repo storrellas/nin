@@ -80,27 +80,6 @@ export class ProfileController {
       console.log(e)
       return Promise.reject(undefined)
     }
-/*
-    // Select timestamp
-    const cache_menu_timestamp : number = 1518616381
-    const cache_export_timestamp : number = 1509404692
-    const cache_foodgroup_timestamp : number = 1518616261
-
-    // Generate response
-    const response_json = {
-      response: {
-          cache: {
-              menu: cache_menu_timestamp,
-              expert: cache_export_timestamp,
-              foodgroups: cache_foodgroup_timestamp,
-              reset: 0
-          }
-      },
-      result: 0
-    }
-    response.json(response_json)
-    return Promise.resolve(undefined)
-/**/
   }
 
   /**
