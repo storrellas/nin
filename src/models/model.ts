@@ -50,7 +50,7 @@ export class Model {
     this.models['child'] = this.sequelize.define('child',{
       id                     : {type: Sequelize.STRING(64), primaryKey:true},
       user_id                : {type: Sequelize.STRING(64)},
-      birth_date             : {type: Sequelize.STRING(64)},
+      birth_date             : {type: Sequelize.DATE()},
       birth_date_reliability : {type: Sequelize.STRING(64)},
       name                   : {type: Sequelize.STRING(64)}
     },
