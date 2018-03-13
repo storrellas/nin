@@ -23,20 +23,11 @@ export class TrackingController {
   /**
     * Calculates whether given weight is [lower, normal, higher]
     */
-  private async calculate_range(gcid: string, weight: number) : Promise<string>{
+  private async calculate_range(child: any, weight: number) : Promise<string>{
     try{
-
-      const output : any =
-        await this.model.getModel('child').findOne(
-          {
-            where: {
-              id: gcid
-            }
-          })
-
       // Calculate range
       const weight_array : number[] =
-            helper.bmi_weight_limits(output.prepregnancy_height)
+            helper.bmi_weight_limits(child.prepregnancy_height)
       const weight_max : number = weight_array[0]
       const weight_min : number = weight_array[1]
       let range_str : string = "normal"
@@ -73,8 +64,10 @@ export class TrackingController {
       this.logger.info("tracking created!")
 
       // Build response
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: gcid } })
       const range_str : string =
-        await this.calculate_range(gcid, parseFloat(request.body.weight))
+        await this.calculate_range(child, parseFloat(request.body.weight))
       const response_json = {
           response: {
               entity: {
@@ -128,13 +121,15 @@ export class TrackingController {
         response.json({result: 'ko'})
       }else{
         this.logger.info("update ok!")
-                    // Build response
+        // Build response
         const tracking_weight : any =
           await this.model.getModel('tracking_weight').findOne({
               where: {id: parseInt(request.body.mid)}
             })
+        const child : any =
+          await this.model.getModel('child').findOne( { where: { id: gcid } })
         const range_str : string =
-          await this.calculate_range(gcid, parseFloat(request.body.weight))
+          await this.calculate_range(child, parseFloat(request.body.weight))
         const response_json = {
             response: {
                 entity: {
