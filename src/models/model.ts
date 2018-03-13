@@ -46,12 +46,30 @@ export class Model {
        freezeTableName: true
     });
 
+    // child
+    this.models['child'] = this.sequelize.define('child',{
+      id                     : {type: Sequelize.STRING(64), primaryKey:true},
+      user_id                : {type: Sequelize.STRING(64)},
+      birth_date             : {type: Sequelize.STRING(64)},
+      birth_date_reliability : {type: Sequelize.STRING(64)},
+      name                   : {type: Sequelize.STRING(64)}
+    },
+    {
+       freezeTableName: true
+    });
+
     // associations
     this.models['tracking_weight'].belongsTo(this.models['user'], {
       foreignKey: 'user_id',
       targetKey: 'id'
     })
-
+    this.models['child'].belongsTo(this.models['user'], {
+      foreignKey: 'user_id',
+      targetKey: 'id'
+    })
+    this.models['user'].hasMany(this.models['child'], {
+      foreignKey: 'user_id'
+    })
 
     // -----------------------
     // Experts

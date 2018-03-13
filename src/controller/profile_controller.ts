@@ -132,6 +132,18 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
 
       this.logger.debug("gigya response -> " + JSON.stringify(gigya_response))
 
+      // Create child
+      for (let item of gigya_response.data.child) {
+          this.model.getModel('child').upsert({
+            id: item.applicationInternalIdentifier,
+            user_id : uid,
+            birth_date : item.birthDate,
+            birth_date_reliability : item.birthDateReliability,
+            name: item.name
+          })
+
+      }
+
       // Information from Gigya should be parsed in here
       const output : Array<any> =
         await this.model.getModel('user').update(
@@ -165,9 +177,6 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       response.json({result: 'ko'})
       return Promise.reject(undefined)
     }
-
-
-
 
   }
 
