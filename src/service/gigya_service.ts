@@ -81,8 +81,11 @@ export class GigyaService {
             })
   }
 
-  public get_account_info(uid : string) : Promise<GigyaResponse & Account>{
-    return this.gigya.accounts.getAccountInfo({ UID: uid })
+  public get_account_info(uid : string, api_key: string = undefined) : Promise<GigyaResponse & Account>{
+    if( api_key != undefined)
+      return this.gigya.accounts.getAccountInfo({ UID: uid, apiKey: api_key })
+    else
+      return this.gigya.accounts.getAccountInfo({ UID: uid })
   }
 
   public get_jwt_public_key() : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{

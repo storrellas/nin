@@ -40,7 +40,7 @@ if (!fs.existsSync(config_file)) {
 nconf.file({ file: config_file });
 
 // Enable custom configuration file
-config_file = './src/resources/NINConfiguration.json.default';
+config_file = './src/resources/NINConfiguration.json';
 if (fs.existsSync(config_file)) {
   console.error("Reading custom Configuration file " + config_file + " was not found! ");
   nconf.file({ file: config_file });
@@ -134,17 +134,17 @@ else
 const android_gigya : GigyaOptions = new GigyaOptions()
 android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
 android_gigya.data_center = 'us1';
-android_gigya.user_key    = 'AMvnR4qi0nSo';
-android_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
+android_gigya.user_key    = nconf.get("GIGYA:USER_KEY");
+android_gigya.secret      = nconf.get("GIGYA:SECRET");
 
 const ios_gigya : GigyaOptions = new GigyaOptions()
 ios_gigya.api_key     = '3_-7gHURwQ0lLRQhSQi9GpB2e8tmk2gM3Akqzg-GxyNcTHNpEBO3vKghOD_PVNVG6G';
 ios_gigya.data_center = 'us1';
-ios_gigya.user_key    = 'AMvnR4qi0nSo';
-ios_gigya.secret      = 'fpZ/5fUHcv8HT4fSU7FdrO11mfjTSWC1';
+ios_gigya.user_key    = nconf.get("GIGYA:USER_KEY");
+ios_gigya.secret      = nconf.get("GIGYA:SECRET");
 
 container.bind<GigyaService>(TYPES.GigyaService).toConstantValue(
-  new GigyaService( android_gigya, container.get<LoggerInstance>(TYPES.Logger))
+  new GigyaService( android_gigya, container.get<LoggerInstance>(TYPES.Logger) )
 );
 
 // ------------------------------------

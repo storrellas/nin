@@ -11,5 +11,9 @@
     "USER"     : "root",
     "PASSWORD" : "root",
     "DEBUG"    : false
+  },
+  "GIGYA"  : {
+    "USER_KEY" : "",
+    "SECRET" : ""
   }
 }

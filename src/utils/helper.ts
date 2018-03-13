@@ -11,6 +11,13 @@ export function get_uid(token : string) : string{
   return item.sub
 }
 
+export function get_api_key(token : string) : string{
+  const item : any = jsonwebtoken.decode(token)
+  //this.logger.debug("extracted uid: " + item.sub)
+  return item.apiKey
+}
+
+
 /**
   * Calculates weight limits according to bmi formula
   * BMI = (Weight in kilograms  / Height[m]^^2)

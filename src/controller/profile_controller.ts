@@ -104,7 +104,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       id: uid
     })
 
-    response.json({result: 'ok'})
+    response.json({result: 0})
     return Promise.resolve(undefined)
   }
 
@@ -118,7 +118,9 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   public async user_update(request: Request, response: Response): Promise<void> {
     const token : any = request.get('token')
     const uid : string = helper.get_uid(token)
+    const api_key : string = helper.get_api_key(token)
     this.logger.info("user_update uid:"  + uid)
+    this.logger.info("user_update api_key:"  + api_key)
 
     try{
 
@@ -126,7 +128,9 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       // Grab information from gigya
       // ------------------
       const gigya_response : GigyaResponse & Account =
-        await this.gigya.get_account_info(uid)
+        await this.gigya.get_account_info(uid, api_key)
+
+      this.logger.debug("gigya response -> " + JSON.stringify(gigya_response))
 
       // Information from Gigya should be parsed in here
       const output : Array<any> =
