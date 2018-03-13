@@ -16,6 +16,7 @@ import * as jsonwebtoken from 'jsonwebtoken';
 export class ProfileImageController {
 
   private media_path : string = process.cwd() + '/media/'
+  private media_base_url : string = "http://localhost:8080/media/"
 
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
@@ -59,9 +60,18 @@ export class ProfileImageController {
 
     // Store image
     const base64Data = request.body.image.replace(/^data:image\/png;base64,/,"");
-    this.save_image(base64Data, uid + ".png")
+    const filename : string = uid + ".png"
+    this.save_image(base64Data, filename)
 
-    response.json({result: 'ok'})
+    // Generate response
+    const response_json = {
+      result : 0,
+      response: {
+        image_url : this.media_base_url + filename
+      }
+    }
+    response.json(response_json)
+    //response.json({result: 'ok'})
     return Promise.resolve(undefined)
   }
   @httpPost('custom/user/delete_image')
@@ -70,9 +80,11 @@ export class ProfileImageController {
     const uid : string = helper.get_uid(token)
     this.logger.info("user_delete_image uid:"  + uid)
 
-    this.remove_image(uid + ".png")
+    // Remove image
+    const filename : string = uid + ".png"
+    this.remove_image(filename)
 
-    response.json({result: 'ok'})
+    response.json({result: 0})
     return Promise.resolve(undefined)
   }
   @httpPost('custom/child/load_image')
@@ -82,9 +94,17 @@ export class ProfileImageController {
 
     // Store image
     const base64Data = request.body.image.replace(/^data:image\/png;base64,/,"");
-    this.save_image(base64Data, gcid + ".png")
+    const filename : string = gcid + ".png"
+    this.save_image(base64Data, filename)
 
-    response.json({result: 'ok'})
+    // Generate response
+    const response_json = {
+      result : 0,
+      response: {
+        image_url : this.media_base_url + filename
+      }
+    }
+    response.json(response_json)
     return Promise.resolve(undefined)
   }
   @httpPost('custom/child/delete_image')
@@ -92,9 +112,11 @@ export class ProfileImageController {
     const gcid : any = request.get('gcid')
     this.logger.info("child_load_image gcid:"  + gcid)
 
-    this.remove_image(gcid + ".png")
+    // Remove image
+    const filename : string = gcid + ".png"
+    this.remove_image(filename)
 
-    response.json({result: 'ok'})
+    response.json({result: 0})
     return Promise.resolve(undefined)
   }
 
