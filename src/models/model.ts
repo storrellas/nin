@@ -190,12 +190,30 @@ export class Model {
        freezeTableName: true
     });
 
+    this.models['meal_nutrition_component'] = this.sequelize.define('meal_nutrition_component',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      meal_id                : {type: Sequelize.INTEGER},
+      nutrition_component_id : {type: Sequelize.INTEGER},
+      quantity               : {type: Sequelize.STRING(64)},
+    },
+    {
+       freezeTableName: true
+    });
+
     // associations
     this.models['menu'].hasMany(this.models['meal'],{
       foreignKey : 'menu_id'
     })
     this.models['meal'].hasMany(this.models['recipe'],{
       foreignKey : 'meal_id'
+    })
+    this.models['meal'].hasMany(this.models['meal_nutrition_component'],{
+      foreignKey : 'meal_id'
+    })
+
+    this.models['meal_nutrition_component'].belongsTo(this.models['nutrition_component'],{
+      foreignKey: 'nutrition_component_id',
+      targetKey: 'id'
     })
 
   }
@@ -706,6 +724,81 @@ prepararlas.",
 
         ]);
       })
+
+      .then( () =>{
+        return this.models['meal_nutrition_component'].bulkCreate([
+// meal_id:1
+          { id :  1, meal_id : 1, nutrition_component_id : 6, quantity : 1 },
+          { id :  2, meal_id : 1, nutrition_component_id : 3, quantity : 2 },
+          { id :  3, meal_id : 1, nutrition_component_id : 1, quantity : 1 },
+          { id :  4, meal_id : 1, nutrition_component_id : 4, quantity : 1 },
+// meal_id:2
+          { id :  5, meal_id : 2, nutrition_component_id : 4, quantity : 1 },
+          { id :  6, meal_id : 2, nutrition_component_id : 5, quantity : 1 },
+          { id :  7, meal_id : 2, nutrition_component_id : 1, quantity : 1 },
+// meal_id:3
+          { id :  8, meal_id : 3, nutrition_component_id : 6, quantity : 1 },
+          { id :  9, meal_id : 3, nutrition_component_id : 3, quantity : 2 },
+          { id : 10, meal_id : 3, nutrition_component_id : 8, quantity : 2 },
+// meal_id:4
+          { id : 11, meal_id : 4, nutrition_component_id : 3, quantity : 1 },
+          { id : 12, meal_id : 4, nutrition_component_id : 4, quantity : 1 },
+// meal_id:5
+          { id : 13, meal_id : 5, nutrition_component_id : 3, quantity : 1 },
+          { id : 14, meal_id : 5, nutrition_component_id : 1, quantity : 1 },
+          { id : 15, meal_id : 5, nutrition_component_id : 6, quantity : 2 },
+          { id : 16, meal_id : 5, nutrition_component_id : 4, quantity : 1 },
+// meal_id:6
+          { id : 17, meal_id : 6, nutrition_component_id : 6, quantity : 1 },
+          { id : 18, meal_id : 6, nutrition_component_id : 8, quantity : 1 },
+          { id : 19, meal_id : 6, nutrition_component_id : 3, quantity : 2 },
+// meal_id:7
+          { id : 20, meal_id : 7, nutrition_component_id : 3, quantity : 2 },
+          { id : 21, meal_id : 7, nutrition_component_id : 4, quantity : 1 },
+// meal_id:8
+          { id : 22, meal_id : 8, nutrition_component_id : 6, quantity : 1 },
+          { id : 23, meal_id : 8, nutrition_component_id : 4, quantity : 1 },
+          { id : 24, meal_id : 8, nutrition_component_id : 3, quantity : 1 },
+          { id : 25, meal_id : 8, nutrition_component_id : 3, quantity : 1 },
+          { id : 26, meal_id : 8, nutrition_component_id : 1, quantity : 1 },
+          { id : 27, meal_id : 8, nutrition_component_id : 8, quantity : 2 },
+// meal_id:9
+          { id : 28, meal_id : 9, nutrition_component_id : 3, quantity : 1 },
+// meal_id:10
+          { id : 29, meal_id : 10, nutrition_component_id : 8, quantity : 1 },
+          { id : 30, meal_id : 10, nutrition_component_id : 5, quantity : 1 },
+          { id : 31, meal_id : 10, nutrition_component_id : 3, quantity : 1 },
+          { id : 32, meal_id : 10, nutrition_component_id : 4, quantity : 1 },
+// meal_id:11
+          { id : 33, meal_id : 11, nutrition_component_id : 3, quantity : 1 },
+          { id : 34, meal_id : 11, nutrition_component_id : 6, quantity : 1 },
+          { id : 35, meal_id : 11, nutrition_component_id : 8, quantity : 2 },
+          { id : 36, meal_id : 11, nutrition_component_id : 1, quantity : 1 },
+          { id : 37, meal_id : 11, nutrition_component_id : 4, quantity : 1 },
+          { id : 38, meal_id : 11, nutrition_component_id : 3, quantity : 1 },
+// meal_id:12
+          { id : 39, meal_id : 12, nutrition_component_id : 8, quantity : 1 },
+          { id : 40, meal_id : 12, nutrition_component_id : 1, quantity : 1 },
+// meal_id:13
+          { id : 41, meal_id : 13, nutrition_component_id : 8, quantity : 2 },
+          { id : 42, meal_id : 13, nutrition_component_id : 3, quantity : 1 },
+          { id : 43, meal_id : 13, nutrition_component_id : 8, quantity : 2 },
+          { id : 44, meal_id : 13, nutrition_component_id : 4, quantity : 2 },
+          { id : 45, meal_id : 13, nutrition_component_id : 6, quantity : 1 },
+          { id : 46, meal_id : 13, nutrition_component_id : 1, quantity : 1 },
+          { id : 47, meal_id : 13, nutrition_component_id : 4, quantity : 1 },
+// meal_id:14
+          { id : 48, meal_id : 14, nutrition_component_id : 4, quantity : 2 },
+// meal_id:15
+          { id : 49, meal_id : 15, nutrition_component_id : 3, quantity : 1 },
+          { id : 50, meal_id : 15, nutrition_component_id : 1, quantity : 1 },
+          { id : 51, meal_id : 15, nutrition_component_id : 6, quantity : 1 },
+          { id : 52, meal_id : 15, nutrition_component_id : 5, quantity : 1 },
+          { id : 53, meal_id : 15, nutrition_component_id : 4, quantity : 1 },
+          { id : 54, meal_id : 15, nutrition_component_id : 5, quantity : 1 },
+        ]);
+      })
+
 
       .then(() => {
         return resolve()

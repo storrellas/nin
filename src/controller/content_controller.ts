@@ -32,8 +32,12 @@ export class ContentController {
             {
              model: this.model.getModel('meal'),
              include: [
+               { model: this.model.getModel('recipe') },
                {
-                model: this.model.getModel('recipe')
+                model: this.model.getModel('meal_nutrition_component'),
+                include: [
+                  { model: this.model.getModel('nutrition_component') }
+                ],
                },
              ],
             },
@@ -63,8 +67,20 @@ export class ContentController {
               gtm_label: item.gtm_label
             })
           }
+
+          // Generate nutrition_category
+          const nutrition_component_object = item.meal_nutrition_components
+          const nutrition_component_list = []
+          for (let item of nutrition_component_object) {
+
+            nutrition_component_list.push({
+              quantity : item.quantity,
+              tid: item.nutrition_component_id,
+              gtm_label: item.nutrition_component.gtm_label
+            })
+          }
           // Push meal
-          meal_list.push({ tid : item.id, recipes : recipe_list })
+          meal_list.push({ tid : item.id, recipes : recipe_list, nutrition_category: nutrition_component_list })
         }
 
         // Push menu
