@@ -187,21 +187,23 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   @httpPost('custom/user/save_prepregnancy_data')
   public async prepregnancy_create_or_update(request: Request, response: Response): Promise<void> {
     const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
     const uid : string = helper.get_uid(token)
-    this.logger.info("prepregnancy_create_or_update uid:"  + uid)
+    this.logger.info("prepregnancy_create_or_update uid:"  + uid + " gcid:" + gcid)
 
     try{
-      const output : Array<any> =
-        await this.model.getModel('user').update(
-          {
-            pre_height : request.body.height,
-            pre_weight : request.body.weight
-          },
-          {
-            where: {
-              id: uid
-            }
-          })
+        const output : Array<any> =
+          await this.model.getModel('child').update(
+            {
+              prepregnancy_height : request.body.height,
+              prepregnancy_weight : request.body.weight
+            },
+            {
+              where: {
+                id: gcid
+              }
+            })
+
 
         // Check row affected
         if( output[0] == 0 ){
@@ -238,17 +240,19 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   @httpPost('custom/user/get_prepregnancy_data')
   public async prepregnancy_get(request: Request, response: Response): Promise<void> {
     const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
     const uid : string = helper.get_uid(token)
-    this.logger.info("prepregnancy_get uid:"  + uid)
+    this.logger.info("prepregnancy_get uid:"  + uid + " gcid:" + gcid)
 
     try{
-      const output : any =
-        await this.model.getModel('user').findOne(
-          {
-            where: {
-              id: uid
-            }
-          })
+        const output : any =
+          await this.model.getModel('child').findOne(
+            {
+              where: {
+                id: gcid
+              }
+            })
+
 
         if( output == undefined ){
           this.logger.error("user not found")
@@ -256,9 +260,9 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
         }else{
           const response_json = {
               response: {
-                  weight: output.pre_weight,
-                  height: output.pre_height,
-                  children: uid + "_1516745642557"
+                  height: output.prepregnancy_height,
+                  weight: output.prepregnancy_weight,
+                  children: output.id
               },
               result: 0
           }

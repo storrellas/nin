@@ -26,8 +26,6 @@ export class Model {
     // user
     this.models['user'] = this.sequelize.define('user',{
       id                    : {type: Sequelize.STRING(64), primaryKey:true},
-      pre_height            : {type: Sequelize.DOUBLE, defaultValue:0},
-      pre_weight            : {type: Sequelize.DOUBLE, defaultValue:0},
       gigya_data            : {type: Sequelize.STRING(1024)}
     },
     {
@@ -52,7 +50,9 @@ export class Model {
       user_id                : {type: Sequelize.STRING(64)},
       birth_date             : {type: Sequelize.DATE()},
       birth_date_reliability : {type: Sequelize.STRING(64)},
-      name                   : {type: Sequelize.STRING(64)}
+      name                   : {type: Sequelize.STRING(64)},
+      prepregnancy_height    : {type: Sequelize.DOUBLE, defaultValue:0},
+      prepregnancy_weight    : {type: Sequelize.DOUBLE, defaultValue:0},
     },
     {
        freezeTableName: true
