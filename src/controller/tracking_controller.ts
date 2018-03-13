@@ -2,7 +2,6 @@ import { controller, httpGet, httpPost, httpPut, httpDelete } from 'inversify-ex
 import { injectable, inject } from 'inversify';
 import { Request, Response, Express } from 'express';
 import * as Sequelize from 'sequelize';
-import * as xml2js from 'xml2js';
 
 import TYPES from '../constant/types';
 import { IModel } from '../models/model';

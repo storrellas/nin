@@ -5,7 +5,6 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 import { Container } from 'inversify';
 import * as bodyParser from 'body-parser';
 import TYPES from './constant/types';
-import * as xml2js from 'xml2js';
 import * as express from 'express'
 import { Request, Response, Application, NextFunction } from 'express';
 
