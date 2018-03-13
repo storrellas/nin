@@ -2,6 +2,7 @@ import { controller, httpGet, httpPost, httpPut, httpDelete } from 'inversify-ex
 import { injectable, inject } from 'inversify';
 import { Request, Response, Express } from 'express';
 import * as Sequelize from 'sequelize';
+import * as DateDiff from 'date-diff';
 
 import TYPES from '../constant/types';
 import { IModel } from '../models/model';
@@ -14,6 +15,8 @@ export class TrackingController {
   // Body mass index for pregnancy
   private bmi_max : number = 24.9
   private bmi_min : number = 18.5
+  private pregnancy_weeks : number = 40
+  private pregnancy_days : number = this.pregnancy_weeks*7
 
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
@@ -44,6 +47,13 @@ export class TrackingController {
   /**
     * Weight Tracking
     */
+  private calculate_diff_weeks(date1 : Date, date2 : Date) : number {
+
+  }
+
+  /**
+    * Weight Tracking
+    */
   @httpPost('custom/mum_weight_trackers/create')
   public async mum_weight_tracking_create(request: Request, response: Response): Promise<void> {
     const token : any = request.get('token')
@@ -66,6 +76,14 @@ export class TrackingController {
       // Build response
       const child : any =
         await this.model.getModel('child').findOne( { where: { id: gcid } })
+
+      // Calculate weeks
+      const birth_date : Date = new Date(child.birth_date)
+      const now_date : Date = new Date();
+      const conception_date : Date = birth_date.setDate(birth_date.getDate()-this.pregnancy_days)
+      const diff = new DateDiff( new Date(), birth_date )
+
+      // Calculate range
       const range_str : string =
         await this.calculate_range(child, parseFloat(request.body.weight))
       const response_json = {
@@ -75,7 +93,7 @@ export class TrackingController {
                   title: "2107776-" + unix_timestamp,
                   status: 1,
                   note: request.body.note,
-                  week: "9",
+                  week: String(parseInt(diff.weeks())),
                   weight: request.body.weight,
                   children: gcid,
                   date: unix_timestamp,
@@ -128,6 +146,13 @@ export class TrackingController {
             })
         const child : any =
           await this.model.getModel('child').findOne( { where: { id: gcid } })
+        // Calculate weeks
+        const birth_date : Date = new Date(child.birth_date)
+        const now_date : Date = new Date();
+        const conception_date : Date = birth_date.setDate(birth_date.getDate()-this.pregnancy_days)
+        const diff = new DateDiff( new Date(), birth_date )
+
+        // Calculate range
         const range_str : string =
           await this.calculate_range(child, parseFloat(request.body.weight))
         const response_json = {
@@ -137,7 +162,7 @@ export class TrackingController {
                     title: "2107776-" + tracking_weight.date,
                     status: 1,
                     note: tracking_weight.note,
-                    week: "9",
+                    week: String(parseInt(diff.weeks())),
                     weight: String(tracking_weight.weight),
                     children: gcid,
                     date: tracking_weight.date,
