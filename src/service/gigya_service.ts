@@ -72,8 +72,9 @@ export class GigyaService {
 
   }
 
-  public login(login : string, password : string) : Promise<GigyaResponse & Account & SessionInfo>{
+  public login(login : string, password : string, api_key: string = undefined) : Promise<GigyaResponse & Account & SessionInfo>{
     return this.gigya.accounts.login({
+              apiKey: api_key,
               loginID: login,
               password : password,
               include: 'data',
@@ -82,18 +83,15 @@ export class GigyaService {
   }
 
   public get_account_info(uid : string, api_key: string = undefined) : Promise<GigyaResponse & Account>{
-    if( api_key != undefined)
-      return this.gigya.accounts.getAccountInfo({ UID: uid, apiKey: api_key })
-    else
-      return this.gigya.accounts.getAccountInfo({ UID: uid })
+    return this.gigya.accounts.getAccountInfo({ apiKey: api_key, UID: uid })
   }
 
-  public get_jwt_public_key() : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{
-    return this.gigya.accounts.getJWTPublicKey()
+  public get_jwt_public_key(api_key: string = undefined) : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{
+    return this.gigya.accounts.getJWTPublicKey({ apiKey: api_key })
   }
 
-  public get_jwt(uid : string) : Promise<GigyaResponse & AccountsGetJWTResponse>{
-    return this.gigya.accounts.getJWT({ targetUID: uid })
+  public get_jwt(uid : string, api_key: string = undefined) : Promise<GigyaResponse & AccountsGetJWTResponse>{
+    return this.gigya.accounts.getJWT({ apiKey: api_key, targetUID: uid })
   }
 
 }
