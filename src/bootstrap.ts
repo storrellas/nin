@@ -131,20 +131,14 @@ else
 }
 
 // Gigya Controller
-const android_gigya : GigyaOptions = new GigyaOptions()
-android_gigya.api_key     = '3_HkjGLqe4R73hayOfESeZeR-ABzTxZTPrK8qhxZoe-0mweFle_sL9O4-ojQp9IxuP';
-android_gigya.data_center = 'us1';
-android_gigya.user_key    = nconf.get("GIGYA:USER_KEY");
-android_gigya.secret      = nconf.get("GIGYA:SECRET");
-
-const ios_gigya : GigyaOptions = new GigyaOptions()
-ios_gigya.api_key     = '3_-7gHURwQ0lLRQhSQi9GpB2e8tmk2gM3Akqzg-GxyNcTHNpEBO3vKghOD_PVNVG6G';
-ios_gigya.data_center = 'us1';
-ios_gigya.user_key    = nconf.get("GIGYA:USER_KEY");
-ios_gigya.secret      = nconf.get("GIGYA:SECRET");
+const gigya_options : GigyaOptions = new GigyaOptions()
+gigya_options.api_key     = nconf.get("GIGYA:API_KEY_DEFAULT");
+gigya_options.data_center = nconf.get("GIGYA:DATA_CENTER");
+gigya_options.user_key    = nconf.get("GIGYA:USER_KEY");
+gigya_options.secret      = nconf.get("GIGYA:SECRET");
 
 container.bind<GigyaService>(TYPES.GigyaService).toConstantValue(
-  new GigyaService( android_gigya, container.get<LoggerInstance>(TYPES.Logger) )
+  new GigyaService( gigya_options, container.get<LoggerInstance>(TYPES.Logger) )
 );
 
 // ------------------------------------

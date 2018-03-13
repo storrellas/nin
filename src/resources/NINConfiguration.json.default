@@ -13,7 +13,9 @@
     "DEBUG"    : false
   },
   "GIGYA"  : {
-    "USER_KEY" : "",
-    "SECRET" : ""
+    "API_KEY_DEFAULT" : "",
+    "DATA_CENTER"     : "",
+    "USER_KEY"        : "",
+    "SECRET"          : ""
   }
 }
