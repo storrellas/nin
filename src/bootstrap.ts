@@ -6,6 +6,7 @@ import { Container } from 'inversify';
 import * as bodyParser from 'body-parser';
 import TYPES from './constant/types';
 import * as xml2js from 'xml2js';
+import * as express from 'express'
 import { Request, Response, Application, NextFunction } from 'express';
 
 
@@ -18,7 +19,6 @@ import  './controller/content_controller';
 import  './controller/image_controller';
 import  './controller/profile_controller';
 import  './controller/tracking_controller';
-
 
 // ------------------------------------
 // CONFIGURATION
@@ -175,10 +175,10 @@ fs.readFile(config_file, 'utf8', function (err : NodeJS.ErrnoException,data) {
  });
 
 
- // start the server
- const server = new InversifyExpressServer(container);
+// start the server
+const server = new InversifyExpressServer(container);
 
- server.setConfig((app: Application) => {
+  server.setConfig((app: Application) => {
    app.use(bodyParser.urlencoded({
      extended: true
    }));
@@ -188,7 +188,12 @@ fs.readFile(config_file, 'utf8', function (err : NodeJS.ErrnoException,data) {
      type: () => true
    }));
 
- });
+   // Serve static files
+   app.use("/media", express.static(process.cwd() + '/media/'));
+
+});
+
+
 
 export const serverInstance = server.build();
 serverInstance.listen(http_port);
