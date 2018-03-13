@@ -23,20 +23,20 @@ export class TrackingController {
   /**
     * Calculates whether given weight is [lower, normal, higher]
     */
-  private async calculate_range(uid: string, weight: number) : Promise<string>{
+  private async calculate_range(gcid: string, weight: number) : Promise<string>{
     try{
 
       const output : any =
-        await this.model.getModel('user').findOne(
+        await this.model.getModel('child').findOne(
           {
             where: {
-              id: uid
+              id: gcid
             }
           })
 
       // Calculate range
       const weight_array : number[] =
-            helper.bmi_weight_limits(output.pre_height)
+            helper.bmi_weight_limits(output.prepregnancy_height)
       const weight_max : number = weight_array[0]
       const weight_min : number = weight_array[1]
       let range_str : string = "normal"
@@ -56,6 +56,7 @@ export class TrackingController {
   @httpPost('custom/mum_weight_trackers/create')
   public async mum_weight_tracking_create(request: Request, response: Response): Promise<void> {
     const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
     const uid : string = helper.get_uid(token)
     this.logger.info("mum_weight_tracking_create uid:"  + uid)
 
@@ -64,7 +65,7 @@ export class TrackingController {
       const unix_timestamp : number = parseInt(request.body.date)
       const tracking_weight : any =
           await this.model.getModel('tracking_weight').create({
-            user_id               : uid,
+            child_id              : gcid,
             weight                : request.body.weight,
             note                  : request.body.note,
             date                  : unix_timestamp
@@ -73,7 +74,7 @@ export class TrackingController {
 
       // Build response
       const range_str : string =
-        await this.calculate_range(uid, parseFloat(request.body.weight))
+        await this.calculate_range(gcid, parseFloat(request.body.weight))
       const response_json = {
           response: {
               entity: {
@@ -83,7 +84,7 @@ export class TrackingController {
                   note: request.body.note,
                   week: "9",
                   weight: request.body.weight,
-                  children: uid + "_1516745642557",
+                  children: gcid,
                   date: unix_timestamp,
                   mid: tracking_weight.id
               },
@@ -102,6 +103,11 @@ export class TrackingController {
   }
   @httpPost('custom/mum_weight_trackers/update')
   public async mum_weight_tracking_update(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("mum_weight_tracking_update uid:"  + uid)
+
     try{
 
       const output : any =
@@ -128,7 +134,7 @@ export class TrackingController {
               where: {id: parseInt(request.body.mid)}
             })
         const range_str : string =
-          await this.calculate_range(tracking_weight.user_id, parseFloat(request.body.weight))
+          await this.calculate_range(gcid, parseFloat(request.body.weight))
         const response_json = {
             response: {
                 entity: {
@@ -138,7 +144,7 @@ export class TrackingController {
                     note: tracking_weight.note,
                     week: "9",
                     weight: String(tracking_weight.weight),
-                    children: tracking_weight.user_id + "_1516745642557",
+                    children: gcid,
                     date: tracking_weight.date,
                     mid: tracking_weight.id
                 },

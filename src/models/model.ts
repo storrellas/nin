@@ -32,18 +32,6 @@ export class Model {
        freezeTableName: true,
     });
 
-    // tracking_weight
-    this.models['tracking_weight'] = this.sequelize.define('tracking_weight',{
-      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      user_id               : {type: Sequelize.STRING(64)},
-      weight                : {type: Sequelize.DOUBLE},
-      note                  : {type: Sequelize.STRING(256)},
-      date                  : {type: Sequelize.STRING(64)}
-    },
-    {
-       freezeTableName: true
-    });
-
     // child
     this.models['child'] = this.sequelize.define('child',{
       id                     : {type: Sequelize.STRING(64), primaryKey:true},
@@ -58,9 +46,23 @@ export class Model {
        freezeTableName: true
     });
 
+
+    // tracking_weight
+    this.models['tracking_weight'] = this.sequelize.define('tracking_weight',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      child_id              : {type: Sequelize.STRING(64)},
+      weight                : {type: Sequelize.DOUBLE},
+      note                  : {type: Sequelize.STRING(256)},
+      date                  : {type: Sequelize.STRING(64)}
+    },
+    {
+       freezeTableName: true
+    });
+
+
     // associations
-    this.models['tracking_weight'].belongsTo(this.models['user'], {
-      foreignKey: 'user_id',
+    this.models['tracking_weight'].belongsTo(this.models['child'], {
+      foreignKey: 'child_id',
       targetKey: 'id'
     })
     this.models['child'].belongsTo(this.models['user'], {
