@@ -47,8 +47,8 @@ export class TrackingController {
   /**
     * Weight Tracking
     */
-  private calculate_diff_weeks(date1 : Date, date2 : Date) : number {
-
+  private calculate_conception(date : Date) : Date {
+    return date.setDate(date.getDate()-this.pregnancy_days)
   }
 
   /**
@@ -78,10 +78,9 @@ export class TrackingController {
         await this.model.getModel('child').findOne( { where: { id: gcid } })
 
       // Calculate weeks
-      const birth_date : Date = new Date(child.birth_date)
       const now_date : Date = new Date();
-      const conception_date : Date = birth_date.setDate(birth_date.getDate()-this.pregnancy_days)
-      const diff = new DateDiff( new Date(), birth_date )
+      const conception_date : Date = this.calculate_conception(new Date(child.birth_date))
+      const diff = new DateDiff( now_date, conception_date )
 
       // Calculate range
       const range_str : string =
@@ -147,10 +146,9 @@ export class TrackingController {
         const child : any =
           await this.model.getModel('child').findOne( { where: { id: gcid } })
         // Calculate weeks
-        const birth_date : Date = new Date(child.birth_date)
         const now_date : Date = new Date();
-        const conception_date : Date = birth_date.setDate(birth_date.getDate()-this.pregnancy_days)
-        const diff = new DateDiff( new Date(), birth_date )
+        const conception_date : Date = this.calculate_conception(new Date(child.birth_date))
+        const diff = new DateDiff( now_date, conception_date )
 
         // Calculate range
         const range_str : string =
