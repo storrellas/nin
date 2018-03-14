@@ -153,7 +153,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       // Grab information from gigya
       // ------------------
       const gigya_response : GigyaResponse & Account =
-        await this.gigya.get_account_info(uid, api_key)
+        await this.gigya.get_account_info(uid)
 
       this.logger.debug("gigya response -> " + JSON.stringify(gigya_response))
 

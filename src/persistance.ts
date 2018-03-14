@@ -4,6 +4,7 @@ import * as fs from 'fs';
 
 import { LoggerInstance, transports, LoggerOptions, WLogger } from './utils/logger';
 import { IModel, Model } from './models/model';
+import { Fixture } from './models/fixture';
 
 // ------------------------------------
 // CONFIGURATION
@@ -52,7 +53,7 @@ const logger : LoggerInstance = new WLogger({
 // INITIALIZE APPLICATION
 // ------------------------------------
 
-const model : Model = new Model(
+const fixture : Fixture = new Fixture(
   "NIN",
   nconf.get("MYSQL:USER"),
   nconf.get("MYSQL:PASSWORD"),
@@ -85,8 +86,9 @@ for (let key in nconf.get()) {
 logger.info(JSON.stringify(config, null, 4));
 
 logger.info("Creating models ...")
-model.sync()
+fixture.sync()
 .then( () => {
   logger.info("All models created successfully!")
   process.exit()
 })
+.catch
