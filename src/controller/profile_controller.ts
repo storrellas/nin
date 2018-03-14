@@ -305,13 +305,4 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   }
 
 
-  /**
-    * Dashboard
-    */
-  @httpPost('custom/user/dashboard')
-  public user_dashboard(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
-  }
-
 }

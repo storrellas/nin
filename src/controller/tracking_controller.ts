@@ -222,13 +222,76 @@ export class TrackingController {
       return Promise.reject(undefined)
     }
 
-
-
   }
   @httpPost('custom/mum_weight_trackers/list')
   public async mum_weight_tracking_retrieve_list(request: Request, response: Response): Promise<void> {
-    response.json({ result: 0 })
-    return Promise.resolve(undefined)
+    const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("mum_weight_tracking_retrieve_list uid:"  + uid)
+
+    try{
+
+      const output : any =
+        await this.model.getModel('tracking_weight').findAll(
+          {
+            where: { child_id: gcid },
+            order: [['date', 'DESC']],
+            limit : 14,
+          })
+
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: gcid } })
+
+      // Generate week_set
+      const week_set = new Set<number>()
+      for (let tracking of output) {
+        const week_number : number =
+          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+        week_set.add(week_number)
+      }
+
+      // Generate map of objects
+      const week_map = new Map<number,{[id:string]:any}>()
+      for (let item of week_set) {
+        week_map.set(item, { week: String(item), tracks: [] })
+      }
+
+      // Fill map of objects
+      for (let tracking of output) {
+        const week_number : number =
+          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+
+        const item = {
+          mid : tracking.id,
+          weight: tracking.weight,
+          note: tracking.node,
+          children: tracking.child_id,
+          timestamp: helper.date_2_epoch_unix(tracking.date)
+        }
+        week_map.get(week_number).tracks.push(item)
+      }
+
+      // Generate week_list
+      const week_list : [] = Array.from(week_map.values())
+
+      // Generate response
+      const response_json = {
+          response: {
+              list: week_list
+          },
+          result: 0
+      }
+      response.json(response_json)
+
+      return Promise.resolve(undefined)
+    }catch(e){
+      console.log(e)
+      this.logger.error("Error")
+      response.json({result: 0})
+      return Promise.reject(undefined)
+    }
+
   }
   @httpPost('custom/mum_weight_trackers/graph')
   public async mum_weight_tracking_retrieve_graph(request: Request, response: Response): Promise<void> {
@@ -237,11 +300,10 @@ export class TrackingController {
     const uid : string = helper.get_uid(token)
     this.logger.info("mum_weight_tracking_retrieve_graph uid:"  + uid)
 
-
-
     try{
 
       const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
+                             "WHERE child_id = '" + gcid + "'" +
                              "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
                              "order by date DESC"
       const output : any = await this.model.raw(query)
@@ -314,6 +376,69 @@ export class TrackingController {
     })
     response.json({result: 0})
     return Promise.resolve(undefined)
+  }
+
+
+  /**
+    * Dashboard
+    */
+  @httpPost('custom/user/dashboard')
+  public async user_dashboard(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("user_dashboard uid:"  + uid + " gcid:"+ gcid)
+
+    try{
+
+      const tracking : any =
+        await this.model.getModel('tracking_weight').findOne(
+          {
+            where: { child_id: gcid },
+            order: [['date', 'DESC']],
+          })
+
+      // Get last week weight
+      let query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
+                             "WHERE child_id = '" + gcid + "'" +
+                             "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
+                             "order by date DESC LIMIT 2"
+      let output : any = await this.model.raw(query)
+      const gain_weight : number = output[0].weight - output[1].weight
+
+      // Get prepregnancy weigth
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: gcid } })
+
+      // Get average
+      query = "SELECT AVG(weight) as average FROM NIN.tracking_weight " +
+                             "WHERE child_id = '" + gcid+ "'"
+      output = await this.model.raw(query)
+
+      response.json({
+        response : {
+          pregnancy_weigh: child.prepregnancy_weight,
+          last_tracked:{
+            weight: tracking.weight,
+            date: helper.date_2_epoch_unix(tracking.date)
+          },
+          average_gain: output[0].average,
+          last_week_gain:{
+            weight: gain_weight,
+            num_days: 7
+          },
+          last_tracked_modified: helper.date_2_epoch_unix(tracking.updatedAt)
+        },
+        result: 0
+      })
+      return Promise.resolve(undefined)
+    }catch(e){
+      this.logger.error("Error")
+      console.log(e)
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
+
   }
 
 }
