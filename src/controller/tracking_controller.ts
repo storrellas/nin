@@ -55,9 +55,8 @@ export class TrackingController {
     * Calculate conception date
     */
   private calculate_week_number(date : Date, birth_date: Date) : number {
-    const now_date : Date = new Date();
     const conception_date : Date = this.calculate_conception(birth_date)
-    const diff = new DateDiff( now_date, conception_date )
+    const diff = new DateDiff( date, conception_date )
     return parseInt(diff.weeks())
   }
 
@@ -113,7 +112,7 @@ export class TrackingController {
             child_id              : gcid,
             weight                : request.body.weight,
             note                  : request.body.note,
-            date                  : unix_timestamp
+            date                  : helper.epoch_unix_2_date(unix_timestamp)
           })
       this.logger.info("tracking created!")
 
@@ -233,37 +232,70 @@ export class TrackingController {
   }
   @httpPost('custom/mum_weight_trackers/graph')
   public async mum_weight_tracking_retrieve_graph(request: Request, response: Response): Promise<void> {
+    const token : any = request.get('token')
+    const gcid : any = request.get('gcid')
+    const uid : string = helper.get_uid(token)
+    this.logger.info("mum_weight_tracking_retrieve_graph uid:"  + uid)
+
+
 
     try{
 
       const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
-                             "GROUP BY CONCAT(YEAR(updatedAt), '/' ,WEEK(updatedAt)) " +
-                             "order by updatedAt DESC"
+                             "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
+                             "order by date DESC"
       const output : any = await this.model.raw(query)
 
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: gcid } })
 
+      // Calculate weight chart
       const pregnancy_chart : Array<number>[] = this.calculate_pregnancy_gain_chart()
       const max_pregnancy_chart : Array<number> = pregnancy_chart[0]
       const min_pregnancy_chart : Array<number> = pregnancy_chart[1]
 
-      // Generate response
       const week_list = []
-      let ind : number = 0
-      for (ind = 0; ind < this.pregnancy_weeks; ind ++) {
+      week_list.push({
+        y_max:{
+          weight: (child.prepregnancy_weight + max_pregnancy_chart[1]),
+          week: 1
+        },
+        y_min:{
+          weight: (child.prepregnancy_weight + max_pregnancy_chart[1]),
+          week: 1
+        },
+        current:{
+          weight: child.prepregnancy_weight,
+          week: 1
+        }
+      })
+      for (let tracking of output) {
+        const week_number : number =
+          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+
+        // Generate week item
         week_list.push({
           y_max:{
-            weight: max_pregnancy_chart[ind],
-            week: ind
+            weight: (child.prepregnancy_weight + max_pregnancy_chart[week_number]),
+            week: week_number
           },
           y_min:{
-            weight: min_pregnancy_chart[ind],
-            week: ind
+            weight: (child.prepregnancy_weight + min_pregnancy_chart[week_number]),
+            week: week_number
           },
+          current:{
+            weight: tracking.weight,
+            week: week_number
+          }
         })
+
       }
 
+
       response.json({
-        weeks: week_list,
+        response : {
+          weeks: week_list,
+        },
         result: 0
       })
 

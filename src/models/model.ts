@@ -54,7 +54,7 @@ export class Model {
       child_id              : {type: Sequelize.STRING(64)},
       weight                : {type: Sequelize.DOUBLE},
       note                  : {type: Sequelize.STRING(256)},
-      date                  : {type: Sequelize.STRING(64)}
+      date                  : {type: Sequelize.DATE()}
     },
     {
        freezeTableName: true

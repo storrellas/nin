@@ -38,9 +38,19 @@ export function bmi_weight_limits(height: number) : number[]{
 }
 
 /**
-  * Gets api_key token from jwt
+  * Date conversion to epoch unix timestamp
   */
 export function date_2_epoch_unix(date_str : string) : number{
   const date = new Date(date_str)
   return parseInt(date.getTime() / 1000)
+}
+
+
+/**
+  * Epoch unix timestamp conversion to date
+  */
+export function epoch_unix_2_date(timestamp : number) : Date{
+  const date : Date = new Date(0); // The 0 there is the key, which sets the date to the epoch
+  date.setUTCSeconds(timestamp);
+  return date
 }
