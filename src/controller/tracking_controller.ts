@@ -45,10 +45,54 @@ export class TrackingController {
   }
 
   /**
-    * Weight Tracking
+    * Calculate conception date
     */
   private calculate_conception(date : Date) : Date {
     return date.setDate(date.getDate()-this.pregnancy_days)
+  }
+
+  /**
+    * Calculate conception date
+    */
+  private calculate_week_number(date : Date, birth_date: Date) : number {
+    const now_date : Date = new Date();
+    const conception_date : Date = this.calculate_conception(birth_date)
+    const diff = new DateDiff( now_date, conception_date )
+    return parseInt(diff.weeks())
+  }
+
+  /**
+    * Calculate pregnancy gain chart
+    */
+  private calculate_pregnancy_gain_chart() : Array<number>[]{
+
+    const max_gain_chart : Array<number> = new Array<number>()
+    const min_gain_chart : Array<number> = new Array<number>()
+
+
+    // For further details see:
+    // https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/prenatal-nutrition/eating-well-being-active-towards-healthy-weight-gain-pregnancy-2010.html
+    const threshold_week : number = 13
+    const max_slope_before_th_week : number = (2.0 - 0.0) / (threshold_week - 0)
+    const max_slope_after_th_week : number = ((16.0) - (2.0)) / (this.pregnancy_weeks - threshold_week)
+    const max_y_intercept_after_th_week : number = 2.0 - max_slope_after_th_week * threshold_week
+
+    const min_slope_before_th_week : number = (0.5 - 0.0) / (threshold_week - 0)
+    const min_slope_after_th_week : number = (11.5 - 0.5) / (this.pregnancy_weeks - threshold_week)
+    const min_y_intercept_after_th_week : number = 2.0 - min_slope_after_th_week * threshold_week
+
+    // Calculate charts
+    let ind : number = 0;
+    for( ind = 0; ind < this.pregnancy_weeks; ind ++){
+      if( ind < threshold_week){
+        max_gain_chart.push( max_slope_before_th_week * ind )
+        min_gain_chart.push( max_slope_before_th_week * ind )
+      }else{
+        max_gain_chart.push( max_slope_after_th_week * ind + max_y_intercept_after_th_week )
+        min_gain_chart.push( min_slope_after_th_week * ind + min_y_intercept_after_th_week )
+      }
+    }
+    return [max_gain_chart, min_gain_chart]
   }
 
   /**
@@ -79,8 +123,8 @@ export class TrackingController {
 
       // Calculate weeks
       const now_date : Date = new Date();
-      const conception_date : Date = this.calculate_conception(new Date(child.birth_date))
-      const diff = new DateDiff( now_date, conception_date )
+      const week_number : number = this.calculate_week_number(now_date, new Date(child.birth_date))
+
 
       // Calculate range
       const range_str : string =
@@ -92,7 +136,7 @@ export class TrackingController {
                   title: "2107776-" + unix_timestamp,
                   status: 1,
                   note: request.body.note,
-                  week: String(parseInt(diff.weeks())),
+                  week: String(week_number),
                   weight: request.body.weight,
                   children: gcid,
                   date: unix_timestamp,
@@ -147,8 +191,7 @@ export class TrackingController {
           await this.model.getModel('child').findOne( { where: { id: gcid } })
         // Calculate weeks
         const now_date : Date = new Date();
-        const conception_date : Date = this.calculate_conception(new Date(child.birth_date))
-        const diff = new DateDiff( now_date, conception_date )
+        const week_number : number = this.calculate_week_number(now_date, new Date(child.birth_date))
 
         // Calculate range
         const range_str : string =
@@ -160,7 +203,7 @@ export class TrackingController {
                     title: "2107776-" + tracking_weight.date,
                     status: 1,
                     note: tracking_weight.note,
-                    week: String(parseInt(diff.weeks())),
+                    week: String(week_number),
                     weight: String(tracking_weight.weight),
                     children: gcid,
                     date: tracking_weight.date,
@@ -184,28 +227,53 @@ export class TrackingController {
 
   }
   @httpPost('custom/mum_weight_trackers/list')
-  public mum_weight_tracking_retrieve_list(request: Request, response: Response): Promise<void> {
-
-    const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
-                           "GROUP BY CONCAT(YEAR(updatedAt), '/' ,WEEK(updatedAt)) " +
-                           "order by updatedAt DESC"
-    this.model.raw(query)
-    .then((output:any) => {
-        // We don't need spread here, since only the results will be returned for select queries
-
-        console.log(output)
-    })
-
-
-// http://www.pregnancy-week-by-week.info/pregnancy-wellness/weight-gain.html
-
-    response.json({result: 'ok'})
+  public async mum_weight_tracking_retrieve_list(request: Request, response: Response): Promise<void> {
+    response.json({ result: 0 })
     return Promise.resolve(undefined)
   }
   @httpPost('custom/mum_weight_trackers/graph')
-  public mum_weight_tracking_retrieve_graph(request: Request, response: Response): Promise<void> {
-    response.json({result: 'ok'})
-    return Promise.resolve(undefined)
+  public async mum_weight_tracking_retrieve_graph(request: Request, response: Response): Promise<void> {
+
+    try{
+
+      const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
+                             "GROUP BY CONCAT(YEAR(updatedAt), '/' ,WEEK(updatedAt)) " +
+                             "order by updatedAt DESC"
+      const output : any = await this.model.raw(query)
+
+
+      const pregnancy_chart : Array<number>[] = this.calculate_pregnancy_gain_chart()
+      const max_pregnancy_chart : Array<number> = pregnancy_chart[0]
+      const min_pregnancy_chart : Array<number> = pregnancy_chart[1]
+
+      // Generate response
+      const week_list = []
+      let ind : number = 0
+      for (ind = 0; ind < this.pregnancy_weeks; ind ++) {
+        week_list.push({
+          y_max:{
+            weight: max_pregnancy_chart[ind],
+            week: ind
+          },
+          y_min:{
+            weight: min_pregnancy_chart[ind],
+            week: ind
+          },
+        })
+      }
+
+      response.json({
+        weeks: week_list,
+        result: 0
+      })
+
+      return Promise.resolve(undefined)
+    }catch(e){
+      this.logger.error("Error")
+      console.log(e)
+      response.json({result: 'ko'})
+      return Promise.reject(undefined)
+    }
   }
   @httpPost('custom/mum_weight_trackers/delete')
   public mum_weight_tracking_delete(request: Request, response: Response): Promise<void> {
