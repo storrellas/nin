@@ -102,7 +102,7 @@ export class TrackingWeightController {
         await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Calculate weeks
-      const week_number : number = helper.calculate_week_number(date, new Date(child.birth_date))
+      const week_number : number = helper.calculate_week_number_pregnancy(date, new Date(child.birth_date))
 
       // Calculate range
       const range_str : string =
@@ -170,7 +170,7 @@ export class TrackingWeightController {
           await this.model.getModel('child').findOne( { where: { id: request.gcid } })
         // Calculate weeks
         const now_date : Date = new Date();
-        const week_number : number = helper.calculate_week_number(now_date, new Date(child.birth_date))
+        const week_number : number = helper.calculate_week_number_pregnancy(now_date, new Date(child.birth_date))
 
         // Calculate range
         const range_str : string =
@@ -228,7 +228,7 @@ export class TrackingWeightController {
       const week_set = new Set<number>()
       for (let tracking of output) {
         const week_number : number =
-          helper.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number_pregnancy(new Date(tracking.date), new Date(child.birth_date))
         week_set.add(week_number)
       }
 
@@ -241,7 +241,7 @@ export class TrackingWeightController {
       // Fill map of objects
       for (let tracking of output) {
         const week_number : number =
-          helper.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number_pregnancy(new Date(tracking.date), new Date(child.birth_date))
 
         const item = {
           mid : tracking.id,
@@ -284,10 +284,11 @@ export class TrackingWeightController {
 
     try{
 
+      const n_week : number = parseInt(request.body.weeks)
       const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
                              "WHERE child_id = '" + request.gcid + "'" +
                              "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
-                             "order by date DESC"
+                             "order by date DESC LIMIT " + String(n_week+1)
       const output : any = await this.model.raw(query)
 
       const child : any =
@@ -298,24 +299,29 @@ export class TrackingWeightController {
       const max_pregnancy_chart : Array<number> = pregnancy_chart[0]
       const min_pregnancy_chart : Array<number> = pregnancy_chart[1]
 
+
       const week_list = []
-      week_list.push({
-        y_max:{
-          weight: (child.prepregnancy_weight + max_pregnancy_chart[1]),
-          week: 1
-        },
-        y_min:{
-          weight: (child.prepregnancy_weight + max_pregnancy_chart[1]),
-          week: 1
-        },
-        current:{
-          weight: child.prepregnancy_weight,
-          week: 1
-        }
-      })
+      // If not enough registers -> add prepregnancy
+      if( output.length < (n_week + 1) ){
+        week_list.push({
+          y_max:{
+            weight: child.prepregnancy_weight,
+            week: 0
+          },
+          y_min:{
+            weight: child.prepregnancy_weight,
+            week: 0
+          },
+          current:{
+            weight: child.prepregnancy_weight,
+            week: 0
+          }
+        })
+      }
+
       for (let tracking of output) {
         const week_number : number =
-          helper.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number_pregnancy(new Date(tracking.date), new Date(child.birth_date))
 
         // Generate week item
         week_list.push({

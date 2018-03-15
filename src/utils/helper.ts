@@ -73,7 +73,7 @@ export function calculate_conception(birth_date : Date) : Date {
 /**
   * Calculate conception date
   */
-export function calculate_week_number(date : Date, birth_date: Date) : number {
+export function calculate_week_number_pregnancy(date : Date, birth_date: Date) : number {
   const conception_date : Date = calculate_conception(birth_date)
   const diff = new DateDiff( date, conception_date )
   return parseInt(diff.weeks())

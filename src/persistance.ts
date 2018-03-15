@@ -36,7 +36,7 @@ nconf.set('NODE_ENV', process.env.NODE_ENV)
 
 
 
-nconf.set('CREATE_USER', false)
+nconf.set('CREATE_USER', true)
 
 // ------------------------------------
 // CONFIGURE LOGGER
