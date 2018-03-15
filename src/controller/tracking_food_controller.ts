@@ -65,6 +65,7 @@ export class TrackingFoodController {
             left_amount           : request.body.left_amount,
             right_amount          : request.body.right_amount,
             last_breast           : request.body.last_breast,
+            owner                 : request.body.owner,
             comment               : request.body.comment,
             date                  : helper.epoch_unix_2_date(unix_timestamp)
           })
@@ -73,16 +74,17 @@ export class TrackingFoodController {
       // Calculate response
       const response_json = {
         response: {
-          food_type : tracking.food_type,
-          date: unix_timestamp,
-          left_amount: tracking.left_amount,
-          right_amount: tracking.right_amount,
-          last_breast: tracking.last_breast,
-          comment: tracking.comment,
-          week: "",
-          children: request.gcid,
-          uid: request.uid,
-          nid: tracking.id
+          food_type     : tracking.food_type,
+          date          : this.date_2_epoch_unix(tracking.date),
+          left_amount   : tracking.left_amount,
+          right_amount  : tracking.right_amount,
+          last_breast   : tracking.last_breast,
+          owner         : tracking.owner,
+          comment       : tracking.comment,
+          week          : "",
+          children      : tracking.gcid,
+          uid           : request.uid,
+          nid           : tracking.id
         },
         result: 0
       }
@@ -110,6 +112,7 @@ export class TrackingFoodController {
             left_amount           : request.body.left_amount,
             right_amount          : request.body.right_amount,
             last_breast           : request.body.last_breast,
+            owner                 : request.body.owner,
             comment               : request.body.comment,
           },
           {
@@ -145,6 +148,7 @@ export class TrackingFoodController {
             left_amount: tracking.left_amount,
             right_amount: tracking.right_amount,
             last_breast: tracking.last_breast,
+            owner         : tracking.owner,
             comment: tracking.comment,
             week: "",
             children: request.gcid,
@@ -155,6 +159,81 @@ export class TrackingFoodController {
         }
         response.json(response_json)
       }
+      return Promise.resolve(undefined)
+    }catch(e){
+      this.logger.error("Error")
+      console.log(e)
+      response.json({result:'ko'})
+      return Promise.reject(undefined)
+    }
+  }
+
+  /**
+    * Growth Tracking - Retrieve
+    */
+  @httpPost('custom/food_track/list')
+  public async food_track_list(request: Request, response: Response): Promise<void> {
+    this.logger.info("food_track uid:" + request.uid + " gcid:" + request.gcid)
+
+    try{
+
+      const output : any =
+        await this.model.getModel('tracking_food').findAll(
+          {
+            where: {
+              child_id: request.gcid,
+              owner: request.body.requester
+            },
+            order: [['date', 'DESC']]
+          })
+
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
+
+      // Generate week_set
+      const week_set = new Set<number>()
+      for (let tracking of output) {
+        const week_number : number =
+          helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
+        week_set.add(week_number)
+      }
+
+      // Generate map of objects
+      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
+      for (let item of week_set) {
+        week_map.set(item, { week: String(item), tracks: [] })
+      }
+
+      // Fill map of objects
+      for (let tracking of output) {
+        const week_number : number =
+          helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
+
+        const item = {
+          mid : tracking.id,
+          date: helper.date_2_epoch_unix(tracking.date),
+          left_amount: tracking.left_amount,
+          right_amount: tracking.right_amount,
+          last_breast: tracking.last_breast,
+          pumped: tracking.pumped,
+          comment: tracking.comment,
+          children: request.gcid
+        }
+        week_map.get(week_number).tracks.push(item)
+      }
+
+      // Generate week_list
+      const week_list : {[id:string]:any}[] = Array.from(week_map.values())
+
+      // Generate response
+      const response_json = {
+          response: {
+              list: week_list
+          },
+          result: 0
+      }
+      response.json(response_json)
+
       return Promise.resolve(undefined)
     }catch(e){
       this.logger.error("Error")

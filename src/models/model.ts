@@ -107,6 +107,7 @@ export class Model {
       left_amount           : {type: Sequelize.DOUBLE},
       right_amount          : {type: Sequelize.DOUBLE},
       last_breast           : {type: Sequelize.STRING(64)},
+      owner                 : {type: Sequelize.STRING(16), defaultValue: 'mum'},
       comment               : {type: Sequelize.STRING(256)},
       date                  : {type: Sequelize.DATE()}
     },

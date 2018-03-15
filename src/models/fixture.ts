@@ -588,15 +588,15 @@ prepararlas.",
         },
         {
           id                    : 2,
-          name                  : "Formula",
-          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
-          gtm_label             : "formula"
-        },
-        {
-          id                    : 3,
           name                  : "Pumped",
           icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
           gtm_label             : "pumped"
+        },
+        {
+          id                    : 3,
+          name                  : "Formula",
+          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          gtm_label             : "formula"
         },
         {
           id                    : 4,
