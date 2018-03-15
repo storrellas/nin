@@ -60,9 +60,24 @@ export class Model {
        freezeTableName: true
     });
 
+    // tracking_growth
+    this.models['tracking_growth'] = this.sequelize.define('tracking_growth',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      child_id              : {type: Sequelize.STRING(64)},
+      weight                : {type: Sequelize.DOUBLE},
+      height                : {type: Sequelize.DOUBLE},
+      date                  : {type: Sequelize.DATE()}
+    },
+    {
+       freezeTableName: true
+    });
 
     // associations
     this.models['tracking_weight'].belongsTo(this.models['child'], {
+      foreignKey: 'child_id',
+      targetKey: 'id'
+    })
+    this.models['tracking_growth'].belongsTo(this.models['child'], {
       foreignKey: 'child_id',
       targetKey: 'id'
     })

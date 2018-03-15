@@ -18,7 +18,8 @@ import { GigyaOptions, GigyaService } from './service/gigya_service';
 import  './controller/content_controller';
 import  './controller/image_controller';
 import  './controller/profile_controller';
-import  './controller/tracking_controller';
+import  './controller/tracking_weight_controller';
+import  './controller/tracking_growth_controller';
 
 declare global {
   namespace Express {
