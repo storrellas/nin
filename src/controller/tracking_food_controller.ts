@@ -70,6 +70,7 @@ export class TrackingFoodController {
           })
       this.logger.info("tracking created!")
 
+      // Calculate response
       const response_json = {
         response: {
           food_type : tracking.food_type,
@@ -91,6 +92,74 @@ export class TrackingFoodController {
       this.logger.error("Error")
       console.log(e)
       response.json({result:-1})
+      return Promise.reject(undefined)
+    }
+  }
+
+  /**
+    * Food Track - Update
+    */
+  @httpPost('custom/food_track/update')
+  public async food_track_update(request: Request, response: Response): Promise<void> {
+    this.logger.info("food_track_update uid:" + request.uid + " gcid:" + request.gcid)
+
+    try{
+      const output : any =
+        await this.model.getModel('tracking_food').update(
+          {
+            left_amount           : request.body.left_amount,
+            right_amount          : request.body.right_amount,
+            last_breast           : request.body.last_breast,
+            comment               : request.body.comment,
+          },
+          {
+            where: {
+              id: request.body.nid
+            }
+          })
+
+      // Check row affected
+      if( output[0] == 0 ){
+        this.logger.error("id not found")
+        response.json({result: 'ko'})
+      }else{
+        this.logger.info("update ok!")
+        // Build response
+        const tracking : any =
+          await this.model.getModel('tracking_food').findOne({
+              where: {id: request.body.nid}
+            })
+        // Build response
+        const child : any =
+          await this.model.getModel('child').findOne( { where: { id: request.gcid } })
+
+        // Calculate weeks
+        const week_number : number =
+            helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
+
+        // Calculate response
+        const response_json = {
+          response: {
+            food_type : tracking.food_type,
+            date: helper.date_2_epoch_unix(tracking.date),
+            left_amount: tracking.left_amount,
+            right_amount: tracking.right_amount,
+            last_breast: tracking.last_breast,
+            comment: tracking.comment,
+            week: "",
+            children: request.gcid,
+            uid: request.uid,
+            nid: tracking.id
+          },
+          result: 0
+        }
+        response.json(response_json)
+      }
+      return Promise.resolve(undefined)
+    }catch(e){
+      this.logger.error("Error")
+      console.log(e)
+      response.json({result:'ko'})
       return Promise.reject(undefined)
     }
   }

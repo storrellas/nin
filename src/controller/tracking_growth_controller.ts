@@ -191,10 +191,8 @@ export class TrackingGrowthController {
             result: 0
         }
         response.json(response_json)
-        return Promise.resolve(undefined)
-  }
+      }
       return Promise.resolve(undefined)
-
     }catch(e){
       this.logger.error("Error")
       console.log(e)
