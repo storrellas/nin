@@ -86,9 +86,17 @@ for (let key in nconf.get()) {
 logger.info(JSON.stringify(config, null, 4));
 
 logger.info("Creating models ...")
-fixture.sync()
+
+const create_user : boolean = true
+
+fixture.sync(create_user)
 .then( () => {
+  if( create_user )
+    logger.info("Created user models")
   logger.info("All models created successfully!")
   process.exit()
 })
-.catch
+.catch( () =>{
+  logger.error("Failed to create models")
+  process.exit()
+})
