@@ -20,6 +20,7 @@ import  './controller/image_controller';
 import  './controller/profile_controller';
 import  './controller/tracking_weight_controller';
 import  './controller/tracking_growth_controller';
+import  './controller/tracking_food_controller';
 
 declare global {
   namespace Express {

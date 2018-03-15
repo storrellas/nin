@@ -579,6 +579,33 @@ prepararlas.",
                 { id : 54, meal_id : 15, nutrition_component_id : 5, quantity : 1 },
               ]);
 
+      await this.models['food_type'].bulkCreate([
+        {
+          id                    : 1,
+          name                  : "Formula",
+          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          gtm_label             : "formula"
+        },
+        {
+          id                    : 2,
+          name                  : "Breastmilk",
+          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          gtm_label             : "breastmilk"
+        },
+        {
+          id                    : 3,
+          name                  : "Pumped",
+          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          gtm_label             : "pumped"
+        },
+        {
+          id                    : 4,
+          name                  : "Solid",
+          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          gtm_label             : "solid"
+        },
+      ]);
+
       if( !create_user )
         return Promise.resolve(undefined)
 

@@ -49,6 +49,20 @@ export class Model {
     });
 
 
+
+    // associations
+    this.models['child'].belongsTo(this.models['user'], {
+      foreignKey: 'user_id',
+      targetKey: 'id'
+    })
+    this.models['user'].hasMany(this.models['child'], {
+      foreignKey: 'user_id'
+    })
+
+    // -----------------------
+    // Tracking
+    // -----------------------
+
     // tracking_weight
     this.models['tracking_weight'] = this.sequelize.define('tracking_weight',{
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
@@ -73,6 +87,17 @@ export class Model {
        freezeTableName: true
     });
 
+    // food_type
+    this.models['food_type'] = this.sequelize.define('food_type',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      name                  : {type: Sequelize.STRING(64)},
+      icon                  : {type: Sequelize.STRING(512)},
+      gtm_label             : {type: Sequelize.STRING(64)}
+    },
+    {
+       freezeTableName: true
+    });
+
     // associations
     this.models['tracking_weight'].belongsTo(this.models['child'], {
       foreignKey: 'child_id',
@@ -81,13 +106,6 @@ export class Model {
     this.models['tracking_growth'].belongsTo(this.models['child'], {
       foreignKey: 'child_id',
       targetKey: 'id'
-    })
-    this.models['child'].belongsTo(this.models['user'], {
-      foreignKey: 'user_id',
-      targetKey: 'id'
-    })
-    this.models['user'].hasMany(this.models['child'], {
-      foreignKey: 'user_id'
     })
 
     // -----------------------
