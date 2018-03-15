@@ -78,3 +78,11 @@ export function calculate_week_number_pregnancy(date : Date, birth_date: Date) :
   const diff = new DateDiff( date, conception_date )
   return parseInt(diff.weeks())
 }
+
+/**
+  * Calculate age in weeks from birth_date
+  */
+export function calculate_week_number_age(date : Date, birth_date: Date) : number {
+  const diff = new DateDiff( date, birth_date )
+  return parseInt(diff.weeks())
+}

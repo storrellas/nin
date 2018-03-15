@@ -18,15 +18,6 @@ export class TrackingGrowthController {
   }
 
   /**
-    * Calculate conception date
-    */
-  private calculate_week_number(date : Date, birth_date: Date) : number {
-    const diff = new DateDiff( date, birth_date )
-    return parseInt(diff.weeks())
-  }
-
-
-  /**
     * Growth Tracking - Create
     */
   @httpPost('custom/child_growth_trackers/create')
@@ -52,7 +43,7 @@ export class TrackingGrowthController {
       // Calculate weeks
       const date : Date = helper.epoch_unix_2_date(unix_timestamp)
       const week_number : number =
-        this.calculate_week_number(date, new Date(child.birth_date))
+        helper.calculate_week_number_age(date, new Date(child.birth_date))
 
       // Calculate range
       const response_json = {
@@ -101,7 +92,7 @@ export class TrackingGrowthController {
       const week_set = new Set<number>()
       for (let tracking of output) {
         const week_number : number =
-          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
         week_set.add(week_number)
       }
 
@@ -114,7 +105,7 @@ export class TrackingGrowthController {
       // Fill map of objects
       for (let tracking of output) {
         const week_number : number =
-          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
 
         const item = {
           mid : tracking.id,
@@ -183,7 +174,7 @@ export class TrackingGrowthController {
 
         // Calculate weeks
         const week_number : number =
-            this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+            helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
 
         // Calculate range
         const response_json = {
