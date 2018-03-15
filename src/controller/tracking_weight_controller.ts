@@ -16,8 +16,6 @@ export class TrackingWeightController {
   // Body mass index for pregnancy
   private bmi_max : number = 24.9
   private bmi_min : number = 18.5
-  private pregnancy_weeks : number = 40
-  private pregnancy_days : number = this.pregnancy_weeks*7
 
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
@@ -48,15 +46,8 @@ export class TrackingWeightController {
   /**
     * Calculate conception date
     */
-  private calculate_conception(date : Date) : Date {
-    return date.setDate(date.getDate()-this.pregnancy_days)
-  }
-
-  /**
-    * Calculate conception date
-    */
   private calculate_week_number(date : Date, birth_date: Date) : number {
-    const conception_date : Date = this.calculate_conception(birth_date)
+    const conception_date : Date = helper.calculate_conception(birth_date)
     const diff = new DateDiff( date, conception_date )
     return parseInt(diff.weeks())
   }
@@ -74,16 +65,16 @@ export class TrackingWeightController {
     // https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/prenatal-nutrition/eating-well-being-active-towards-healthy-weight-gain-pregnancy-2010.html
     const threshold_week : number = 13
     const max_slope_before_th_week : number = (2.0 - 0.0) / (threshold_week - 0)
-    const max_slope_after_th_week : number = ((16.0) - (2.0)) / (this.pregnancy_weeks - threshold_week)
+    const max_slope_after_th_week : number = ((16.0) - (2.0)) / (helper.pregnancy_weeks - threshold_week)
     const max_y_intercept_after_th_week : number = 2.0 - max_slope_after_th_week * threshold_week
 
     const min_slope_before_th_week : number = (0.5 - 0.0) / (threshold_week - 0)
-    const min_slope_after_th_week : number = (11.5 - 0.5) / (this.pregnancy_weeks - threshold_week)
+    const min_slope_after_th_week : number = (11.5 - 0.5) / (helper.pregnancy_weeks - threshold_week)
     const min_y_intercept_after_th_week : number = 2.0 - min_slope_after_th_week * threshold_week
 
     // Calculate charts
     let ind : number = 0;
-    for( ind = 0; ind < this.pregnancy_weeks; ind ++){
+    for( ind = 0; ind < helper.pregnancy_weeks; ind ++){
       if( ind < threshold_week){
         max_gain_chart.push( max_slope_before_th_week * ind )
         min_gain_chart.push( max_slope_before_th_week * ind )
