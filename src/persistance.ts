@@ -33,7 +33,10 @@ if (fs.existsSync(config_file)) {
   nconf.file({ file: config_file });
 }
 nconf.set('NODE_ENV', process.env.NODE_ENV)
-nconf.set('CREATE_USER', true)
+
+
+
+nconf.set('CREATE_USER', false)
 
 // ------------------------------------
 // CONFIGURE LOGGER
@@ -84,8 +87,6 @@ for (let key in nconf.get()) {
   }
 }
 logger.info(JSON.stringify(config, null, 4));
-
-
 
 logger.info("Creating models ...")
 fixture.sync(nconf.get('CREATE_USER'))

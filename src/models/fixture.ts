@@ -593,12 +593,51 @@ prepararlas.",
         {
           id                     : "403aacbc9a35457396675ea8e4f02589_1520256452126",
           user_id                : "403aacbc9a35457396675ea8e4f02589",
-          birth_date             : "2018-03-22 00:00:00",
+          birth_date             : "2018-03-22 00:00:00",  
+          conception_date        : "2017-06-29 00:00:00",
           birth_date_reliability : 4,
           name                   : "Martina",
           prepregnancy_height    : 1.62,
           prepregnancy_weight    : 55.0
         },
+      ]);
+
+      await this.models['tracking_weight'].bulkCreate([
+        {
+          id                    : 1,
+          child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+          weight                : 55.0,
+          note                  : "my note",
+          date                  : "2017-09-19 13:35:28"
+        },
+        {
+          id                    : 2,
+          child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+          weight                : 55.0,
+          note                  : "my note",
+          date                  : "2017-09-19 13:35:28"
+        },
+        {
+          id                    : 3,
+          child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+          weight                : 55.0,
+          note                  : "my note",
+          date                  : "2017-09-19 13:35:28"
+        },
+        {
+          id                    : 4,
+          child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+          weight                : 55.0,
+          note                  : "my note",
+          date                  : "2017-09-19 13:35:28"
+        },
+        {
+          id                    : 5,
+          child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+          weight                : 55.0,
+          note                  : "my note",
+          date                  : "2017-09-19 13:35:28"
+        }
       ]);
 
       return Promise.resolve(undefined)

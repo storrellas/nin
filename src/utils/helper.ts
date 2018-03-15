@@ -54,3 +54,17 @@ export function epoch_unix_2_date(timestamp : number) : Date{
   date.setUTCSeconds(timestamp);
   return date
 }
+
+/**
+  * Pregnancy constants
+  */
+export const pregnancy_weeks : number = 40
+export const pregnancy_days : number = pregnancy_weeks*7
+
+/**
+  * Calculate conception date from birth_date
+  */
+export function calculate_conception(birth_date : Date) : Date {
+  const conception_date = new Date(birth_date)
+  return conception_date.setDate(conception_date.getDate()-pregnancy_days)
+}

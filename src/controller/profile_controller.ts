@@ -12,11 +12,12 @@ import { GigyaResponse, Account, GigyaOptions, GigyaService } from '../service/g
 @controller('/services/1.1/')
 export class ProfileController {
 
+
+
   constructor(@inject(TYPES.GigyaService) private gigya : GigyaService,
               @inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
-
 
   /**
     * Ping
@@ -157,10 +158,10 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
             id: item.applicationInternalIdentifier,
             user_id : request.uid,
             birth_date : item.birthDate,
+            conception_date: helper.calculate_conception(new Date(item.birthDate)),
             birth_date_reliability : item.birthDateReliability,
             name: item.name
           })
-
       }
 
       // Information from Gigya should be parsed in here
@@ -194,6 +195,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       return Promise.resolve(undefined)
     }catch(e){
       response.json({result: 'ko'})
+      console.log(e)
       return Promise.reject(undefined)
     }
 
