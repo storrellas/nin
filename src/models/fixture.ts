@@ -582,15 +582,15 @@ prepararlas.",
       await this.models['food_type'].bulkCreate([
         {
           id                    : 1,
-          name                  : "Formula",
-          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
-          gtm_label             : "formula"
-        },
-        {
-          id                    : 2,
           name                  : "Breastmilk",
           icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
           gtm_label             : "breastmilk"
+        },
+        {
+          id                    : 2,
+          name                  : "Formula",
+          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          gtm_label             : "formula"
         },
         {
           id                    : 3,

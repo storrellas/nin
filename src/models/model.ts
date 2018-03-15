@@ -98,6 +98,22 @@ export class Model {
        freezeTableName: true
     });
 
+
+    // tracking_food
+    this.models['tracking_food'] = this.sequelize.define('tracking_food',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      child_id              : {type: Sequelize.STRING(64)},
+      food_type_id          : {type: Sequelize.INTEGER},
+      left_amount           : {type: Sequelize.DOUBLE},
+      right_amount          : {type: Sequelize.DOUBLE},
+      last_breast           : {type: Sequelize.STRING(64)},
+      comment               : {type: Sequelize.STRING(256)},
+      date                  : {type: Sequelize.DATE()}
+    },
+    {
+       freezeTableName: true
+    });
+
     // associations
     this.models['tracking_weight'].belongsTo(this.models['child'], {
       foreignKey: 'child_id',
@@ -107,6 +123,16 @@ export class Model {
       foreignKey: 'child_id',
       targetKey: 'id'
     })
+    this.models['tracking_food'].belongsTo(this.models['child'], {
+      foreignKey: 'child_id',
+      targetKey: 'id'
+    })
+    this.models['tracking_food'].belongsTo(this.models['food_type'], {
+      foreignKey: 'food_type_id',
+      targetKey: 'id'
+    })
+
+
 
     // -----------------------
     // Experts

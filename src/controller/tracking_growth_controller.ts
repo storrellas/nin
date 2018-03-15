@@ -52,7 +52,7 @@ export class TrackingGrowthController {
                 weight: request.body.weigth,
                 height: request.body.height,
                 date: unix_timestamp,
-                week: String(week_number),
+                week: week_number,
                 children: request.gcid,
                 mid: tracking.id
               }
