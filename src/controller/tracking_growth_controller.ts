@@ -36,7 +36,6 @@ export class TrackingGrowthController {
     try{
 
       const unix_timestamp : number = parseInt(request.body.date)
-      const date : Date = helper.epoch_unix_2_date(unix_timestamp)
       const tracking : any =
           await this.model.getModel('tracking_growth').create({
             child_id              : request.gcid,
@@ -51,7 +50,9 @@ export class TrackingGrowthController {
         await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Calculate weeks
-      const week_number : number = this.calculate_week_number(date, new Date(child.birth_date))
+      const date : Date = helper.epoch_unix_2_date(unix_timestamp)
+      const week_number : number =
+        this.calculate_week_number(date, new Date(child.birth_date))
 
       // Calculate range
       const response_json = {
