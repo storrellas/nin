@@ -158,7 +158,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
             id: item.applicationInternalIdentifier,
             user_id : request.uid,
             birth_date : item.birthDate,
-            conception_date: helper.calculate_conception(new Date(item.birthDate)),
+            conception_date: helper.get_conception_date(new Date(item.birthDate)),
             birth_date_reliability : item.birthDateReliability,
             name: item.name
           })

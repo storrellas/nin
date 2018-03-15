@@ -60,29 +60,39 @@ export function epoch_unix_2_date(timestamp : number) : Date{
   * Pregnancy constants
   */
 export const pregnancy_weeks : number = 40
-export const pregnancy_days : number = pregnancy_weeks*7
+export const days_per_week : number = 7
+export const pregnancy_days : number = pregnancy_weeks*days_per_week
+
 
 /**
   * Calculate conception date from birth_date
   */
-export function calculate_conception(birth_date : Date) : Date {
+export function get_conception_date(birth_date : Date) : Date {
   const conception_date = new Date(birth_date)
-  return conception_date.setDate(conception_date.getDate()-pregnancy_days)
+  return new Date(conception_date.setDate(conception_date.getDate()-pregnancy_days))
 }
 
 /**
-  * Calculate conception date
+  * Calculate number of week in pregnancy
   */
-export function calculate_week_number_pregnancy(date : Date, birth_date: Date) : number {
-  const conception_date : Date = calculate_conception(birth_date)
+export function date_2_week_pregnancy(date : Date, birth_date: Date) : number {
+  const conception_date : Date = get_conception_date(birth_date)
   const diff = new DateDiff( date, conception_date )
   return parseInt(diff.weeks())
 }
 
 /**
-  * Calculate age in weeks from birth_date
+  * Calculate date from week pregnancy
   */
-export function calculate_week_number_age(date : Date, birth_date: Date) : number {
+export function week_2_date_pregnancy(week_number : number, birth_date: Date) : Date {
+  const conception_date : Date = get_conception_date(birth_date)
+  return new Date(conception_date.setDate(conception_date.getDate()+week_number*days_per_week))
+}
+
+/**
+  * Calculate number of week after birth (age in weeks)
+  */
+export function date_2_week_age(date : Date, birth_date: Date) : number {
   const diff = new DateDiff( date, birth_date )
   return parseInt(diff.weeks())
 }
