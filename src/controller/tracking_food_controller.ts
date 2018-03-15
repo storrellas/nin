@@ -49,11 +49,11 @@ export class TrackingFoodController {
   }
 
   /**
-    * Food Track - Retrieve
+    * Food Track - Create
     */
   @httpPost('custom/food_track/create')
   public async food_track_create(request: Request, response: Response): Promise<void> {
-    this.logger.info("food_type_retrieve")
+    this.logger.info("food_track_create uid:" + request.uid + " gcid:" + request.gcid)
 
     try{
 
@@ -95,4 +95,17 @@ export class TrackingFoodController {
     }
   }
 
+
+  /**
+    * Food Track - Delete
+    */
+  @httpPost('custom/food_track/delete')
+  public async food_track_delete(request: Request, response: Response): Promise<void> {
+    this.logger.info("food_track_delete mid:" + request.body.mid)
+    this.model.getModel('tracking_food').destroy({
+        where: {id: request.body.mid}
+    })
+    response.json({result: 0})
+    return Promise.resolve(undefined)
+  }
 }

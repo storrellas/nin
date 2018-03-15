@@ -208,8 +208,9 @@ export class TrackingGrowthController {
     */
   @httpPost('custom/child_growth_trackers/delete')
   public child_growth_trackers_delete(request: Request, response: Response): Promise<void> {
+    this.logger.info("child_growth_trackers_delete mid:" + request.body.mid)
     this.model.getModel('tracking_growth').destroy({
-        where: {id: parseInt(request.body.mid)}
+        where: {id: request.body.mid}
     })
 
     response.json({result: 0})

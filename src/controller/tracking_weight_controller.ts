@@ -363,8 +363,9 @@ export class TrackingWeightController {
     */
   @httpPost('custom/mum_weight_trackers/delete')
   public mum_weight_tracking_delete(request: Request, response: Response): Promise<void> {
+    this.logger.info("mum_weight_tracking_delete mid:" + equest.body.mid)
     this.model.getModel('tracking_weight').destroy({
-        where: {id: parseInt(request.body.mid)}
+        where: {id: request.body.mid}
     })
     response.json({result: 0})
     return Promise.resolve(undefined)
