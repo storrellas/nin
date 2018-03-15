@@ -71,17 +71,22 @@ export class TrackingFoodController {
           })
       this.logger.info("tracking created!")
 
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
+
       // Calculate response
+      const week_number : number =
+          helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
       const response_json = {
         response: {
           food_type       : tracking.food_type,
-          date            : this.date_2_epoch_unix(tracking.date),
+          date            : helper.date_2_epoch_unix(tracking.date),
           left_amount     : tracking.left_amount,
           right_amount    : tracking.right_amount,
           last_breast     : tracking.last_breast,
           owner           : tracking.owner,
           comment         : tracking.comment,
-          week            : "",
+          week            : week_number,
           children        : tracking.gcid,
           uid             : request.uid,
           nid             : tracking.id
@@ -136,11 +141,9 @@ export class TrackingFoodController {
         const child : any =
           await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
-        // Calculate weeks
+        // Calculate response
         const week_number : number =
             helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
-
-        // Calculate response
         const response_json = {
           response: {
             food_type     : tracking.food_type,
@@ -150,7 +153,7 @@ export class TrackingFoodController {
             last_breast   : tracking.last_breast,
             owner         : tracking.owner,
             comment       : tracking.comment,
-            week          : "",
+            week          : week_number,
             children      : request.gcid,
             uid           : request.uid,
             nid           : tracking.id
