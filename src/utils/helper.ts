@@ -1,4 +1,5 @@
 import * as jsonwebtoken from 'jsonwebtoken';
+import * as DateDiff from 'date-diff';
 
 // Body mass index for pregnancy
 export const bmi_max : number = 24.9
@@ -67,4 +68,13 @@ export const pregnancy_days : number = pregnancy_weeks*7
 export function calculate_conception(birth_date : Date) : Date {
   const conception_date = new Date(birth_date)
   return conception_date.setDate(conception_date.getDate()-pregnancy_days)
+}
+
+/**
+  * Calculate conception date
+  */
+export function calculate_week_number(date : Date, birth_date: Date) : number {
+  const conception_date : Date = calculate_conception(birth_date)
+  const diff = new DateDiff( date, conception_date )
+  return parseInt(diff.weeks())
 }

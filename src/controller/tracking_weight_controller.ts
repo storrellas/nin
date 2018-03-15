@@ -2,7 +2,6 @@ import { controller, httpGet, httpPost, httpPut, httpDelete } from 'inversify-ex
 import { injectable, inject } from 'inversify';
 import { Request, Response, Express } from 'express';
 import * as Sequelize from 'sequelize';
-import * as DateDiff from 'date-diff';
 
 import TYPES from '../constant/types';
 import { IModel } from '../models/model';
@@ -43,14 +42,6 @@ export class TrackingWeightController {
     }
   }
 
-  /**
-    * Calculate conception date
-    */
-  private calculate_week_number(date : Date, birth_date: Date) : number {
-    const conception_date : Date = helper.calculate_conception(birth_date)
-    const diff = new DateDiff( date, conception_date )
-    return parseInt(diff.weeks())
-  }
 
   /**
     * Calculate pregnancy gain chart
@@ -111,7 +102,7 @@ export class TrackingWeightController {
         await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Calculate weeks
-      const week_number : number = this.calculate_week_number(date, new Date(child.birth_date))
+      const week_number : number = helper.calculate_week_number(date, new Date(child.birth_date))
 
       // Calculate range
       const range_str : string =
@@ -179,7 +170,7 @@ export class TrackingWeightController {
           await this.model.getModel('child').findOne( { where: { id: request.gcid } })
         // Calculate weeks
         const now_date : Date = new Date();
-        const week_number : number = this.calculate_week_number(now_date, new Date(child.birth_date))
+        const week_number : number = helper.calculate_week_number(now_date, new Date(child.birth_date))
 
         // Calculate range
         const range_str : string =
@@ -237,7 +228,7 @@ export class TrackingWeightController {
       const week_set = new Set<number>()
       for (let tracking of output) {
         const week_number : number =
-          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
         week_set.add(week_number)
       }
 
@@ -250,7 +241,7 @@ export class TrackingWeightController {
       // Fill map of objects
       for (let tracking of output) {
         const week_number : number =
-          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
 
         const item = {
           mid : tracking.id,
@@ -324,7 +315,7 @@ export class TrackingWeightController {
       })
       for (let tracking of output) {
         const week_number : number =
-          this.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
+          helper.calculate_week_number(new Date(tracking.date), new Date(child.birth_date))
 
         // Generate week item
         week_list.push({
