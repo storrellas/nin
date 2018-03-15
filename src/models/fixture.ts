@@ -579,15 +579,27 @@ prepararlas.",
                 { id : 54, meal_id : 15, nutrition_component_id : 5, quantity : 1 },
               ]);
 
-    if( !create_user )
-      return Promise.resolve(undefined)
+      if( !create_user )
+        return Promise.resolve(undefined)
 
-    await this.models['user'].bulkCreate([
-      {
-        id                    : "403aacbc9a35457396675ea8e4f02589",
-        gigya_data            : "{'birthDate':'1978-03-08','birthDateReliability':'0','child':[{'birthDate':'2018-03-22','birthDateReliability':'4','firstName':'vghv','sex':'1','applicationInternalIdentifier':'403aacbc9a35457396675ea8e4f02589_1520256452126'}],'consumerType':'PRIVATE','countryCode':'MX','gigsys_RGinfantnut':'true','initialAppSourceCode':'MXNINAPP','marketCode':'30206'}",
-      },
-    ]);
+      await this.models['user'].bulkCreate([
+        {
+          id                    : "403aacbc9a35457396675ea8e4f02589",
+          gigya_data            : "{'birthDate':'1978-03-08','birthDateReliability':'0','child':[{'birthDate':'2018-03-22','birthDateReliability':'4','firstName':'vghv','sex':'1','applicationInternalIdentifier':'403aacbc9a35457396675ea8e4f02589_1520256452126'}],'consumerType':'PRIVATE','countryCode':'MX','gigsys_RGinfantnut':'true','initialAppSourceCode':'MXNINAPP','marketCode':'30206'}",
+        },
+      ]);
+
+      await this.models['child'].bulkCreate([
+        {
+          id                     : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+          user_id                : "403aacbc9a35457396675ea8e4f02589",
+          birth_date             : "2018-03-22 00:00:00",
+          birth_date_reliability : 4,
+          name                   : "Martina",
+          prepregnancy_height    : 1.62,
+          prepregnancy_weight    : 55.0
+        },
+      ]);
 
       return Promise.resolve(undefined)
     }catch(e){

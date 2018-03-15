@@ -38,7 +38,7 @@ export class Model {
       id                     : {type: Sequelize.STRING(64), primaryKey:true},
       user_id                : {type: Sequelize.STRING(64)},
       birth_date             : {type: Sequelize.DATE()},
-      birth_date_reliability : {type: Sequelize.STRING(64)},
+      birth_date_reliability : {type: Sequelize.INTEGER},
       name                   : {type: Sequelize.STRING(64)},
       prepregnancy_height    : {type: Sequelize.DOUBLE, defaultValue:0},
       prepregnancy_weight    : {type: Sequelize.DOUBLE, defaultValue:0},

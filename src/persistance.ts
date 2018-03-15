@@ -32,8 +32,8 @@ if (fs.existsSync(config_file)) {
   console.error("Reading custom Configuration file " + config_file + " was not found! ");
   nconf.file({ file: config_file });
 }
-
 nconf.set('NODE_ENV', process.env.NODE_ENV)
+nconf.set('CREATE_USER', true)
 
 // ------------------------------------
 // CONFIGURE LOGGER
@@ -85,13 +85,12 @@ for (let key in nconf.get()) {
 }
 logger.info(JSON.stringify(config, null, 4));
 
+
+
 logger.info("Creating models ...")
-
-const create_user : boolean = true
-
-fixture.sync(create_user)
+fixture.sync(nconf.get('CREATE_USER'))
 .then( () => {
-  if( create_user )
+  if( nconf.get('CREATE_USER') )
     logger.info("Created user models")
   logger.info("All models created successfully!")
   process.exit()
