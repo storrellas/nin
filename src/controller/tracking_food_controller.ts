@@ -60,31 +60,31 @@ export class TrackingFoodController {
       const unix_timestamp : number = parseInt(request.body.date)
       const tracking : any =
           await this.model.getModel('tracking_food').create({
-            child_id              : request.gcid,
-            food_type_id          : request.body.food_type,
-            left_amount           : request.body.left_amount,
-            right_amount          : request.body.right_amount,
-            last_breast           : request.body.last_breast,
-            owner                 : request.body.owner,
-            comment               : request.body.comment,
-            date                  : helper.epoch_unix_2_date(unix_timestamp)
+            child_id      : request.gcid,
+            food_type_id  : request.body.food_type,
+            left_amount   : request.body.left_amount,
+            right_amount  : request.body.right_amount,
+            last_breast   : request.body.last_breast,
+            comment       : request.body.comment,
+            owner         : request.body.owner,
+            date          : helper.epoch_unix_2_date(unix_timestamp)
           })
       this.logger.info("tracking created!")
 
       // Calculate response
       const response_json = {
         response: {
-          food_type     : tracking.food_type,
-          date          : this.date_2_epoch_unix(tracking.date),
-          left_amount   : tracking.left_amount,
-          right_amount  : tracking.right_amount,
-          last_breast   : tracking.last_breast,
-          owner         : tracking.owner,
-          comment       : tracking.comment,
-          week          : "",
-          children      : tracking.gcid,
-          uid           : request.uid,
-          nid           : tracking.id
+          food_type       : tracking.food_type,
+          date            : this.date_2_epoch_unix(tracking.date),
+          left_amount     : tracking.left_amount,
+          right_amount    : tracking.right_amount,
+          last_breast     : tracking.last_breast,
+          owner           : tracking.owner,
+          comment         : tracking.comment,
+          week            : "",
+          children        : tracking.gcid,
+          uid             : request.uid,
+          nid             : tracking.id
         },
         result: 0
       }
@@ -109,11 +109,11 @@ export class TrackingFoodController {
       const output : any =
         await this.model.getModel('tracking_food').update(
           {
-            left_amount           : request.body.left_amount,
-            right_amount          : request.body.right_amount,
-            last_breast           : request.body.last_breast,
-            owner                 : request.body.owner,
-            comment               : request.body.comment,
+            left_amount   : request.body.left_amount,
+            right_amount  : request.body.right_amount,
+            last_breast   : request.body.last_breast,
+            owner         : request.body.owner,
+            comment       : request.body.comment,
           },
           {
             where: {
@@ -143,17 +143,17 @@ export class TrackingFoodController {
         // Calculate response
         const response_json = {
           response: {
-            food_type : tracking.food_type,
-            date: helper.date_2_epoch_unix(tracking.date),
-            left_amount: tracking.left_amount,
-            right_amount: tracking.right_amount,
-            last_breast: tracking.last_breast,
+            food_type     : tracking.food_type,
+            date          : helper.date_2_epoch_unix(tracking.date),
+            left_amount   : tracking.left_amount,
+            right_amount  : tracking.right_amount,
+            last_breast   : tracking.last_breast,
             owner         : tracking.owner,
-            comment: tracking.comment,
-            week: "",
-            children: request.gcid,
-            uid: request.uid,
-            nid: tracking.id
+            comment       : tracking.comment,
+            week          : "",
+            children      : request.gcid,
+            uid           : request.uid,
+            nid           : tracking.id
           },
           result: 0
         }
@@ -210,14 +210,14 @@ export class TrackingFoodController {
           helper.calculate_week_number_age(new Date(tracking.date), new Date(child.birth_date))
 
         const item = {
-          mid : tracking.id,
-          date: helper.date_2_epoch_unix(tracking.date),
-          left_amount: tracking.left_amount,
-          right_amount: tracking.right_amount,
-          last_breast: tracking.last_breast,
-          pumped: tracking.pumped,
-          comment: tracking.comment,
-          children: request.gcid
+          mid            : tracking.id,
+          date           : helper.date_2_epoch_unix(tracking.date),
+          left_amount    : tracking.left_amount,
+          right_amount   : tracking.right_amount,
+          last_breast    : tracking.last_breast,
+          pumped         : tracking.pumped,
+          comment        : tracking.comment,
+          children       : tracking.child_id
         }
         week_map.get(week_number).tracks.push(item)
       }
