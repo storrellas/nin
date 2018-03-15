@@ -99,17 +99,14 @@ export class TrackingController {
     */
   @httpPost('custom/mum_weight_trackers/create')
   public async mum_weight_tracking_create(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("mum_weight_tracking_create uid:"  + uid)
+    this.logger.info("mum_weight_tracking_create uid:"  + request.uid + " gcid:" + request.gcid)
 
     try{
 
       const unix_timestamp : number = parseInt(request.body.date)
       const tracking_weight : any =
           await this.model.getModel('tracking_weight').create({
-            child_id              : gcid,
+            child_id              : request.gcid,
             weight                : request.body.weight,
             note                  : request.body.note,
             date                  : helper.epoch_unix_2_date(unix_timestamp)
@@ -118,7 +115,7 @@ export class TrackingController {
 
       // Build response
       const child : any =
-        await this.model.getModel('child').findOne( { where: { id: gcid } })
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Calculate weeks
       const now_date : Date = new Date();
@@ -137,7 +134,7 @@ export class TrackingController {
                   note: request.body.note,
                   week: String(week_number),
                   weight: request.body.weight,
-                  children: gcid,
+                  children: request.gcid,
                   date: unix_timestamp,
                   mid: tracking_weight.id
               },
@@ -156,10 +153,7 @@ export class TrackingController {
   }
   @httpPost('custom/mum_weight_trackers/update')
   public async mum_weight_tracking_update(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("mum_weight_tracking_update uid:"  + uid)
+    this.logger.info("mum_weight_tracking_update uid:" + request.uid + " gcid:" + request.gcid)
 
     try{
 
@@ -187,7 +181,7 @@ export class TrackingController {
               where: {id: parseInt(request.body.mid)}
             })
         const child : any =
-          await this.model.getModel('child').findOne( { where: { id: gcid } })
+          await this.model.getModel('child').findOne( { where: { id: request.gcid } })
         // Calculate weeks
         const now_date : Date = new Date();
         const week_number : number = this.calculate_week_number(now_date, new Date(child.birth_date))
@@ -204,7 +198,7 @@ export class TrackingController {
                     note: tracking_weight.note,
                     week: String(week_number),
                     weight: String(tracking_weight.weight),
-                    children: gcid,
+                    children: request.gcid,
                     date: tracking_weight.date,
                     mid: tracking_weight.id
                 },
@@ -225,23 +219,20 @@ export class TrackingController {
   }
   @httpPost('custom/mum_weight_trackers/list')
   public async mum_weight_tracking_retrieve_list(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("mum_weight_tracking_retrieve_list uid:"  + uid)
+    this.logger.info("mum_weight_tracking_retrieve_list uid:" + request.uid + " gcid:" + request.gcid)
 
     try{
 
       const output : any =
         await this.model.getModel('tracking_weight').findAll(
           {
-            where: { child_id: gcid },
+            where: { child_id: request.gcid },
             order: [['date', 'DESC']],
             limit : 14,
           })
 
       const child : any =
-        await this.model.getModel('child').findOne( { where: { id: gcid } })
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Generate week_set
       const week_set = new Set<number>()
@@ -252,7 +243,7 @@ export class TrackingController {
       }
 
       // Generate map of objects
-      const week_map = new Map<number,{[id:string]:any}>()
+      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
       for (let item of week_set) {
         week_map.set(item, { week: String(item), tracks: [] })
       }
@@ -273,7 +264,7 @@ export class TrackingController {
       }
 
       // Generate week_list
-      const week_list : [] = Array.from(week_map.values())
+      const week_list : {[id:string]:any}[] = Array.from(week_map.values())
 
       // Generate response
       const response_json = {
@@ -295,21 +286,18 @@ export class TrackingController {
   }
   @httpPost('custom/mum_weight_trackers/graph')
   public async mum_weight_tracking_retrieve_graph(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("mum_weight_tracking_retrieve_graph uid:"  + uid)
+    this.logger.info("mum_weight_tracking_retrieve_graph uid:" + request.uid + " gcid:" + request.gcid)
 
     try{
 
       const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
-                             "WHERE child_id = '" + gcid + "'" +
+                             "WHERE child_id = '" + request.gcid + "'" +
                              "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
                              "order by date DESC"
       const output : any = await this.model.raw(query)
 
       const child : any =
-        await this.model.getModel('child').findOne( { where: { id: gcid } })
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Calculate weight chart
       const pregnancy_chart : Array<number>[] = this.calculate_pregnancy_gain_chart()
@@ -384,23 +372,20 @@ export class TrackingController {
     */
   @httpPost('custom/user/dashboard')
   public async user_dashboard(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("user_dashboard uid:"  + uid + " gcid:"+ gcid)
+    this.logger.info("user_dashboard uid:" + request.uid + " gcid:" + request.gcid)
 
     try{
 
       const tracking : any =
         await this.model.getModel('tracking_weight').findOne(
           {
-            where: { child_id: gcid },
+            where: { child_id: request.gcid },
             order: [['date', 'DESC']],
           })
 
       // Get last week weight
       let query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
-                             "WHERE child_id = '" + gcid + "'" +
+                             "WHERE child_id = '" + request.gcid + "'" +
                              "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
                              "order by date DESC LIMIT 2"
       let output : any = await this.model.raw(query)
@@ -408,11 +393,11 @@ export class TrackingController {
 
       // Get prepregnancy weigth
       const child : any =
-        await this.model.getModel('child').findOne( { where: { id: gcid } })
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Get average
       query = "SELECT AVG(weight) as average FROM NIN.tracking_weight " +
-                             "WHERE child_id = '" + gcid+ "'"
+                             "WHERE child_id = '" + request.gcid+ "'"
       output = await this.model.raw(query)
 
       response.json({

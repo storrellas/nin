@@ -53,13 +53,11 @@ export class ProfileImageController {
     */
   @httpPost('custom/user/load_image')
   public user_load_image(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("user_load_image uid:"  + uid)
+    this.logger.info("user_load_image uid:"  + request.uid)
 
     // Store image
     const base64Data = request.body.image.replace(/^data:image\/png;base64,/,"");
-    const filename : string = uid + ".png"
+    const filename : string = request.uid + ".png"
     this.save_image(base64Data, filename)
 
     // Generate response
@@ -75,12 +73,10 @@ export class ProfileImageController {
   }
   @httpPost('custom/user/delete_image')
   public user_delete_image(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("user_delete_image uid:"  + uid)
+    this.logger.info("user_delete_image uid:"  + request.uid)
 
     // Remove image
-    const filename : string = uid + ".png"
+    const filename : string = request.uid + ".png"
     this.remove_image(filename)
 
     response.json({result: 0})
@@ -88,12 +84,11 @@ export class ProfileImageController {
   }
   @httpPost('custom/child/load_image')
   public child_load_image(request: Request, response: Response): Promise<void> {
-    const gcid : any = request.get('gcid')
-    this.logger.info("child_load_image gcid:"  + gcid)
+    this.logger.info("child_load_image gcid:"  + request.gcid)
 
     // Store image
     const base64Data = request.body.image.replace(/^data:image\/png;base64,/,"");
-    const filename : string = gcid + ".png"
+    const filename : string = request.gcid + ".png"
     this.save_image(base64Data, filename)
 
     // Generate response
@@ -108,8 +103,7 @@ export class ProfileImageController {
   }
   @httpPost('custom/child/delete_image')
   public child_delete_image(request: Request, response: Response): Promise<void> {
-    const gcid : any = request.get('gcid')
-    this.logger.info("child_load_image gcid:"  + gcid)
+    this.logger.info("child_load_image gcid:"  + request.gcid)
 
     // Remove image
     const filename : string = gcid + ".png"

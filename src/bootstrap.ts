@@ -9,6 +9,7 @@ import * as express from 'express'
 import { Request, Response, Application, NextFunction } from 'express';
 
 
+import * as helper from './utils/helper';
 import { LoggerInstance, transports, LoggerOptions, WLogger } from './utils/logger';
 import { IModel, Model } from './models/model';
 import { IDataStore, DataStore, LocalDataStore } from './service/datastore';
@@ -18,6 +19,16 @@ import  './controller/content_controller';
 import  './controller/image_controller';
 import  './controller/profile_controller';
 import  './controller/tracking_controller';
+
+declare global {
+  namespace Express {
+    interface Request {
+      uid: string;
+      gcid : string;
+      api_key: string;
+    }
+  }
+}
 
 // ------------------------------------
 // CONFIGURATION
@@ -42,7 +53,7 @@ nconf.file({ file: config_file });
 // Enable custom configuration file
 config_file = './src/resources/NINConfiguration.json';
 if (fs.existsSync(config_file)) {
-  console.error("Reading custom Configuration file " + config_file + " was not found! ");
+  console.log("Reading custom Configuration file " + config_file + " was found! ");
   nconf.file({ file: config_file });
 }
 
@@ -170,19 +181,28 @@ fs.readFile(config_file, 'utf8', function (err : NodeJS.ErrnoException,data) {
 
 // start the server
 const server = new InversifyExpressServer(container);
+server.setConfig((app: Application) => {
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }));
+  //Uncomment this to play with user controller that is working with jsons not binaries
+  app.use(bodyParser.json());
+  app.use(bodyParser.text({
+    type: () => true
+  }));
 
-  server.setConfig((app: Application) => {
-   app.use(bodyParser.urlencoded({
-     extended: true
-   }));
-   //Uncomment this to play with user controller that is working with jsons not binaries
-   app.use(bodyParser.json());
-   app.use(bodyParser.text({
-     type: () => true
-   }));
+  // Serve static files
+  app.use("/media", express.static(process.cwd() + '/media/'));
 
-   // Serve static files
-   app.use("/media", express.static(process.cwd() + '/media/'));
+
+  // Middleware for extracting data from url / body and set into request.data
+  app.use((request: Request, response: Response, next : NextFunction) => {
+    request.gcid = request.get('gcid')
+    const token : any = request.get('token')
+    request.uid = helper.get_uid(token)
+    request.api_key = helper.get_api_key(token)
+    next()
+  });
 
 });
 

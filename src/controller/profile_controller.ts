@@ -120,13 +120,11 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     */
   @httpPost('custom/user/login')
   public user_login(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("user_login uid:"  + uid)
+    this.logger.info("user_login uid:"  + request.uid)
 
     // Create custom user if not exists
     this.model.getModel('user').upsert({
-      id: uid
+      id: request.uid
     })
 
     response.json({result: 0})
@@ -141,11 +139,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     */
   @httpPost('custom/user/update')
   public async user_update(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const uid : string = helper.get_uid(token)
-    const api_key : string = helper.get_api_key(token)
-    this.logger.info("user_update uid:"  + uid)
-    this.logger.info("user_update api_key:"  + api_key)
+    this.logger.info("user_update uid:"  + request.uid + " api_key:" + request.api_key)
 
     try{
 
@@ -153,7 +147,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       // Grab information from gigya
       // ------------------
       const gigya_response : GigyaResponse & Account =
-        await this.gigya.get_account_info(uid)
+        await this.gigya.get_account_info(request.uid, request.api_key)
 
       this.logger.debug("gigya response -> " + JSON.stringify(gigya_response))
 
@@ -161,7 +155,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
       for (let item of gigya_response.data.child) {
           this.model.getModel('child').upsert({
             id: item.applicationInternalIdentifier,
-            user_id : uid,
+            user_id : request.uid,
             birth_date : item.birthDate,
             birth_date_reliability : item.birthDateReliability,
             name: item.name
@@ -177,7 +171,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
           },
           {
             where: {
-              id: uid
+              id: request.uid
             }
           })
         // Check row affected
@@ -211,10 +205,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     */
   @httpPost('custom/user/save_prepregnancy_data')
   public async prepregnancy_create_or_update(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("prepregnancy_create_or_update uid:"  + uid + " gcid:" + gcid)
+    this.logger.info("prepregnancy_create_or_update uid:"  + request.uid + " gcid:" + request.gcid)
 
     try{
         const output : Array<any> =
@@ -225,7 +216,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
             },
             {
               where: {
-                id: gcid
+                id: request.gcid
               }
             })
 
@@ -264,17 +255,14 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
   }
   @httpPost('custom/user/get_prepregnancy_data')
   public async prepregnancy_get(request: Request, response: Response): Promise<void> {
-    const token : any = request.get('token')
-    const gcid : any = request.get('gcid')
-    const uid : string = helper.get_uid(token)
-    this.logger.info("prepregnancy_get uid:"  + uid + " gcid:" + gcid)
+    this.logger.info("prepregnancy_get uid:"  + request.uid + " gcid:" + request.gcid)
 
     try{
         const output : any =
           await this.model.getModel('child').findOne(
             {
               where: {
-                id: gcid
+                id: request.gcid
               }
             })
 
