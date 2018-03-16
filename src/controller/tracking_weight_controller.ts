@@ -16,6 +16,9 @@ export class TrackingWeightController {
   private bmi_max : number = 24.9
   private bmi_min : number = 18.5
 
+  // Max tracking items in list
+  private max_trackings_list : number = 14
+
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
@@ -104,7 +107,7 @@ export class TrackingWeightController {
       // Calculate weeks
       const birth_date : Date = new Date(child.birth_date)
       const conception_date : Date = helper.get_conception_date(birth_date)
-      const week_number : number = parseInt( helper.get_week_difference(date, conception_date) )
+      const week_number : number = parseInt( helper.get_week_from_date(date, conception_date) )
 
       // Calculate range
       const range_str : string =
@@ -174,7 +177,7 @@ export class TrackingWeightController {
         const date : Date = new Date(tracking_weight.date);
         const birth_date : Date = new Date(child.birth_date)
         const conception_date : Date = helper.get_conception_date(birth_date)
-        const week_number : number = parseInt( helper.get_week_difference(date, conception_date) )
+        const week_number : number = parseInt( helper.get_week_from_date(date, conception_date) )
 
 
         // Calculate range
@@ -223,9 +226,10 @@ export class TrackingWeightController {
       const birth_date : Date = new Date(child.birth_date)
 
       // Calculate date from week number
-      // const week_number : string = parseInt(request.body.request_number)
-      // const requested_date : Date =
-      //   helper.week_2_date_pregnancy(parseInt(request.body.request_number), birth_date)
+      const week_number : string = parseInt(request.body.request_number)
+      const conception_date : Date = helper.get_conception_date(birth_date)
+      const requested_date : Date =
+        helper.get_date_from_week(parseInt(request.body.request_number), conception_date)
 
       // Retreive trackings
       const tracking_list : any =
@@ -234,14 +238,22 @@ export class TrackingWeightController {
             where: { child_id: request.gcid },
             order: [['date', 'DESC']],
           })
-      const conception_date : Date = helper.get_conception_date(birth_date)
-
 
       // Fill map of objects
       const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
+      let n_trackings : number = 0
       for (let tracking of tracking_list) {
         const week_number : number =
-          parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
+          parseInt( helper.get_week_from_date(new Date(tracking.date), conception_date) )
+
+        // NOTE: Retrieve max_tracking_list items taking into account complete tracking weeks
+        // That is, n_trackings could be greater than max_trackings_list to append remaining tracks
+        if( n_trackings >= this.max_trackings_list ){
+          if( !week_map.has(week_number) ){
+            break;
+          }
+        }
+
 
         // Add item to map if not exists
         if( !week_map.has(week_number) ){
@@ -257,6 +269,7 @@ export class TrackingWeightController {
           timestamp: helper.date_2_epoch_unix(tracking.date)
         }
         week_map.get(week_number).tracks.push(item)
+        n_trackings ++;
       }
 
       // Generate week_list
@@ -316,7 +329,7 @@ export class TrackingWeightController {
       const week_list = []
       for (let tracking of tracking_list) {
         const week_number : number =
-          parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
+          parseInt( helper.get_week_from_date(new Date(tracking.date), conception_date) )
 
         // NOTE: Requirements is that we should get latest week tracking_growth
         // trackings are retreived ordered by date.

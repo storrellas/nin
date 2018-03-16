@@ -76,7 +76,7 @@ export class TrackingFoodController {
 
       // Calculate response
       const week_number : number =
-          parseInt(helper.get_week_difference(new Date(tracking.date), new Date(child.birth_date)))
+          parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
       const response_json = {
         response: {
           food_type       : tracking.food_type,
@@ -143,7 +143,7 @@ export class TrackingFoodController {
 
         // Calculate response
         const week_number : number =
-            parseInt(helper.get_week_difference(new Date(tracking.date), new Date(child.birth_date)))
+            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
         const response_json = {
           response: {
             food_type     : tracking.food_type,
@@ -197,7 +197,7 @@ export class TrackingFoodController {
       const week_set = new Set<number>()
       for (let tracking of output) {
         const week_number : number =
-            parseInt(helper.get_week_difference(new Date(tracking.date), new Date(child.birth_date)))
+            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
         week_set.add(week_number)
       }
 
@@ -210,7 +210,7 @@ export class TrackingFoodController {
       // Fill map of objects
       for (let tracking of output) {
         const week_number : number =
-            parseInt(helper.get_week_difference(new Date(tracking.date), new Date(child.birth_date)))
+            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
         const item = {
           mid            : tracking.id,
           date           : helper.date_2_epoch_unix(tracking.date),
