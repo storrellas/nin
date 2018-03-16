@@ -300,7 +300,7 @@ export class Model {
 
   }
 
-  public raw(query : string): Promise<any> {
+  public raw(query : string): PromiseLike<any> {
     return this.sequelize.query(query, { type: Sequelize.QueryTypes.SELECT})
   }
 

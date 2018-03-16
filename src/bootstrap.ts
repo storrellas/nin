@@ -25,9 +25,9 @@ import  './controller/tracking_food_controller';
 declare global {
   namespace Express {
     interface Request {
-      uid: string;
-      gcid : string;
-      api_key: string;
+      uid     : string | undefined;
+      gcid    : string | undefined;
+      api_key : string | undefined;
     }
   }
 }
