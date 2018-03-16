@@ -63,7 +63,6 @@ export const pregnancy_weeks : number = 40
 export const days_per_week : number = 7
 export const pregnancy_days : number = pregnancy_weeks*days_per_week
 
-
 /**
   * Calculate conception date from birth_date
   */
@@ -86,4 +85,8 @@ export function get_week_from_date(date: Date, reference_date: Date) : number{
 export function get_date_from_week(week_number : number, date: Date) : Date {
   const copy_date = new Date(date)
   return new Date(copy_date.setDate(copy_date.getDate()+week_number*days_per_week))
+}
+
+export class TrackingOptions{
+  public max_trackings_list : number;
 }

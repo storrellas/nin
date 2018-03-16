@@ -154,6 +154,11 @@ container.bind<GigyaService>(TYPES.GigyaService).toConstantValue(
   new GigyaService( gigya_options, container.get<LoggerInstance>(TYPES.Logger) )
 );
 
+
+const options : helper.TrackingOptions = new helper.TrackingOptions()
+options.max_trackings_list = nconf.get("MAX_TRACKING_LIST");
+container.bind<helper.TrackingOptions>(TYPES.TrackingOptions).toConstantValue(options);
+
 // ------------------------------------
 // INITIALIZE APPLICATION
 // ------------------------------------

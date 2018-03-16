@@ -12,6 +12,7 @@
     "PASSWORD" : "root",
     "DEBUG"    : false
   },
+  "MAX_TRACKING_LIST" : 14,
   "GIGYA"  : {
     "API_KEY_DEFAULT" : "",
     "DATA_CENTER"     : "",

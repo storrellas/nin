@@ -12,10 +12,8 @@ import * as helper from '../utils/helper';
 @controller('/services/1.1/')
 export class TrackingGrowthController {
 
-  // Max tracking items in list
-  private max_trackings_list : number = 14
-
-  constructor(@inject(TYPES.Model) private model: IModel,
+  constructor(@inject(TYPES.TrackingOptions) private options: helper.TrackingOptions,
+              @inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
 
@@ -111,7 +109,7 @@ export class TrackingGrowthController {
 
         // NOTE: Retrieve max_tracking_list items taking into account complete tracking weeks
         // That is, n_trackings could be greater than max_trackings_list to append remaining tracks
-        if( n_trackings >= this.max_trackings_list ){
+        if( n_trackings >= this.options.max_trackings_list ){
           if( !week_map.has(week_number) ){
             break;
           }
