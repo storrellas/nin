@@ -84,5 +84,6 @@ export function get_week_from_date(date: Date, reference_date: Date) : number{
   * Calculate date from week pregnancy
   */
 export function get_date_from_week(week_number : number, date: Date) : Date {
-  return new Date(date.setDate(date.getDate()+week_number*days_per_week))
+  const copy_date = new Date(date)
+  return new Date(copy_date.setDate(copy_date.getDate()+week_number*days_per_week))
 }

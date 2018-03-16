@@ -226,25 +226,31 @@ export class TrackingWeightController {
       const birth_date : Date = new Date(child.birth_date)
 
       // Calculate date from week number
-      const week_number : string = parseInt(request.body.request_number)
       const conception_date : Date = helper.get_conception_date(birth_date)
-      const requested_date : Date =
-        helper.get_date_from_week(parseInt(request.body.request_number), conception_date)
+      const requested_week_number : number = parseInt(request.body.request_number)
 
       // Retreive trackings
       const tracking_list : any =
         await this.model.getModel('tracking_weight').findAll(
           {
-            where: { child_id: request.gcid },
+            where: {
+              child_id: request.gcid,
+              //date: { $lte: requested_date }
+            },
             order: [['date', 'DESC']],
           })
 
       // Fill map of objects
       const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
       let n_trackings : number = 0
+      let week_number : number = 0
       for (let tracking of tracking_list) {
-        const week_number : number =
-          parseInt( helper.get_week_from_date(new Date(tracking.date), conception_date) )
+        week_number = parseInt( helper.get_week_from_date(new Date(tracking.date), conception_date) )
+
+        // NOTE: Only retreive those
+        if( week_number > requested_week_number ){
+          continue;
+        }
 
         // NOTE: Retrieve max_tracking_list items taking into account complete tracking weeks
         // That is, n_trackings could be greater than max_trackings_list to append remaining tracks
@@ -253,7 +259,6 @@ export class TrackingWeightController {
             break;
           }
         }
-
 
         // Add item to map if not exists
         if( !week_map.has(week_number) ){
@@ -280,11 +285,10 @@ export class TrackingWeightController {
           response: {
               list: week_list
           },
+          request_number : week_number,
           result: 0
       }
       response.json(response_json)
-/**/
-// -------------------------
 
       return Promise.resolve(undefined)
     }catch(e){
