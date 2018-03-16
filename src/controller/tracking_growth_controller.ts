@@ -2,7 +2,6 @@ import { controller, httpGet, httpPost, httpPut, httpDelete } from 'inversify-ex
 import { injectable, inject } from 'inversify';
 import { Request, Response, Express } from 'express';
 import * as Sequelize from 'sequelize';
-import * as DateDiff from 'date-diff';
 
 import TYPES from '../constant/types';
 import { IModel } from '../models/model';
@@ -131,7 +130,10 @@ export class TrackingGrowthController {
           children: tracking.child_id,
           timestamp: helper.date_2_epoch_unix(tracking.date)
         }
-        week_map.get(week_number).tracks.push(item)
+
+        // Append item
+        const value : any = week_map.get(week_number)
+        value.tracks.push(item)
         n_trackings ++;
       }
 

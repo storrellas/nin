@@ -273,7 +273,10 @@ export class TrackingWeightController {
           children: tracking.child_id,
           timestamp: helper.date_2_epoch_unix(tracking.date)
         }
-        week_map.get(week_number).tracks.push(item)
+
+        // Append item
+        const value : any = week_map.get(week_number)
+        value.tracks.push(item)
         n_trackings ++;
       }
 
