@@ -155,9 +155,14 @@ container.bind<GigyaService>(TYPES.GigyaService).toConstantValue(
 );
 
 
-const options : helper.TrackingOptions = new helper.TrackingOptions()
-options.max_trackings_list = nconf.get("MAX_TRACKING_LIST");
-container.bind<helper.TrackingOptions>(TYPES.TrackingOptions).toConstantValue(options);
+const tracking_options : helper.TrackingOptions = new helper.TrackingOptions()
+tracking_options.max_trackings_list = nconf.get("MAX_TRACKING_LIST");
+container.bind<helper.TrackingOptions>(TYPES.TrackingOptions).toConstantValue(tracking_options);
+
+const image_options : helper.ImageOptions = new helper.ImageOptions()
+image_options.path = nconf.get("IMAGE:PATH");
+image_options.base_url = nconf.get("IMAGE:BASE_URL");
+container.bind<helper.ImageOptions>(TYPES.ImageOptions).toConstantValue(image_options);
 
 // ------------------------------------
 // INITIALIZE APPLICATION

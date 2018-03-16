@@ -3,7 +3,8 @@ const TYPES = {
   DataStore: Symbol('DataStore'),
   Model: Symbol('Model'),
   GigyaService: Symbol('GigyaService'),
-  TrackingOptions: Symbol('TrackingOptions')
+  TrackingOptions: Symbol('TrackingOptions'),
+  ImageOptions: Symbol('ImageOptions'),
 };
 
 export default TYPES;

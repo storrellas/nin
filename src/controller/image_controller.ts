@@ -14,10 +14,8 @@ import * as jsonwebtoken from 'jsonwebtoken';
 @controller('/services/1.1/')
 export class ProfileImageController {
 
-  private media_path : string = process.cwd() + '/media/'
-  private media_base_url : string = "http://localhost:8080/media/"
-
-  constructor(@inject(TYPES.Model) private model: IModel,
+  constructor(@inject(TYPES.ImageOptions) private options: helper.ImageOptions,
+              @inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
 
@@ -25,7 +23,7 @@ export class ProfileImageController {
     * Save image
     */
   private save_image(base64Data: string, filename: string) : void {
-    const image_path : string = this.media_path + filename
+    const image_path : string = this.options.path + filename
     const binaryData = new Buffer(base64Data, 'base64').toString('binary');
     fs.writeFile(image_path, binaryData, "binary", (err: any) => {
       if( err != undefined)
@@ -39,7 +37,7 @@ export class ProfileImageController {
     * Remove image
     */
   private remove_image(filename: string) : void {
-    const image_path : string = this.media_path + filename
+    const image_path : string = this.options.path + filename
     fs.unlink(image_path,(err: any) => {
       if( err != undefined)
         this.logger.error("Error occurred " + err)
@@ -64,7 +62,7 @@ export class ProfileImageController {
     const response_json = {
       result : 0,
       response: {
-        image_url : this.media_base_url + filename
+        image_url : this.options.base_url + filename
       }
     }
     response.json(response_json)
@@ -95,7 +93,7 @@ export class ProfileImageController {
     const response_json = {
       result : 0,
       response: {
-        image_url : this.media_base_url + filename
+        image_url : this.options.base_url + filename
       }
     }
     response.json(response_json)
@@ -106,7 +104,7 @@ export class ProfileImageController {
     this.logger.info("child_load_image gcid:"  + request.gcid)
 
     // Remove image
-    const filename : string = gcid + ".png"
+    const filename : string = request.gcid + ".png"
     this.remove_image(filename)
 
     response.json({result: 0})

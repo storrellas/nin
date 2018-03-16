@@ -90,3 +90,8 @@ export function get_date_from_week(week_number : number, date: Date) : Date {
 export class TrackingOptions{
   public max_trackings_list : number;
 }
+
+export class ImageOptions{
+  public path     : string;
+  public base_url : string;
+}
