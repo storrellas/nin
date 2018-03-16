@@ -223,9 +223,9 @@ export class TrackingWeightController {
       const birth_date : Date = new Date(child.birth_date)
 
       // Calculate date from week number
-      const week_number : string = parseInt(request.body.request_number)
-      const requested_date : Date =
-        helper.week_2_date_pregnancy(parseInt(request.body.request_number), birth_date)
+      // const week_number : string = parseInt(request.body.request_number)
+      // const requested_date : Date =
+      //   helper.week_2_date_pregnancy(parseInt(request.body.request_number), birth_date)
 
       // Retreive trackings
       const tracking_list : any =
@@ -234,30 +234,21 @@ export class TrackingWeightController {
             where: { child_id: request.gcid },
             order: [['date', 'DESC']],
           })
-
       const conception_date : Date = helper.get_conception_date(birth_date)
 
 
-
-      // Generate week_set
-      const week_set = new Set<number>()
-      for (let tracking of tracking_list) {
-        const week_number : number =
-          parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
-        week_set.add(week_number)
-      }
-
-      // Generate map of objects
-      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
-      for (let item of week_set) {
-        week_map.set(item, { week: String(item), tracks: [] })
-      }
-
       // Fill map of objects
+      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
       for (let tracking of tracking_list) {
         const week_number : number =
           parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
 
+        // Add item to map if not exists
+        if( !week_map.has(week_number) ){
+          week_map.set(week_number, { week: String(week_number), tracks: [] })
+        }
+
+        // Append item
         const item = {
           mid : tracking.id,
           weight: tracking.weight,
@@ -279,6 +270,8 @@ export class TrackingWeightController {
           result: 0
       }
       response.json(response_json)
+/**/
+// -------------------------
 
       return Promise.resolve(undefined)
     }catch(e){
