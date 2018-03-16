@@ -299,45 +299,41 @@ export class TrackingWeightController {
 
     try{
 
-      const n_week : number = parseInt(request.body.weeks)
-      const query : string = "SELECT id, child_id, weight, note, date, createdAt, MAX(updatedAt) FROM tracking_weight " +
-                             "WHERE child_id = '" + request.gcid + "'" +
-                             "GROUP BY CONCAT(YEAR(date), '/' ,WEEK(date)) " +
-                             "order by date DESC LIMIT " + String(n_week+1)
-      const output : any = await this.model.raw(query)
+      // Requested weeek number
+      const n_requested_week : number = parseInt(request.body.weeks)
 
+      // Obtain trackings
+      const tracking_list : any =
+        await this.model.getModel('tracking_weight').findAll(
+          {
+            where: { child_id: request.gcid },
+            order: [['date', 'DESC']],
+          })
       const child : any =
         await this.model.getModel('child').findOne( { where: { id: request.gcid } })
+      const conception_date : Date = helper.get_conception_date(new Date(child.birth_date))
 
       // Calculate weight chart
       const pregnancy_chart : Array<number>[] = this.calculate_pregnancy_gain_chart()
       const max_pregnancy_chart : Array<number> = pregnancy_chart[0]
       const min_pregnancy_chart : Array<number> = pregnancy_chart[1]
 
-
-      const conception_date : Date = helper.get_conception_date(birth_date)
-
+      // Iterate results
+      let current_week_number : number = 0
       const week_list = []
-      // If not enough registers -> add prepregnancy
-      if( output.length < (n_week + 1) ){
-        week_list.push({
-          y_max:{
-            weight: child.prepregnancy_weight,
-            week: 0
-          },
-          y_min:{
-            weight: child.prepregnancy_weight,
-            week: 0
-          },
-          current:{
-            weight: child.prepregnancy_weight,
-            week: 0
-          }
-        })
-      }
-      for (let tracking of output) {
+      for (let tracking of tracking_list) {
         const week_number : number =
-          parseInt( helper.get_week_difference(date, conception_date) )
+          parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
+
+        // NOTE: Requirements is that we should get latest week tracking_growth
+        // trackings are retreived ordered by date.
+        // If( week number changes ) append()
+        // else skip()
+        if( current_week_number == week_number )
+          continue;
+
+        // Store current week number
+        current_week_number = week_number
 
         // Generate week item
         week_list.push({
@@ -355,15 +351,39 @@ export class TrackingWeightController {
           }
         })
 
+        // Limit number of items
+        if( week_list.length >= (n_requested_week+1) )
+          break;
+      }
+
+      // Insert item when not enough items
+      if( week_list.length < (n_requested_week+1) ){
+        week_list.push({
+          y_max:{
+            weight: child.prepregnancy_weight,
+            week: 0
+          },
+          y_min:{
+            weight: child.prepregnancy_weight,
+            week: 0
+          },
+          current:{
+            weight: child.prepregnancy_weight,
+            week: 0
+          }
+        })
       }
 
 
+      // Generate response
       response.json({
         response : {
           weeks: week_list,
         },
         result: 0
       })
+/**/
+// ------------------------------------
 
       return Promise.resolve(undefined)
     }catch(e){
