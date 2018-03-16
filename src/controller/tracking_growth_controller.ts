@@ -46,7 +46,7 @@ export class TrackingGrowthController {
       // Calculate weeks
       const date : Date = new Date(tracking.date)
       const week_number : number =
-          parseInt(helper.get_week_from_date(date, new Date(child.birth_date)))
+          Math.floor(helper.get_week_from_date(date, new Date(child.birth_date)))
 
       // Calculate range
       const response_json = {
@@ -103,7 +103,7 @@ export class TrackingGrowthController {
       let n_trackings : number = 0
       let week_number : number = 0
       for (let tracking of tracking_list) {
-        week_number = parseInt( helper.get_week_from_date(new Date(tracking.date), birth_date) )
+        week_number = Math.floor( helper.get_week_from_date(new Date(tracking.date), birth_date) )
 
         // NOTE: Only retreive those
         if( week_number > requested_week_number ){
@@ -194,7 +194,7 @@ export class TrackingGrowthController {
 
         // Calculate weeks
         const week_number : number =
-            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
+            Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
 
 
         // Calculate range

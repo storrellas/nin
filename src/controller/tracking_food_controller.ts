@@ -13,6 +13,9 @@ import * as helper from '../utils/helper';
 @controller('/services/1.1/')
 export class TrackingFoodController {
 
+  // Max tracking items in list
+  private max_trackings_list : number = 14
+
   constructor(@inject(TYPES.Model) private model: IModel,
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
@@ -76,7 +79,7 @@ export class TrackingFoodController {
 
       // Calculate response
       const week_number : number =
-          parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
+          Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
       const response_json = {
         response: {
           food_type       : tracking.food_type,
@@ -143,7 +146,7 @@ export class TrackingFoodController {
 
         // Calculate response
         const week_number : number =
-            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
+            Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
         const response_json = {
           response: {
             food_type     : tracking.food_type,
@@ -203,7 +206,7 @@ export class TrackingFoodController {
       let n_trackings : number = 0
       let week_number : number = 0
       for (let tracking of tracking_list) {
-        week_number = parseInt( helper.get_week_from_date(new Date(tracking.date), birth_date) )
+        week_number = Math.floor( helper.get_week_from_date(new Date(tracking.date), birth_date) )
 
         // NOTE: Only retreive those
         if( week_number > requested_week_number ){

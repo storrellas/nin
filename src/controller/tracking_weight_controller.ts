@@ -107,7 +107,7 @@ export class TrackingWeightController {
       // Calculate weeks
       const birth_date : Date = new Date(child.birth_date)
       const conception_date : Date = helper.get_conception_date(birth_date)
-      const week_number : number = parseInt( helper.get_week_from_date(date, conception_date) )
+      const week_number : number = Math.floor( helper.get_week_from_date(date, conception_date) )
 
       // Calculate range
       const range_str : string =
@@ -177,7 +177,7 @@ export class TrackingWeightController {
         const date : Date = new Date(tracking_weight.date);
         const birth_date : Date = new Date(child.birth_date)
         const conception_date : Date = helper.get_conception_date(birth_date)
-        const week_number : number = parseInt( helper.get_week_from_date(date, conception_date) )
+        const week_number : number = Math.floor( helper.get_week_from_date(date, conception_date) )
 
 
         // Calculate range
@@ -245,7 +245,7 @@ export class TrackingWeightController {
       let n_trackings : number = 0
       let week_number : number = 0
       for (let tracking of tracking_list) {
-        week_number = parseInt( helper.get_week_from_date(new Date(tracking.date), conception_date) )
+        week_number = Math.floor( helper.get_week_from_date(new Date(tracking.date), conception_date) )
 
         // NOTE: Only retreive those
         if( week_number > requested_week_number ){
@@ -333,7 +333,7 @@ export class TrackingWeightController {
       const week_list = []
       for (let tracking of tracking_list) {
         const week_number : number =
-          parseInt( helper.get_week_from_date(new Date(tracking.date), conception_date) )
+          Math.floor( helper.get_week_from_date(new Date(tracking.date), conception_date) )
 
         // NOTE: Requirements is that we should get latest week tracking_growth
         // trackings are retreived ordered by date.
@@ -392,8 +392,7 @@ export class TrackingWeightController {
         },
         result: 0
       })
-/**/
-// ------------------------------------
+
 
       return Promise.resolve(undefined)
     }catch(e){
@@ -409,7 +408,7 @@ export class TrackingWeightController {
     */
   @httpPost('custom/mum_weight_trackers/delete')
   public mum_weight_tracking_delete(request: Request, response: Response): Promise<void> {
-    this.logger.info("mum_weight_tracking_delete mid:" + equest.body.mid)
+    this.logger.info("mum_weight_tracking_delete mid:" + request.body.mid)
     this.model.getModel('tracking_weight').destroy({
         where: {id: request.body.mid}
     })
