@@ -5,11 +5,11 @@ import * as uuidv4 from 'uuid/v4';
 
 export interface IModel {
   getModel(name: string): Sequelize.Model<{}, {}>;
-  raw(query : string): Promise<any>;
+  raw(query : string): PromiseLike<any>;
 }
 
 @injectable()
-export class Model {
+export class Model implements IModel {
 
   protected sequelize: Sequelize.Sequelize;
   protected models: {[index: string]: Sequelize.Model<{}, {}>} = {};
