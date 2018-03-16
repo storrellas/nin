@@ -102,7 +102,9 @@ export class TrackingWeightController {
         await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
       // Calculate weeks
-      const week_number : number = helper.date_2_week_pregnancy(date, new Date(child.birth_date))
+      const birth_date : Date = new Date(child.birth_date)
+      const conception_date : Date = helper.get_conception_date(birth_date)
+      const week_number : number = parseInt( helper.get_week_difference(date, conception_date) )
 
       // Calculate range
       const range_str : string =
@@ -169,8 +171,11 @@ export class TrackingWeightController {
         const child : any =
           await this.model.getModel('child').findOne( { where: { id: request.gcid } })
         // Calculate weeks
-        const now_date : Date = new Date();
-        const week_number : number = helper.date_2_week_pregnancy(now_date, new Date(child.birth_date))
+        const date : Date = new Date(tracking_weight.date);
+        const birth_date : Date = new Date(child.birth_date)
+        const conception_date : Date = helper.get_conception_date(birth_date)
+        const week_number : number = parseInt( helper.get_week_difference(date, conception_date) )
+
 
         // Calculate range
         const range_str : string =
@@ -230,13 +235,15 @@ export class TrackingWeightController {
             order: [['date', 'DESC']],
           })
 
+      const conception_date : Date = helper.get_conception_date(birth_date)
+
 
 
       // Generate week_set
       const week_set = new Set<number>()
       for (let tracking of tracking_list) {
         const week_number : number =
-          helper.date_2_week_pregnancy(new Date(tracking.date), birth_date)
+          parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
         week_set.add(week_number)
       }
 
@@ -249,7 +256,7 @@ export class TrackingWeightController {
       // Fill map of objects
       for (let tracking of tracking_list) {
         const week_number : number =
-          helper.date_2_week_pregnancy(new Date(tracking.date), new Date(child.birth_date))
+          parseInt( helper.get_week_difference(new Date(tracking.date), conception_date) )
 
         const item = {
           mid : tracking.id,
@@ -308,6 +315,8 @@ export class TrackingWeightController {
       const min_pregnancy_chart : Array<number> = pregnancy_chart[1]
 
 
+      const conception_date : Date = helper.get_conception_date(birth_date)
+
       const week_list = []
       // If not enough registers -> add prepregnancy
       if( output.length < (n_week + 1) ){
@@ -326,10 +335,9 @@ export class TrackingWeightController {
           }
         })
       }
-
       for (let tracking of output) {
         const week_number : number =
-          helper.date_2_week_pregnancy(new Date(tracking.date), new Date(child.birth_date))
+          parseInt( helper.get_week_difference(date, conception_date) )
 
         // Generate week item
         week_list.push({

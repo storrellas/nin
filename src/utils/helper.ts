@@ -75,10 +75,9 @@ export function get_conception_date(birth_date : Date) : Date {
 /**
   * Calculate number of week in pregnancy
   */
-export function date_2_week_pregnancy(date : Date, birth_date: Date) : number {
-  const conception_date : Date = get_conception_date(birth_date)
-  const diff = new DateDiff( date, conception_date )
-  return parseInt(diff.weeks())
+export function get_week_difference(date: Date, reference_date: Date) : number{
+  const diff = new DateDiff( date, reference_date )
+  return diff.weeks()
 }
 
 /**
@@ -87,12 +86,4 @@ export function date_2_week_pregnancy(date : Date, birth_date: Date) : number {
 export function week_2_date_pregnancy(week_number : number, birth_date: Date) : Date {
   const conception_date : Date = get_conception_date(birth_date)
   return new Date(conception_date.setDate(conception_date.getDate()+week_number*days_per_week))
-}
-
-/**
-  * Calculate number of week after birth (age in weeks)
-  */
-export function date_2_week_age(date : Date, birth_date: Date) : number {
-  const diff = new DateDiff( date, birth_date )
-  return parseInt(diff.weeks())
 }
