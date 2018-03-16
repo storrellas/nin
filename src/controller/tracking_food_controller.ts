@@ -180,37 +180,50 @@ export class TrackingFoodController {
 
     try{
 
-      const output : any =
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
+      const birth_date : Date = new Date(child.birth_date)
+
+      // Calculate date from week number
+      const requested_week_number : number = parseInt(request.body.request_number)
+
+      // Retreive trackings
+      const tracking_list : any =
         await this.model.getModel('tracking_food').findAll(
           {
             where: {
               child_id: request.gcid,
-              owner: request.body.requester
+              //date: { $lte: requested_date }
             },
-            order: [['date', 'DESC']]
+            order: [['date', 'DESC']],
           })
 
-      const child : any =
-        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
-
-      // Generate week_set
-      const week_set = new Set<number>()
-      for (let tracking of output) {
-        const week_number : number =
-            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
-        week_set.add(week_number)
-      }
-
-      // Generate map of objects
-      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
-      for (let item of week_set) {
-        week_map.set(item, { week: String(item), tracks: [] })
-      }
-
       // Fill map of objects
-      for (let tracking of output) {
-        const week_number : number =
-            parseInt(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
+      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
+      let n_trackings : number = 0
+      let week_number : number = 0
+      for (let tracking of tracking_list) {
+        week_number = parseInt( helper.get_week_from_date(new Date(tracking.date), birth_date) )
+
+        // NOTE: Only retreive those
+        if( week_number > requested_week_number ){
+          continue;
+        }
+
+        // NOTE: Retrieve max_tracking_list items taking into account complete tracking weeks
+        // That is, n_trackings could be greater than max_trackings_list to append remaining tracks
+        if( n_trackings >= this.max_trackings_list ){
+          if( !week_map.has(week_number) ){
+            break;
+          }
+        }
+
+        // Add item to map if not exists
+        if( !week_map.has(week_number) ){
+          week_map.set(week_number, { week: String(week_number), tracks: [] })
+        }
+
+        // Append item
         const item = {
           mid            : tracking.id,
           date           : helper.date_2_epoch_unix(tracking.date),
@@ -222,6 +235,7 @@ export class TrackingFoodController {
           children       : tracking.child_id
         }
         week_map.get(week_number).tracks.push(item)
+        n_trackings ++;
       }
 
       // Generate week_list
@@ -232,17 +246,19 @@ export class TrackingFoodController {
           response: {
               list: week_list
           },
+          request_number : week_number,
           result: 0
       }
       response.json(response_json)
 
       return Promise.resolve(undefined)
     }catch(e){
-      this.logger.error("Error")
       console.log(e)
-      response.json({result:'ko'})
+      this.logger.error("Error")
+      response.json({result: 0})
       return Promise.reject(undefined)
     }
+
   }
 
 
