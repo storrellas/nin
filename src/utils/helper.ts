@@ -11,6 +11,8 @@ export const bmi_min : number = 18.5
 export function get_uid(token : string) : string{
   const item : any = jsonwebtoken.decode(token)
   //this.logger.debug("extracted uid: " + item.sub)
+  if( !item.sub )
+    return ""
   return item.sub
 }
 

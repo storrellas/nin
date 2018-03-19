@@ -174,6 +174,7 @@ export class TrackingFoodController {
   public async food_track_list(request: Request, response: Response): Promise<void> {
     this.logger.info("food_track uid:" + request.uid + " gcid:" + request.gcid)
 
+
     try{
 
       const child : any =
@@ -190,6 +191,7 @@ export class TrackingFoodController {
             where: {
               child_id: request.gcid,
               //date: { $lte: requested_date }
+              food_type_id: request.body.type
             },
             order: [['date', 'DESC']],
           })
