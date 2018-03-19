@@ -78,7 +78,7 @@ export class TrackingFoodController {
           Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
       const response_json = {
         response: {
-          food_type       : tracking.food_type,
+          food_type       : tracking.food_type_id,
           date            : helper.date_2_epoch_unix(tracking.date),
           left_amount     : tracking.left_amount,
           right_amount    : tracking.right_amount,
