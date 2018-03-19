@@ -583,25 +583,31 @@ prepararlas.",
         {
           id                    : 1,
           name                  : "Breastmilk",
-          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/breast_icon_small.png",
           gtm_label             : "breastmilk"
         },
         {
           id                    : 2,
-          name                  : "Pumped",
-          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
-          gtm_label             : "pumped"
+          name                  : "Pumped Mum",
+          icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/pump_icon_small.png",
+          gtm_label             : "pumped_mum"
         },
         {
           id                    : 3,
-          name                  : "Formula",
-          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
-          gtm_label             : "formula"
+          name                  : "Pumped Child",
+          icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/pump_icon_small_0.png",
+          gtm_label             : "pumped_child"
         },
         {
           id                    : 4,
+          name                  : "Formula",
+          icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/formula_icon_small.png",
+          gtm_label             : "formula"
+        },
+        {
+          id                    : 5,
           name                  : "Solid",
-          icon                  : "https://mx.test-nestleinfant.acsitefactory.com/sites/g/files/sxd651/f/logocomienzosano_1.png",
+          icon                  : "https://mx-test.factory.nestlebaby.com/sites/g/files/sxd651/f/solid_icon_small.png",
           gtm_label             : "solid"
         },
       ]);

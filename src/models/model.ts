@@ -107,7 +107,6 @@ export class Model implements IModel {
       left_amount           : {type: Sequelize.INTEGER},
       right_amount          : {type: Sequelize.INTEGER},
       last_breast           : {type: Sequelize.STRING(64)},
-      owner                 : {type: Sequelize.STRING(16), defaultValue: 'mum'},
       comment               : {type: Sequelize.STRING(256)},
       date                  : {type: Sequelize.DATE()}
     },
