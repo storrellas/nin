@@ -60,6 +60,51 @@ export class Model implements IModel {
     })
 
     // -----------------------
+    // Nutrition
+    // -----------------------
+
+    this.models['nutrition_component'] = this.sequelize.define('nutrition_component',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      name                  : {type: Sequelize.STRING(64)},
+      icon                  : {type: Sequelize.STRING(64)},
+      description           : {type: Sequelize.STRING(1024)},
+      gtm_label             : {type: Sequelize.STRING(1024)}
+    },
+    {
+       freezeTableName: true
+    });
+
+    this.models['ingredient'] = this.sequelize.define('ingredient',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      nutrition_component_id : {type: Sequelize.INTEGER},
+      name                   : {type: Sequelize.STRING(64)}
+    },
+    {
+       freezeTableName: true
+    });
+
+    this.models['meal_type'] = this.sequelize.define('meal_type',{
+      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      name                   : {type: Sequelize.STRING(64)},
+      date_start             : {type: Sequelize.STRING(32)},
+      date_end               : {type: Sequelize.STRING(32)},
+      gtm_label              : {type: Sequelize.STRING(32)},
+    },
+    {
+       freezeTableName: true
+    });
+
+
+    // associations
+    this.models['ingredient'].belongsTo(this.models['nutrition_component'], {
+      foreignKey: 'nutrition_component_id',
+      targetKey: 'id'
+    })
+    this.models['nutrition_component'].hasMany(this.models['ingredient'],{
+      foreignKey : 'nutrition_component_id'
+    })
+
+    // -----------------------
     // Tracking
     // -----------------------
 
@@ -114,6 +159,15 @@ export class Model implements IModel {
        freezeTableName: true
     });
 
+    this.models['tracking_food_ingredient'] = this.sequelize.define('tracking_food_ingredients',{
+      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
+      tracking_food_id      : {type: Sequelize.INTEGER},
+      ingredient_id         : {type: Sequelize.INTEGER}
+    },
+    {
+       freezeTableName: true
+    });
+
     // associations
     this.models['tracking_weight'].belongsTo(this.models['child'], {
       foreignKey: 'child_id',
@@ -132,6 +186,14 @@ export class Model implements IModel {
       targetKey: 'id'
     })
 
+    this.models['tracking_food_ingredient'].belongsTo(this.models['tracking_food'], {
+      foreignKey: 'tracking_food_id',
+      targetKey: 'id'
+    })
+    this.models['tracking_food_ingredient'].belongsTo(this.models['ingredient'], {
+      foreignKey: 'ingredient_id',
+      targetKey: 'id'
+    })
 
 
     // -----------------------
@@ -190,50 +252,7 @@ export class Model implements IModel {
       targetKey: 'id'
     })
 
-    // -----------------------
-    // Nutrition
-    // -----------------------
 
-    this.models['nutrition_component'] = this.sequelize.define('nutrition_component',{
-      id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      name                  : {type: Sequelize.STRING(64)},
-      icon                  : {type: Sequelize.STRING(64)},
-      description           : {type: Sequelize.STRING(1024)},
-      gtm_label             : {type: Sequelize.STRING(1024)}
-    },
-    {
-       freezeTableName: true
-    });
-
-    this.models['ingredient'] = this.sequelize.define('ingredient',{
-      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      nutrition_component_id : {type: Sequelize.INTEGER},
-      name                   : {type: Sequelize.STRING(64)}
-    },
-    {
-       freezeTableName: true
-    });
-
-    this.models['meal_type'] = this.sequelize.define('meal_type',{
-      id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
-      name                   : {type: Sequelize.STRING(64)},
-      date_start             : {type: Sequelize.STRING(32)},
-      date_end               : {type: Sequelize.STRING(32)},
-      gtm_label              : {type: Sequelize.STRING(32)},
-    },
-    {
-       freezeTableName: true
-    });
-
-
-    // associations
-    this.models['ingredient'].belongsTo(this.models['nutrition_component'], {
-      foreignKey: 'nutrition_component_id',
-      targetKey: 'id'
-    })
-    this.models['nutrition_component'].hasMany(this.models['ingredient'],{
-      foreignKey : 'nutrition_component_id'
-    })
 
     // -----------------------
     // Menu
