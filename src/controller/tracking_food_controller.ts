@@ -275,4 +275,37 @@ export class TrackingFoodController {
     response.json({result: 0})
     return Promise.resolve(undefined)
   }
+
+
+  /**
+    * Ingredients
+    */
+  @httpPost('custom/ingredients/list')
+  public async ingredients_list(request: Request, response: Response): Promise<void> {
+    this.logger.info("ingredients_list")
+    try{
+
+      const ingredient_list : any =
+        await this.model.getModel('ingredient').findAll({
+          attributes: [['id', 'tid'], 'name', ['nutrition_component_id', 'foodgroup']]
+        })
+
+      // Generate Response
+      const response_json = {
+        result: 0,
+        response: {
+          ingredients: ingredient_list
+        }
+      }
+      response.json(response_json)
+    }catch(e){
+      console.log(e)
+      this.logger.error("Error")
+      response.json({result: 0})
+      return Promise.reject(undefined)
+    }
+
+    return Promise.resolve(undefined)
+  }
+
 }
