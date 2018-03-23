@@ -147,7 +147,7 @@ export class ContentController {
         await this.model.getModel('nutrition_component').findAll({
           include: [
             {
-             model: this.model.getModel('nutrition_substitute')
+             model: this.model.getModel('ingredient')
             }
           ]
         })
@@ -157,17 +157,17 @@ export class ContentController {
       const nutrition_list : any[] = []
       for (let item of output) {
 
-      // Generate nutrition_substitute list
-        const nutrition_substitute_list : any[] = []
-        for (let component of item.nutrition_substitutes) {
-          nutrition_substitute_list.push(component.name)
+      // Generate ingredient list
+        const ingredient_list : any[] = []
+        for (let component of item.ingredients) {
+          ingredient_list.push(component.name)
         }
 
         nutrition_list.push({
           tid: item.id,
           name: item.name,
           field_nc_icon: item.icon,
-          field_nc_substitutes: nutrition_substitute_list,
+          field_nc_substitutes: ingredient_list,
           description: item.description,
           gtm_label: item.gtm_label,
         })

@@ -158,7 +158,7 @@ prepararlas.",
                 },
               ]);
 
-      await this.models['nutrition_substitute'].bulkCreate(
+      await this.models['ingredient'].bulkCreate(
               [
                 // 1
                 { id : 1, nutrition_component_id : 1, name : "1 cdita de aceite" },

@@ -205,7 +205,7 @@ export class Model implements IModel {
        freezeTableName: true
     });
 
-    this.models['nutrition_substitute'] = this.sequelize.define('nutrition_substitute',{
+    this.models['ingredient'] = this.sequelize.define('ingredient',{
       id                     : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       nutrition_component_id : {type: Sequelize.INTEGER},
       name                   : {type: Sequelize.STRING(64)}
@@ -227,11 +227,11 @@ export class Model implements IModel {
 
 
     // associations
-    this.models['nutrition_substitute'].belongsTo(this.models['nutrition_component'], {
+    this.models['ingredient'].belongsTo(this.models['nutrition_component'], {
       foreignKey: 'nutrition_component_id',
       targetKey: 'id'
     })
-    this.models['nutrition_component'].hasMany(this.models['nutrition_substitute'],{
+    this.models['nutrition_component'].hasMany(this.models['ingredient'],{
       foreignKey : 'nutrition_component_id'
     })
 
