@@ -65,6 +65,8 @@ export class TrackingFoodController {
             left_amount   : request.body.left_amount,
             right_amount  : request.body.right_amount,
             last_breast   : request.body.last_breast,
+            formula_name  : request.body.formula_name,
+            quantity      : request.body.quantity,
             comment       : request.body.comment,
             date          : helper.epoch_unix_2_date(unix_timestamp)
           })
@@ -78,16 +80,17 @@ export class TrackingFoodController {
           Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
       const response_json = {
         response: {
+          nid             : tracking.id,
           food_type       : tracking.food_type_id,
           date            : helper.date_2_epoch_unix(tracking.date),
           left_amount     : tracking.left_amount,
           right_amount    : tracking.right_amount,
           last_breast     : tracking.last_breast,
+          formula_name    : tracking.formula_name,
+          quantity        : tracking.quantity,
           comment         : tracking.comment,
           week            : week_number,
-          children        : tracking.gcid,
-          uid             : request.uid,
-          nid             : tracking.id
+          children        : tracking.child_id
         },
         result: 0
       }
@@ -115,6 +118,8 @@ export class TrackingFoodController {
             left_amount   : request.body.left_amount,
             right_amount  : request.body.right_amount,
             last_breast   : request.body.last_breast,
+            formula_name  : request.body.formula_name,
+            quantity      : request.body.quantity,
             comment       : request.body.comment,
           },
           {
@@ -141,22 +146,32 @@ export class TrackingFoodController {
         // Calculate response
         const week_number : number =
             Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
-        const response_json = {
-          response: {
-            food_type     : tracking.food_type,
-            date          : helper.date_2_epoch_unix(tracking.date),
-            left_amount   : tracking.left_amount,
-            right_amount  : tracking.right_amount,
-            last_breast   : tracking.last_breast,
-            comment       : tracking.comment,
-            week          : week_number,
-            children      : request.gcid,
-            uid           : request.uid,
-            nid           : tracking.id
-          },
-          result: 0
+
+        // Add common fields
+        let entity : any = {
+          nid           : tracking.id,
+          food_type     : tracking.food_type,
+          date          : helper.date_2_epoch_unix(tracking.date),
         }
-        response.json(response_json)
+        // Add tracking for breastmilk, pumped_child and pumped_mum
+        if( tracking.left_amount ){
+          entity.left_amount = tracking.left_amount
+          entity.right_amount = tracking.right_amount
+          entity.last_breast = tracking.last_breast
+        }
+        // Add tracking for formula
+        if( tracking.formula_name ){
+          entity.formula_name = tracking.formula_name
+          entity.quantity = tracking.quantity
+        }
+        // Add rest of common fields
+        entity.comment = tracking.comment,
+        entity.week = week_number,
+        entity.children = request.gcid
+        response.json({
+            response: entity,
+            result: 0
+        })
       }
       return Promise.resolve(undefined)
     }catch(e){

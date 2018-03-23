@@ -152,6 +152,8 @@ export class Model implements IModel {
       left_amount           : {type: Sequelize.INTEGER},
       right_amount          : {type: Sequelize.INTEGER},
       last_breast           : {type: Sequelize.STRING(64)},
+      formula_name          : {type: Sequelize.STRING(64)},
+      quantity              : {type: Sequelize.INTEGER},
       comment               : {type: Sequelize.STRING(256)},
       date                  : {type: Sequelize.DATE()}
     },
