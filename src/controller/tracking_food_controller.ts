@@ -62,11 +62,19 @@ export class TrackingFoodController {
           await this.model.getModel('tracking_food').create({
             child_id      : request.gcid,
             food_type_id  : request.body.food_type,
+
+            // Fields for breastmilk, pumped_child and pumped_mum
             left_amount   : request.body.left_amount,
             right_amount  : request.body.right_amount,
             last_breast   : request.body.last_breast,
-            formula_name  : request.body.formula_name,
+
+            // Fields for formula, solid
             quantity      : request.body.quantity,
+            // Fields for formula
+            formula_name  : request.body.formula_name,
+            // Fields for solid
+            reaction      : request.body.reaction,
+
             comment       : request.body.comment,
             date          : helper.epoch_unix_2_date(unix_timestamp)
           })

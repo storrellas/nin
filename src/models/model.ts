@@ -149,11 +149,17 @@ export class Model implements IModel {
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       child_id              : {type: Sequelize.STRING(64)},
       food_type_id          : {type: Sequelize.INTEGER},
+      // Fields for breastmilk, pumped_child and pumped_mum
       left_amount           : {type: Sequelize.INTEGER},
       right_amount          : {type: Sequelize.INTEGER},
       last_breast           : {type: Sequelize.STRING(64)},
-      formula_name          : {type: Sequelize.STRING(64)},
+      // Fields for formula, solid
       quantity              : {type: Sequelize.INTEGER},
+      // Fields for formula
+      formula_name          : {type: Sequelize.STRING(64)},
+      // Fields for solid
+      reaction              : {type: Sequelize.STRING(64)},
+
       comment               : {type: Sequelize.STRING(256)},
       date                  : {type: Sequelize.DATE()}
     },
