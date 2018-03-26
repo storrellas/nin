@@ -194,6 +194,9 @@ export class Model implements IModel {
       targetKey: 'id'
     })
 
+    this.models['tracking_food'].hasMany(this.models['tracking_food_ingredient'], {
+      foreignKey: 'tracking_food_id',
+    })
     this.models['tracking_food_ingredient'].belongsTo(this.models['tracking_food'], {
       foreignKey: 'tracking_food_id',
       targetKey: 'id'

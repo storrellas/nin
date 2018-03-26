@@ -17,6 +17,44 @@ export class TrackingFoodController {
               @inject(TYPES.Logger) private logger: LoggerInstance){
   }
 
+  private generate_entity(tracking : any, ingredient_list : any , child : any) : any {
+
+    // Calculate response
+    const week_number : number =
+        Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
+
+    // Add common fields
+    let entity : any = {
+      nid           : tracking.id,
+      food_type     : tracking.food_type_id,
+      date          : helper.date_2_epoch_unix(tracking.date),
+    }
+    // Add tracking for breastmilk, pumped_child and pumped_mum
+    if( tracking.left_amount ){
+      entity.left_amount = tracking.left_amount
+      entity.right_amount = tracking.right_amount
+      entity.last_breast = tracking.last_breast
+    }
+    // Add tracking for formula
+    if( tracking.formula_name ){
+      entity.formula_name = tracking.formula_name
+      entity.quantity = tracking.quantity
+    }
+    // Add tracking for solid
+    if( tracking.reaction ){
+      entity.reaction = tracking.reaction
+      entity.ingredients = ingredient_list
+      entity.quantity = tracking.quantity
+    }
+    // Add rest of common fields
+    entity.comment = tracking.comment,
+    entity.date = helper.date_2_epoch_unix(tracking.date)
+    entity.week = week_number,
+    entity.children = child.id
+    return entity
+
+  }
+
 
   /**
     * Food Track - Retrieve
@@ -80,37 +118,30 @@ export class TrackingFoodController {
           })
       this.logger.info("tracking created!")
 
+      // Iterate ingredients
+      const ingredient_list = []
+      if( request.body.ingredients ){
+        for (let ingredient of request.body.ingredients) {
+          const food_ingredient : any =
+              await this.model.getModel('tracking_food_ingredient').create({
+                tracking_food_id : tracking.id,
+                ingredient_id : ingredient
+              })
+          ingredient_list.push(food_ingredient.ingredient_id)
+        }
+      }
+
+      // Retrieve child
       const child : any =
         await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
-      // Calculate response
-      const week_number : number =
-          Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
-      const response_json = {
-        response: {
-          nid             : tracking.id,
-          food_type       : tracking.food_type_id,
-
-          // Fields for breastmilk, pumped_child and pumped_mum
-          left_amount     : tracking.left_amount,
-          right_amount    : tracking.right_amount,
-          last_breast     : tracking.last_breast,
-
-          // Fields for formula, solid
-          quantity        : tracking.quantity,
-          // Fields for formula
-          formula_name    : tracking.formula_name,
-          // Fields for solid
-          reaction        : tracking.reaction,
-
-          comment         : tracking.comment,
-          date            : helper.date_2_epoch_unix(tracking.date),
-          week            : week_number,
-          children        : tracking.child_id
-        },
-        result: 0
-      }
-      response.json(response_json)
+      // Generate entity
+      const entity : any =
+        this.generate_entity(tracking, ingredient_list, child)
+      response.json({
+          response: entity,
+          result: 0
+      })
       return Promise.resolve(undefined)
     }catch(e){
       this.logger.error("Error")
@@ -151,6 +182,23 @@ export class TrackingFoodController {
             }
           })
 
+      // Iterate ingredients
+      await this.model.getModel('tracking_food_ingredient').destroy({
+        where: {
+          tracking_food_id: request.body.nid
+        }
+      })
+      if( request.body.ingredients ){
+        for (let ingredient of request.body.ingredients) {
+          const food_ingredient : any =
+              await this.model.getModel('tracking_food_ingredient').create({
+                tracking_food_id : request.body.nid,
+                ingredient_id : ingredient
+              })
+        }
+      }
+
+
       // Check row affected
       if( output[0] == 0 ){
         this.logger.error("id not found")
@@ -160,42 +208,27 @@ export class TrackingFoodController {
         // Build response
         const tracking : any =
           await this.model.getModel('tracking_food').findOne({
+              include: [
+                {
+                 model: this.model.getModel('tracking_food_ingredient')
+                }
+              ],
               where: {id: request.body.nid}
             })
-        // Build response
+
+
+        // Retrieve child
         const child : any =
           await this.model.getModel('child').findOne( { where: { id: request.gcid } })
 
-        // Calculate response
-        const week_number : number =
-            Math.floor(helper.get_week_from_date(new Date(tracking.date), new Date(child.birth_date)))
+        const ingredient_list = []
+        for (let ingredient of tracking.tracking_food_ingredients) {
+          ingredient_list.push(ingredient.ingredient_id)
+        }
 
-        // Add common fields
-        let entity : any = {
-          nid           : tracking.id,
-          food_type     : tracking.food_type,
-          date          : helper.date_2_epoch_unix(tracking.date),
-        }
-        // Add tracking for breastmilk, pumped_child and pumped_mum
-        if( tracking.left_amount ){
-          entity.left_amount = tracking.left_amount
-          entity.right_amount = tracking.right_amount
-          entity.last_breast = tracking.last_breast
-        }
-        // Add tracking for formula
-        if( tracking.formula_name ){
-          entity.formula_name = tracking.formula_name
-          entity.quantity = tracking.quantity
-        }
-        // Add tracking for solid
-        if( tracking.reaction ){
-          entity.reaction = tracking.reaction
-          entity.quantity = tracking.quantity
-        }
-        // Add rest of common fields
-        entity.comment = tracking.comment,
-        entity.week = week_number,
-        entity.children = request.gcid
+        // Generate entity
+        const entity : any =
+          this.generate_entity(tracking, ingredient_list, child)
         response.json({
             response: entity,
             result: 0
@@ -264,6 +297,9 @@ export class TrackingFoodController {
           week_map.set(week_number, { week: String(week_number), tracks: [] })
         }
 
+        // // Generate entity
+        // const item : any =
+        //   this.generate_entity(tracking, [], child)
         // Append item
         const item = {
           mid            : tracking.id,
