@@ -90,13 +90,21 @@ export class TrackingFoodController {
         response: {
           nid             : tracking.id,
           food_type       : tracking.food_type_id,
-          date            : helper.date_2_epoch_unix(tracking.date),
+
+          // Fields for breastmilk, pumped_child and pumped_mum
           left_amount     : tracking.left_amount,
           right_amount    : tracking.right_amount,
           last_breast     : tracking.last_breast,
-          formula_name    : tracking.formula_name,
+
+          // Fields for formula, solid
           quantity        : tracking.quantity,
+          // Fields for formula
+          formula_name    : tracking.formula_name,
+          // Fields for solid
+          reaction        : tracking.reaction,
+
           comment         : tracking.comment,
+          date            : helper.date_2_epoch_unix(tracking.date),
           week            : week_number,
           children        : tracking.child_id
         },
@@ -123,11 +131,18 @@ export class TrackingFoodController {
       const output : any =
         await this.model.getModel('tracking_food').update(
           {
+            // Fields for breastmilk, pumped_child and pumped_mum
             left_amount   : request.body.left_amount,
             right_amount  : request.body.right_amount,
             last_breast   : request.body.last_breast,
-            formula_name  : request.body.formula_name,
+
+            // Fields for formula, solid
             quantity      : request.body.quantity,
+            // Fields for formula
+            formula_name  : request.body.formula_name,
+            // Fields for solid
+            reaction      : request.body.reaction,
+
             comment       : request.body.comment,
           },
           {
@@ -170,6 +185,11 @@ export class TrackingFoodController {
         // Add tracking for formula
         if( tracking.formula_name ){
           entity.formula_name = tracking.formula_name
+          entity.quantity = tracking.quantity
+        }
+        // Add tracking for solid
+        if( tracking.reaction ){
+          entity.reaction = tracking.reaction
           entity.quantity = tracking.quantity
         }
         // Add rest of common fields
