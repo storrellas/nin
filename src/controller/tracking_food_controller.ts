@@ -56,35 +56,6 @@ export class TrackingFoodController {
   }
 
 
-  /**
-    * Food Track - Retrieve
-    */
-  @httpPost('custom/food_type/list')
-  public async food_type_retrieve(request: Request, response: Response): Promise<void> {
-    this.logger.info("food_type_retrieve")
-
-    try{
-
-    const food_type_list : any =
-      await this.model.getModel('food_type').findAll({
-        attributes: [['id','tid'], 'name', ['icon', 'field_icon'], 'gtm_label']
-      })
-
-      const response_json = {
-        response: {
-          food_type: food_type_list
-        },
-        result: 0
-      }
-      response.json(response_json)
-      return Promise.resolve(undefined)
-    }catch(e){
-      this.logger.error("Error")
-      console.log(e)
-      response.json({result:-1})
-      return Promise.reject(undefined)
-    }
-  }
 
   /**
     * Food Track - Create
@@ -262,11 +233,14 @@ export class TrackingFoodController {
 
       // Retreive trackings
       const tracking_list : any =
-        await this.model.getModel('tracking_food').findAll(
-          {
+        await this.model.getModel('tracking_food').findAll({
+            include: [
+              {
+               model: this.model.getModel('tracking_food_ingredient')
+              }
+            ],
             where: {
               child_id: request.gcid,
-              //date: { $lte: requested_date }
               food_type_id: request.body.type
             },
             order: [['date', 'DESC']],
@@ -297,20 +271,14 @@ export class TrackingFoodController {
           week_map.set(week_number, { week: String(week_number), tracks: [] })
         }
 
-        // // Generate entity
-        // const item : any =
-        //   this.generate_entity(tracking, [], child)
-        // Append item
-        const item = {
-          mid            : tracking.id,
-          date           : helper.date_2_epoch_unix(tracking.date),
-          left_amount    : tracking.left_amount,
-          right_amount   : tracking.right_amount,
-          last_breast    : tracking.last_breast,
-          pumped         : tracking.pumped,
-          comment        : tracking.comment,
-          children       : tracking.child_id
+        const ingredient_list = []
+        for (let ingredient of tracking.tracking_food_ingredients) {
+          ingredient_list.push(ingredient.ingredient_id)
         }
+
+        // Generate entity
+        const item : any =
+           this.generate_entity(tracking, ingredient_list, child)
 
         // Append item
         const value : any = week_map.get(week_number)
@@ -355,6 +323,37 @@ export class TrackingFoodController {
     return Promise.resolve(undefined)
   }
 
+
+
+    /**
+      * Food Track - Retrieve
+      */
+    @httpPost('custom/food_type/list')
+    public async food_type_retrieve(request: Request, response: Response): Promise<void> {
+      this.logger.info("food_type_retrieve")
+
+      try{
+
+      const food_type_list : any =
+        await this.model.getModel('food_type').findAll({
+          attributes: [['id','tid'], 'name', ['icon', 'field_icon'], 'gtm_label']
+        })
+
+        const response_json = {
+          response: {
+            food_type: food_type_list
+          },
+          result: 0
+        }
+        response.json(response_json)
+        return Promise.resolve(undefined)
+      }catch(e){
+        this.logger.error("Error")
+        console.log(e)
+        response.json({result:-1})
+        return Promise.reject(undefined)
+      }
+    }
 
   /**
     * Ingredients
