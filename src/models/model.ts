@@ -152,7 +152,7 @@ export class Model implements IModel {
       // Fields for breastmilk, pumped_child and pumped_mum
       left_amount           : {type: Sequelize.INTEGER},
       right_amount          : {type: Sequelize.INTEGER},
-      last_breast           : {type: Sequelize.STRING(64)},
+      last_breast           : {type: Sequelize.STRING(16)},
       // Fields for formula, solid
       quantity              : {type: Sequelize.INTEGER},
       // Fields for formula

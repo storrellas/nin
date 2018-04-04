@@ -687,17 +687,28 @@ prepararlas.",
       const food_track_list = []
       const n_food_tracks_per_day = 8
       const n_days = 30
-      const n_food_track = 8 * 30
-      for(let ind = 1; ind < n_food_track; ind+=1){
-        food_track_list.push(        {
-                  id                    : ind,
-                  food_type_id          : 3, // pumped_child
-                  child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
-                  quantity              : 10.0,
-                  reaction              : "like",
-                  comment               : "my comment",
-                  date                  : "2018-02-14 13:35:28"
+      const n_food_track = 4 * 30
+      const start_date : Date = new Date('2018-03-22 00:00:00')
+      for(let ind = 1; ind < n_food_track; ind+=2){
+        food_track_list.push({
+              id                    : ind,
+              food_type_id          : 3, // pumped_child
+              child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+              left_amount           : 10.0,
+              right_amount          : 10.0,
+              last_breast           : "left",
+              comment               : "my comment",
+              date                  : new Date(start_date.setHours(start_date.getHours()+6))
           })
+          food_track_list.push({
+                id                    : ind+1,
+                food_type_id          : 4, // forumula
+                child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+                quantity              : 10.0,
+                formula_name          : "my formula",
+                comment               : "my comment",
+                date                  : new Date(start_date.setHours(start_date.getHours()+6))
+            })
       }
       await this.models['tracking_food'].bulkCreate(food_track_list);
 
