@@ -723,11 +723,17 @@ prepararlas.",
 
       // Add ingredients to tracking_food
       const food_track_ingredient_list = []
-      for(let ind = 1; ind < n_food_track; ind+=3){ // Iterating every food track
+      let food_track_id : number = 3
+      for(let ind = 1; food_track_id < n_food_track; ind+=2, food_track_id += 3){ // Iterating every food track
         food_track_ingredient_list.push({
-              id                    : ind+2,
-              tracking_food_id      : ind+2,
+              id                    : ind,
+              tracking_food_id      : food_track_id,
               ingredient_id         : 1
+          })
+        food_track_ingredient_list.push({
+              id                    : ind+1,
+              tracking_food_id      : food_track_id,
+              ingredient_id         : 2
           })
       }
       await this.models['tracking_food_ingredient'].bulkCreate(food_track_ingredient_list);
