@@ -689,7 +689,7 @@ prepararlas.",
       const n_days = 30
       const n_food_track = 8 * 30
       const start_date : Date = new Date('2018-03-22 00:00:00')
-      for(let ind = 1; ind < n_food_track; ind+=2){
+      for(let ind = 1; ind < n_food_track; ind+=3){
         food_track_list.push({
               id                    : ind,
               food_type_id          : 3, // pumped_child
@@ -698,7 +698,7 @@ prepararlas.",
               right_amount          : 10.0,
               last_breast           : "left",
               comment               : "my comment",
-              date                  : new Date(start_date.setHours(start_date.getHours()+6))
+              date                  : new Date(start_date.setHours(start_date.getHours()+7))
           })
           food_track_list.push({
                 id                    : ind+1,
@@ -707,10 +707,30 @@ prepararlas.",
                 quantity              : 10.0,
                 formula_name          : "my formula",
                 comment               : "my comment",
-                date                  : new Date(start_date.setHours(start_date.getHours()+6))
+                date                  : new Date(start_date.setHours(start_date.getHours()+3))
+            })
+          food_track_list.push({
+                id                    : ind+2,
+                food_type_id          : 5, // solid
+                child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+                quantity              : 10.0,
+                reaction              : "like",
+                comment               : "my comment",
+                date                  : new Date(start_date.setHours(start_date.getHours()+5))
             })
       }
       await this.models['tracking_food'].bulkCreate(food_track_list);
+
+      // Add ingredients to tracking_food
+      const food_track_ingredient_list = []
+      for(let ind = 1; ind < n_food_track; ind+=3){ // Iterating every food track
+        food_track_ingredient_list.push({
+              id                    : ind+2,
+              tracking_food_id      : ind+2,
+              ingredient_id         : 1
+          })
+      }
+      await this.models['tracking_food_ingredient'].bulkCreate(food_track_ingredient_list);
 
       return Promise.resolve(undefined)
     }catch(e){

@@ -250,9 +250,14 @@ export class TrackingFoodController {
       let week_number : number = 0;
       if( request.get('raw') == 'true'){
 
+
         for (let tracking of tracking_list) {
+          const ingredient_list = []
+          for (let ingredient of tracking.tracking_food_ingredients) {
+            ingredient_list.push(ingredient.ingredient_id)
+          }
           const item : any =
-             this.generate_entity(tracking, [], child)
+             this.generate_entity(tracking, ingredient_list, child)
              response_list.push(item)
          }
 
