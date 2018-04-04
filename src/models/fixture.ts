@@ -694,8 +694,8 @@ prepararlas.",
               id                    : ind,
               food_type_id          : 3, // pumped_child
               child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
-              left_amount           : 10.0,
-              right_amount          : 10.0,
+              left                  : 10.0,
+              right                 : 10.0,
               last_breast           : "left",
               comment               : "my comment",
               date                  : new Date(start_date.setHours(start_date.getHours()+7))

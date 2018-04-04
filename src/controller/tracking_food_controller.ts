@@ -30,9 +30,9 @@ export class TrackingFoodController {
       date          : helper.date_2_epoch_unix(tracking.date),
     }
     // Add tracking for breastmilk, pumped_child and pumped_mum
-    if( tracking.left_amount ){
-      entity.left_amount = tracking.left_amount
-      entity.right_amount = tracking.right_amount
+    if( tracking.left ){
+      entity.left = tracking.left
+      entity.right = tracking.right
       entity.last_breast = tracking.last_breast
     }
     // Add tracking for formula
@@ -73,8 +73,8 @@ export class TrackingFoodController {
             food_type_id  : request.body.food_type,
 
             // Fields for breastmilk, pumped_child and pumped_mum
-            left_amount   : request.body.left_amount,
-            right_amount  : request.body.right_amount,
+            left          : request.body.left,
+            right         : request.body.right,
             last_breast   : request.body.last_breast,
 
             // Fields for formula, solid
@@ -134,8 +134,8 @@ export class TrackingFoodController {
         await this.model.getModel('tracking_food').update(
           {
             // Fields for breastmilk, pumped_child and pumped_mum
-            left_amount   : request.body.left_amount,
-            right_amount  : request.body.right_amount,
+            left          : request.body.left,
+            right         : request.body.right,
             last_breast   : request.body.last_breast,
 
             // Fields for formula, solid
@@ -240,7 +240,7 @@ export class TrackingFoodController {
             ],
             where: {
               child_id: request.gcid,
-              food_type_id: request.body.type
+              food_type_id: request.body.food_type
             },
             order: [['date', 'DESC']],
           })
