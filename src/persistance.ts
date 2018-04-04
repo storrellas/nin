@@ -37,6 +37,7 @@ nconf.set('NODE_ENV', process.env.NODE_ENV)
 
 
 nconf.set('CREATE_USER', true)
+nconf.set('CREATE_FOOD_TRACKING', true)
 
 // ------------------------------------
 // CONFIGURE LOGGER
@@ -88,8 +89,9 @@ for (let key in nconf.get()) {
 }
 logger.info(JSON.stringify(config, null, 4));
 
+
 logger.info("Creating models ...")
-fixture.sync(nconf.get('CREATE_USER'))
+fixture.sync(nconf.get('CREATE_USER'),nconf.get('CREATE_FOOD_TRACKING'))
 .then( () => {
   if( nconf.get('CREATE_USER') )
     logger.info("Created user models")

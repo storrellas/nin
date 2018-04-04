@@ -221,7 +221,6 @@ export class TrackingFoodController {
   public async food_track_list(request: Request, response: Response): Promise<void> {
     this.logger.info("food_track uid:" + request.uid + " gcid:" + request.gcid)
 
-
     try{
 
       const child : any =
@@ -246,53 +245,69 @@ export class TrackingFoodController {
             order: [['date', 'DESC']],
           })
 
-      // Fill map of objects
-      const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
-      let n_trackings : number = 0
-      let week_number : number = 0
-      for (let tracking of tracking_list) {
-        week_number = Math.floor( helper.get_week_from_date(new Date(tracking.date), birth_date) )
+      let response_list : {[id:string]:any}[] = []
+      let week_number : number = 0;
+      if( request.get('raw') == 'true'){
 
-        // NOTE: Only retreive those
-        if( week_number > requested_week_number ){
-          continue;
-        }
+        for (let tracking of tracking_list) {
+          const item : any =
+             this.generate_entity(tracking, [], child)
+             response_list.push(item)
+         }
 
-        // NOTE: Retrieve max_tracking_list items taking into account complete tracking weeks
-        // That is, n_trackings could be greater than max_trackings_list to append remaining tracks
-        if( n_trackings >= this.options.max_trackings_list ){
-          if( !week_map.has(week_number) ){
-            break;
+      } // END: IF -----------------------------------
+      else
+      {
+        // Fill map of objects
+        const week_map : Map<number,{[id:string]:any}> = new Map<number,{[id:string]:any}>()
+        let n_trackings : number = 0
+        for (let tracking of tracking_list) {
+          week_number = Math.floor( helper.get_week_from_date(new Date(tracking.date), birth_date) )
+
+          // NOTE: Only retreive those
+          if( week_number > requested_week_number ){
+            continue;
           }
+
+          // NOTE: Retrieve max_tracking_list items taking into account complete tracking weeks
+          // That is, n_trackings could be greater than max_trackings_list to append remaining tracks
+          if( n_trackings >= this.options.max_trackings_list ){
+            if( !week_map.has(week_number) ){
+              break;
+            }
+          }
+
+          // Add item to map if not exists
+          if( !week_map.has(week_number) ){
+            week_map.set(week_number, { week: String(week_number), tracks: [] })
+          }
+
+          const ingredient_list = []
+          for (let ingredient of tracking.tracking_food_ingredients) {
+            ingredient_list.push(ingredient.ingredient_id)
+          }
+
+          // Generate entity
+          const item : any =
+             this.generate_entity(tracking, ingredient_list, child)
+
+          // Append item
+          const value : any = week_map.get(week_number)
+          value.tracks.push(item)
+          n_trackings ++;
         }
 
-        // Add item to map if not exists
-        if( !week_map.has(week_number) ){
-          week_map.set(week_number, { week: String(week_number), tracks: [] })
-        }
+        // Generate week_list
+        response_list = Array.from(week_map.values())
 
-        const ingredient_list = []
-        for (let ingredient of tracking.tracking_food_ingredients) {
-          ingredient_list.push(ingredient.ingredient_id)
-        }
+      } // END: ELSE -----------------------------------
 
-        // Generate entity
-        const item : any =
-           this.generate_entity(tracking, ingredient_list, child)
 
-        // Append item
-        const value : any = week_map.get(week_number)
-        value.tracks.push(item)
-        n_trackings ++;
-      }
-
-      // Generate week_list
-      const week_list : {[id:string]:any}[] = Array.from(week_map.values())
 
       // Generate response
       const response_json = {
           response: {
-              list: week_list
+              list: response_list
           },
           request_number : week_number,
           result: 0

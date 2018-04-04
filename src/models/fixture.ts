@@ -10,7 +10,7 @@ export class Fixture extends Model{
     super(database, user, password, options)
   }
 
-  public async sync(create_user : boolean = false) : Promise<void> {
+  public async sync(create_user : boolean = false, create_food_tracking : boolean = false) : Promise<void> {
 
     try{
       await this.sequelize.sync({force:true})
@@ -679,6 +679,27 @@ prepararlas.",
           date                  : "2018-02-14 13:35:28"
         }
       ]);
+
+      if( !create_food_tracking )
+        return Promise.resolve(undefined)
+
+      // Generate food track
+      const food_track_list = []
+      const n_food_tracks_per_day = 8
+      const n_days = 30
+      const n_food_track = 8 * 30
+      for(let ind = 1; ind < n_food_track; ind+=1){
+        food_track_list.push(        {
+                  id                    : ind,
+                  food_type_id          : 3, // pumped_child
+                  child_id              : "403aacbc9a35457396675ea8e4f02589_1520256452126",
+                  quantity              : 10.0,
+                  reaction              : "like",
+                  comment               : "my comment",
+                  date                  : "2018-02-14 13:35:28"
+          })
+      }
+      await this.models['tracking_food'].bulkCreate(food_track_list);
 
       return Promise.resolve(undefined)
     }catch(e){

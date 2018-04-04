@@ -158,7 +158,7 @@ export class Model implements IModel {
       // Fields for formula
       formula_name          : {type: Sequelize.STRING(64)},
       // Fields for solid
-      reaction              : {type: Sequelize.STRING(64)},
+      reaction              : {type: Sequelize.STRING(16)},
 
       comment               : {type: Sequelize.STRING(256)},
       date                  : {type: Sequelize.DATE()}
