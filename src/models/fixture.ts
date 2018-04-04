@@ -687,7 +687,7 @@ prepararlas.",
       const food_track_list = []
       const n_food_tracks_per_day = 8
       const n_days = 30
-      const n_food_track = 4 * 30
+      const n_food_track = 8 * 30
       const start_date : Date = new Date('2018-03-22 00:00:00')
       for(let ind = 1; ind < n_food_track; ind+=2){
         food_track_list.push({

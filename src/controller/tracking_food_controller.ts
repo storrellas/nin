@@ -245,6 +245,7 @@ export class TrackingFoodController {
             order: [['date', 'DESC']],
           })
 
+
       let response_list : {[id:string]:any}[] = []
       let week_number : number = 0;
       if( request.get('raw') == 'true'){
