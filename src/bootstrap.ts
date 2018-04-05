@@ -45,7 +45,7 @@ declare global {
 nconf.argv().env({separator:'__'})
 
 // Check whether configuration file is found
-let config_file : string = nconf.get('config_file') || './src/resources/NINConfiguration.json.default';
+let config_file : string = nconf.get('config_file') || __dirname + '/../src/resources/NINConfiguration.json.default';
 if (!fs.existsSync(config_file)) {
   console.error("Default Configuration file " + config_file + " was not found! ");
   process.exit(1);
@@ -53,9 +53,10 @@ if (!fs.existsSync(config_file)) {
 nconf.file({ file: config_file });
 
 // Enable custom configuration file
-config_file = './src/resources/NINConfiguration.json';
-if (fs.existsSync(config_file)) {
+const custom_config_file = __dirname + '/src/resources/NINConfiguration.json';
+if (fs.existsSync(custom_config_file)) {
   console.log("Reading custom Configuration file " + config_file + " was found! ");
+  config_file = custom_config_file
   nconf.file({ file: config_file });
 }
 
@@ -104,8 +105,6 @@ container.bind<LoggerInstance>(TYPES.Logger).toConstantValue(logger);
 //     })
 //   );
 // }
-
-
 
 if( nconf.get('NODE_ENV') === 'integration_test'){
   nconf.set('MYSQL','USING SQLITE FOR INTEGRATION TESTS')
