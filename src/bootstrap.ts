@@ -208,6 +208,13 @@ server.setConfig((app: Application) => {
 
   // Middleware for extracting data from url / body and set into request.data
   app.use((request: Request, response: Response, next : NextFunction) => {
+
+    // Cache time does not provide headers
+    if( request.url.indexOf('custom/cache/time') >= 0){
+      next()
+      return
+    }
+
     request.gcid = request.get('gcid')
     const token : any = request.get('token')
     request.uid = helper.get_uid(token)

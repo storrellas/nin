@@ -30,7 +30,6 @@ services:
     depends_on:
       - redis
     environment:
-      - VIRTUAL_HOST=${VIRTUAL_HOST}
       - HTTPS_METHOD=noredirect
       - LOGLEVEL=${LOGLEVEL}
       - REDIS__HOST=redis
