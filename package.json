@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build:live",
     "build": "./node_modules/typescript/bin/tsc",
-    "build:launch": "node ./build/bootstrap.js",
+    "launch": "node ./build/bootstrap.js",
     "build:live": "nodemon -L --exec ./node_modules/.bin/ts-node -- ./src/bootstrap.ts",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "mocha --opts mocha.unit.opts",
