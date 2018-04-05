@@ -81,29 +81,29 @@ const logger : LoggerInstance = new WLogger({
 const container = new Container();
 
 container.bind<LoggerInstance>(TYPES.Logger).toConstantValue(logger);
-if( process.env.NODE_ENV === 'production')
-{
-  // container.bind<IDataStore>(TYPES.DataStore).toConstantValue(
-  //   new LocalDataStore(new WLogger())
-  // );
-
-  container.bind<IDataStore>(TYPES.DataStore).toConstantValue(
-    new DataStore(container.get<LoggerInstance>(TYPES.Logger), {
-      host   : nconf.get('REDIS:HOST'),
-      port   : nconf.get('REDIS:PORT'),
-      expire : nconf.get('REDIS:EXPIRE')
-    })
-  );
-
-}else{
-  container.bind<IDataStore>(TYPES.DataStore).toConstantValue(
-    new DataStore(container.get<LoggerInstance>(TYPES.Logger), {
-      host   : nconf.get('REDIS:HOST'),
-      port   : nconf.get('REDIS:PORT'),
-      expire : nconf.get('REDIS:EXPIRE')
-    })
-  );
-}
+// if( process.env.NODE_ENV === 'production')
+// {
+//   // container.bind<IDataStore>(TYPES.DataStore).toConstantValue(
+//   //   new LocalDataStore(new WLogger())
+//   // );
+//
+//   container.bind<IDataStore>(TYPES.DataStore).toConstantValue(
+//     new DataStore(container.get<LoggerInstance>(TYPES.Logger), {
+//       host   : nconf.get('REDIS:HOST'),
+//       port   : nconf.get('REDIS:PORT'),
+//       expire : nconf.get('REDIS:EXPIRE')
+//     })
+//   );
+//
+// }else{
+//   container.bind<IDataStore>(TYPES.DataStore).toConstantValue(
+//     new DataStore(container.get<LoggerInstance>(TYPES.Logger), {
+//       host   : nconf.get('REDIS:HOST'),
+//       port   : nconf.get('REDIS:PORT'),
+//       expire : nconf.get('REDIS:EXPIRE')
+//     })
+//   );
+// }
 
 
 
