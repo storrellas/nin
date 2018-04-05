@@ -17,7 +17,7 @@
 
 version: "3"
 services:
-  rmserver:
+  ninserver:
     image: ${IMAGE_NAME}:${IMAGE_TAG}
     restart: always
     build:

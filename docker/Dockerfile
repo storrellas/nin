@@ -1,5 +1,5 @@
 FROM node:8
-MAINTAINER Orchestrator Core Team
+MAINTAINER Mobile Factory Team
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV NODE_ENV production
@@ -11,11 +11,9 @@ RUN sed -i "s/^exit 101$/exit 0/" /usr/sbin/policy-rc.d
 # copy project files
 COPY ./ /repo/
 
-#RUN apt-get update && \
-#      apt-get -y install \
-#      libjpeg-turbo-progs
-
 WORKDIR "/repo/"
+RUN npm config set proxy http://barc.proxy.corp.sopra:8080
+RUN npm config set https-proxy http://barc.proxy.corp.sopra:8080
 RUN npm install
 RUN npm run build
 
