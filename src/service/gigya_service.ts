@@ -72,7 +72,7 @@ export class GigyaService {
 
   }
 
-  public login(login : string, password : string, api_key: string = undefined) : Promise<GigyaResponse & Account & SessionInfo>{
+  public login(login : string, password : string, api_key: string|undefined = undefined) : Promise<GigyaResponse & Account & SessionInfo>{
     return this.gigya.accounts.login({
               apiKey: api_key,
               loginID: login,
@@ -82,15 +82,15 @@ export class GigyaService {
             })
   }
 
-  public get_account_info(uid : string, api_key: string = undefined) : Promise<GigyaResponse & Account>{
+  public get_account_info(uid : string, api_key: string|undefined = undefined) : Promise<GigyaResponse & Account>{
     return this.gigya.accounts.getAccountInfo({ apiKey: api_key, UID: uid })
   }
 
-  public get_jwt_public_key(api_key: string = undefined) : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{
+  public get_jwt_public_key(api_key: string|undefined = undefined) : Promise<GigyaResponse & AccountsGetJWTPublicKeyResponse>{
     return this.gigya.accounts.getJWTPublicKey({ apiKey: api_key })
   }
 
-  public get_jwt(uid : string, api_key: string = undefined) : Promise<GigyaResponse & AccountsGetJWTResponse>{
+  public get_jwt(uid : string, api_key: string|undefined = undefined) : Promise<GigyaResponse & AccountsGetJWTResponse>{
     return this.gigya.accounts.getJWT({ apiKey: api_key, targetUID: uid })
   }
 

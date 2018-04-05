@@ -1,5 +1,6 @@
 import * as jsonwebtoken from 'jsonwebtoken';
-import * as DateDiff from 'date-diff';
+//import * as DateDiff from 'date-diff';
+var DateDiff = require('date-diff');
 
 // Body mass index for pregnancy
 export const bmi_max : number = 24.9
@@ -45,7 +46,7 @@ export function bmi_weight_limits(height: number) : number[]{
   */
 export function date_2_epoch_unix(date_str : string) : number{
   const date = new Date(date_str)
-  return parseInt(date.getTime() / 1000)
+  return Math.floor(date.getTime() / 1000)
 }
 
 

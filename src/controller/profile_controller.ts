@@ -144,6 +144,9 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
 
     try{
 
+      if(!request.uid)
+        throw new Error('uid is undefined');
+
       // ------------------
       // Grab information from gigya
       // ------------------
@@ -210,6 +213,10 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     this.logger.info("prepregnancy_create_or_update uid:"  + request.uid + " gcid:" + request.gcid)
 
     try{
+
+      if(!request.gcid)
+        throw new Error('gcid is undefined');
+
         const output : Array<any> =
           await this.model.getModel('child').update(
             {
