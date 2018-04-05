@@ -55,8 +55,8 @@ nconf.file({ file: config_file });
 // Enable custom configuration file
 const custom_config_file = __dirname + '/../src/resources/NINConfiguration.json';
 if (fs.existsSync(custom_config_file)) {
-  console.log("Reading custom Configuration file " + config_file + " was found! ");
   config_file = custom_config_file
+  console.log("Reading custom Configuration file " + config_file + " was found! ");
   nconf.file({ file: config_file });
 }
 

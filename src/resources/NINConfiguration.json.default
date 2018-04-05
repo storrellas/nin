@@ -1,5 +1,5 @@
 {
-  "HTTP_PORT" : 8080,
+  "HTTP_PORT" : 8081,
   "LOGLEVEL"  : "debug",
   "REDIS": {
     "HOST"   : "localhost",
