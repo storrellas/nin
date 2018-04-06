@@ -686,7 +686,7 @@ prepararlas.",
       // Generate food track
       const food_track_list = []
       const n_food_tracks_per_day = 8
-      const n_days = 90
+      const n_days = 1000
       const n_food_track = n_food_tracks_per_day * n_days
       const start_date : Date = new Date('2018-03-22 00:00:00')
       for(let ind = 1; ind < n_food_track; ind+=3){
