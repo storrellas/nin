@@ -250,7 +250,7 @@ export class TrackingFoodController {
       let week_number : number = 0;
       if( request.get('raw') == 'true'){
 
-
+        let request_number : number = parseInt(request.body.request_number)
         for (let tracking of tracking_list) {
           const ingredient_list = []
           for (let ingredient of tracking.tracking_food_ingredients) {
@@ -259,8 +259,12 @@ export class TrackingFoodController {
 
           const item : any =
              this.generate_entity(tracking, ingredient_list, child)
-             response_list.push(item)
-         }
+          response_list.push(item)
+
+          // Limit number of requests
+          if( response_list.length > request_number)
+            break;
+        }
 
       } // END: IF -----------------------------------
       else
