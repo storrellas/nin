@@ -79,6 +79,7 @@ export class ProfileController {
     }catch(e){
       this.logger.error("error")
       console.log(e)
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -199,6 +200,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     }catch(e){
       response.json({result: 'ko'})
       console.log(e)
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
 
@@ -258,7 +260,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     }catch(e){
       console.log(e)
       this.logger.error("exception raised")
-      response.json({result: 'ko'})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -296,7 +298,7 @@ de los 6 meses de acuerdo con las recomendaciones de tu profesional de la salud.
     }catch(e){
       console.log(e)
       this.logger.error("exception raised")
-      response.json({result: 'ko'})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }

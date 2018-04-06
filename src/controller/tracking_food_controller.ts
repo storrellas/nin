@@ -117,7 +117,7 @@ export class TrackingFoodController {
     }catch(e){
       this.logger.error("Error")
       console.log(e)
-      response.json({result:-1})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -209,7 +209,7 @@ export class TrackingFoodController {
     }catch(e){
       this.logger.error("Error")
       console.log(e)
-      response.json({result:'ko'})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -325,7 +325,7 @@ export class TrackingFoodController {
     }catch(e){
       console.log(e)
       this.logger.error("Error")
-      response.json({result: 0})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
 
@@ -372,7 +372,7 @@ export class TrackingFoodController {
       }catch(e){
         this.logger.error("Error")
         console.log(e)
-        response.json({result:-1})
+        response.json({result:-1, messge:String(e)})
         return Promise.reject(undefined)
       }
     }
@@ -401,7 +401,7 @@ export class TrackingFoodController {
     }catch(e){
       console.log(e)
       this.logger.error("Error")
-      response.json({result: 0})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
 

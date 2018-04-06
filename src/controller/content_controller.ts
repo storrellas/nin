@@ -98,6 +98,7 @@ export class ContentController {
     }catch(e){
       this.logger.error("error")
       console.log(e)
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -133,8 +134,9 @@ export class ContentController {
 
       //response.json({result: 'ok'})
       return Promise.resolve(undefined)
-    }catch{
+    }catch(e){
       this.logger.error("error")
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -182,8 +184,9 @@ export class ContentController {
 
       //response.json({result: 'ok'})
       return Promise.resolve(undefined)
-    }catch{
+    }catch(e){
       this.logger.error("error")
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
 
@@ -224,6 +227,7 @@ export class ContentController {
     }catch(e){
       this.logger.error("error")
       console.log(e)
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -279,8 +283,9 @@ export class ContentController {
       response.json(response_json)
       // response.json({result: 'ok'})
       return Promise.resolve(undefined)
-    }catch{
+    }catch(e){
       this.logger.error("error")
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -314,8 +319,9 @@ export class ContentController {
       response.json(response_json)
       // response.json({result: 'ok'})
       return Promise.resolve(undefined)
-    }catch{
+    }catch(e){
       this.logger.error("error")
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }

@@ -210,16 +210,22 @@ server.setConfig((app: Application) => {
   app.use((request: Request, response: Response, next : NextFunction) => {
 
     // Cache time does not provide headers
-    if( request.url.indexOf('custom/cache/time') >= 0){
+    if( request.url.indexOf('custom/cache/time') >= 0 || request.url.indexOf('custom/security/message') >= 0){
       next()
       return
     }
 
-    request.gcid = request.get('gcid')
-    const token : any = request.get('token')
-    request.uid = helper.get_uid(token)
-    request.api_key = helper.get_api_key(token)
-    next()
+    try{
+      request.gcid = request.get('gcid')
+      const token : any = request.get('token')
+      request.uid = helper.get_uid(token)
+      request.api_key = helper.get_api_key(token)
+      next()
+    }catch(e){
+      logger.error("Error")
+      console.log(e)
+      response.json({result:-1, messge:String(e)})
+    }
   });
 
 });

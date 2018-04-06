@@ -64,7 +64,7 @@ export class TrackingGrowthController {
     }catch(e){
       this.logger.error("Error")
       console.log(e)
-      response.json({result:-1})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
@@ -152,7 +152,7 @@ export class TrackingGrowthController {
     }catch(e){
       console.log(e)
       this.logger.error("Error")
-      response.json({result: 0})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
 
@@ -217,7 +217,7 @@ export class TrackingGrowthController {
     }catch(e){
       this.logger.error("Error")
       console.log(e)
-      response.json({result:'ko'})
+      response.json({result:-1, messge:String(e)})
       return Promise.reject(undefined)
     }
   }
