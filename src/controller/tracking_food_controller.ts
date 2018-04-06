@@ -313,7 +313,86 @@ export class TrackingFoodController {
 
       } // END: ELSE -----------------------------------
 
+      // Generate response
+      const response_json = {
+          response: {
+              list: response_list
+          },
+          request_number : week_number,
+          result: 0
+      }
+      response.json(response_json)
 
+      return Promise.resolve(undefined)
+    }catch(e){
+      console.log(e)
+      this.logger.error("Error")
+      response.json({result:-1, messge:String(e)})
+      return Promise.reject(undefined)
+    }
+
+  }
+
+
+  @httpPost('custom/food_track/graph')
+  public async food_track_graph(request: Request, response: Response): Promise<void> {
+    this.logger.info("food_track uid:" + request.uid + " gcid:" + request.gcid)
+
+    try{
+
+      // Obtain date_start/date_end
+      let date_from : Date = new Date(0)
+      let date_to : Date = new Date()
+      if( request.body.date_from )
+        date_from = helper.epoch_unix_2_date(request.body.date_from)
+      if( request.body.date_to )
+        date_to = helper.epoch_unix_2_date(request.body.date_to)
+
+      const child : any =
+        await this.model.getModel('child').findOne( { where: { id: request.gcid } })
+      const birth_date : Date = new Date(child.birth_date)
+
+      // Calculate date from week number
+      const requested_week_number : number = parseInt(request.body.request_number)
+
+      // Set limit
+      let limit : number = this.options.max_trackings_list
+      if( request.body.request_number )
+        limit = request.body.request_number
+
+      // Retreive trackings
+      const tracking_list : any =
+        await this.model.getModel('tracking_food').findAll({
+            include: [
+              {
+               model: this.model.getModel('tracking_food_ingredient')
+              }
+            ],
+            where: {
+              child_id: request.gcid,
+              food_type_id: request.body.food_type,
+              date:{
+                $between: [date_from, date_to]
+              }
+            },
+            order: [['date', 'DESC']],
+            limit: limit
+          })
+
+
+      let response_list : {[id:string]:any}[] = []
+      let week_number : number = 0;
+
+      for (let tracking of tracking_list) {
+        const ingredient_list = []
+        for (let ingredient of tracking.tracking_food_ingredients) {
+          ingredient_list.push(ingredient.ingredient_id)
+        }
+
+        const item : any =
+           this.generate_entity(tracking, ingredient_list, child)
+        response_list.push(item)
+      }
 
       // Generate response
       const response_json = {
