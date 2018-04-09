@@ -66,7 +66,7 @@ export class Model implements IModel {
     this.models['nutrition_component'] = this.sequelize.define('nutrition_component',{
       id                    : {type: Sequelize.INTEGER, autoIncrement: true, primaryKey:true},
       name                  : {type: Sequelize.STRING(64)},
-      icon                  : {type: Sequelize.STRING(256)},
+      icon                  : {type: Sequelize.STRING(512)},
       description           : {type: Sequelize.STRING(1024)},
       gtm_label             : {type: Sequelize.STRING(1024)}
     },
@@ -294,7 +294,7 @@ export class Model implements IModel {
       meal_id                : {type: Sequelize.INTEGER},
       title                  : {type: Sequelize.STRING(64)},
       quantity               : {type: Sequelize.STRING(64)},
-      icon                   : {type: Sequelize.STRING(64)},
+      icon                   : {type: Sequelize.STRING(512)},
       gtm_label              : {type: Sequelize.STRING(64)},
     },
     {
